@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'src.dart';
 
@@ -20,11 +21,17 @@ class _BatteryControlState extends State<BatteryControl> {
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
                     decoration: BoxDecoration(
-                        color: Color(0x0EFFFFFF),
+                        color: Color.fromARGB(63, 91, 91, 91),
                         borderRadius: BorderRadius.circular(30)),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [Left(), Middle(), Right()])))));
+                    child: Column(children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Left(), Middle(), Right()]),
+                      Text(
+                        "5H 30M To Empty",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      )
+                    ])))));
   }
 }
 
@@ -39,59 +46,84 @@ class _RightState extends State<Right> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              Row(children: [
+                Icon(Icons.bolt, color: Colors.yellow),
+                Icon(Icons.bolt, color: Colors.green),
+                Icon(Icons.bolt, color: Colors.green)
+              ]),
+              Text("9.54A Out", style: TextStyle(color: Colors.white)),
+              Text("122W out", style: TextStyle(color: Colors.white))
+            ])),
+        Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+        CupertinoButton(
+          color: Colors.green,
+          padding: EdgeInsets.all(3),
+          onPressed: () {},
+          child: Text("Discharge"),
+        )
+      ],
     );
   }
 }
 
 class Middle extends StatefulWidget {
   Middle({super.key});
-  double batteryH = 210;
+  double batteryH = 200;
   @override
   State<StatefulWidget> createState() => _MiddleState();
 }
 
 class _MiddleState extends State<Middle> {
+  String battery_name = "48V 320Ah - 245";
   @override
   Widget build(BuildContext context) {
-    int level = 50;
+    int level = 0;
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-      child: Stack(alignment: Alignment.bottomCenter, children: [
-        Container(
-          decoration: BoxDecoration(
-              color: Color.fromARGB(255, 0, 193, 6),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30))),
-          height: (widget.batteryH - level - 20 < 0)
-              ? 0
-              : widget.batteryH - level - 20,
-          width: widget.batteryH / 2,
-        ),
-        Image.asset(
-          "assets/bat.png",
-          height: widget.batteryH,
-        ),
-        Padding(
-            padding: EdgeInsets.only(bottom: 30),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                "90%",
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                    fontSize: 20),
-              ),
-              Text("55.20V"),
-              Text("302/320Ah"),
-            ])),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Text(
-            "wec3",
-            style: TextStyle(color: Colors.white),
+      padding: EdgeInsets.only(top: 20, right: 10, left: 10),
+      child: Column(children: [
+        Text(battery_name,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.white)),
+        Stack(alignment: Alignment.bottomCenter, children: [
+          Container(
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 0, 193, 6),
+                borderRadius:
+                    BorderRadius.vertical(bottom: Radius.circular(30))),
+            height: (widget.batteryH - level - 30 < 0)
+                ? 0
+                : widget.batteryH - level - 30,
+            width: widget.batteryH / 2,
           ),
-        )
+          Image.asset(
+            "assets/bat.png",
+            height: widget.batteryH,
+          ),
+          Padding(
+              padding: EdgeInsets.only(bottom: 30),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "90%",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                          fontSize: 20),
+                    ),
+                    Text("55.20V"),
+                    Text("302/320Ah"),
+                  ])),
+        ])
       ]),
     );
   }
@@ -107,6 +139,24 @@ class Left extends StatefulWidget {
 class _LeftState extends State<Left> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "OFF",
+            style: TextStyle(
+                fontSize: 40, fontWeight: FontWeight.w900, color: Colors.red),
+          ),
+          Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+          CupertinoButton(
+            color: Colors.red,
+            padding: EdgeInsets.all(3),
+            onPressed: () {},
+            child: Text("Charge"),
+          )
+        ],
+      ),
+    );
   }
 }
