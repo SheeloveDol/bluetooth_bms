@@ -83,7 +83,7 @@ class _RightState extends State<Right> {
 class Middle extends StatefulWidget {
   Middle({super.key, required this.controller});
   ScrollController controller;
-  double batteryH = 200;
+  double batteryH = 90;
   @override
   State<StatefulWidget> createState() => _MiddleState();
 }
@@ -121,10 +121,10 @@ class _MiddleState extends State<Middle> {
                 color: Color.fromARGB(255, 0, 193, 6),
                 borderRadius:
                     BorderRadius.vertical(bottom: Radius.circular(30))),
-            height: (widget.batteryH - level - 30 < 0)
+            width: (widget.batteryH - level - 30 < 0)
                 ? 0
                 : widget.batteryH - level - 30,
-            width: widget.batteryH / 2,
+            height: widget.batteryH / 2,
           ),
           Image.asset(
             "assets/bat.png",
