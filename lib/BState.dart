@@ -72,7 +72,8 @@ class _ActiveStatesState extends State<ActiveStates> {
     }
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+      Text("$title :",
+          style: TextStyle(color: color, fontWeight: FontWeight.bold)),
       Padding(padding: EdgeInsets.only(left: 5)),
       Text(
         description,

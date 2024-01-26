@@ -38,21 +38,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Listener(
+        body: GestureDetector(
             child: Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/bg.jpeg"), fit: BoxFit.cover)),
-      child: ListView(
-          physics: const ClampingScrollPhysics(),
-          controller: controller,
-          children: <Widget>[
-            BatteryControl(controller: controller),
-            BatteryState(),
-            CellsState(),
-            Temperatures(),
-            Reports()
-          ]),
-    )));
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/bg.jpeg"),
+                        fit: BoxFit.cover)),
+                child: Stack(children: [
+                  ListView(
+                      padding: EdgeInsets.only(top: 235),
+                      physics: const ClampingScrollPhysics(),
+                      controller: controller,
+                      children: <Widget>[
+                        BatteryState(),
+                        CellsState(),
+                        Temperatures(),
+                        Reports()
+                      ]),
+                  BatteryControl(controller: controller)
+                ]))));
   }
 }

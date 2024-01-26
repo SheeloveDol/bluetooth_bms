@@ -1,1 +1,3 @@
-class Be {}
+class Be {
+  Be() {}
+}

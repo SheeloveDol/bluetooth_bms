@@ -16,7 +16,8 @@ class _BatteryControlState extends State<BatteryControl> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        margin:
+            const EdgeInsets.only(top: 40, left: 15, right: 15, bottom: 670),
         child: ClipRect(
             child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -68,7 +69,7 @@ class _RightState extends State<Right> {
               Text("9.54A Out", style: TextStyle(color: Colors.white)),
               Text("122W out", style: TextStyle(color: Colors.white))
             ])),
-        Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
         CupertinoButton(
           color: Colors.green,
           padding: EdgeInsets.all(3),
@@ -83,7 +84,7 @@ class _RightState extends State<Right> {
 class Middle extends StatefulWidget {
   Middle({super.key, required this.controller});
   ScrollController controller;
-  double batteryH = 200;
+  double batteryH = 90;
   @override
   State<StatefulWidget> createState() => _MiddleState();
 }
@@ -95,11 +96,6 @@ class _MiddleState extends State<Middle> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.controller.addListener(() {
-      setState(() {
-        widget.batteryH -= widget.controller.offset;
-      });
-    });
   }
 
   @override
@@ -121,10 +117,10 @@ class _MiddleState extends State<Middle> {
                 color: Color.fromARGB(255, 0, 193, 6),
                 borderRadius:
                     BorderRadius.vertical(bottom: Radius.circular(30))),
-            height: (widget.batteryH - level - 30 < 0)
+            width: (widget.batteryH - level - 30 < 0)
                 ? 0
                 : widget.batteryH - level - 30,
-            width: widget.batteryH / 2,
+            height: widget.batteryH / 2,
           ),
           Image.asset(
             "assets/bat.png",
@@ -170,7 +166,7 @@ class _LeftState extends State<Left> {
             style: TextStyle(
                 fontSize: 40, fontWeight: FontWeight.w900, color: Colors.red),
           ),
-          Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+          Padding(padding: EdgeInsets.symmetric(vertical: 10)),
           CupertinoButton(
             color: Colors.red,
             padding: EdgeInsets.all(3),
