@@ -16,21 +16,30 @@ class _CellsStateState extends State<CellsState> {
     // TODO: implement initState
     super.initState();
 
-    cells.add(Container());
+    for (var i = 0; i < 14; i++) {
+      cells.add(Container(
+        width: 12,
+        height: 12,
+        color: Colors.blue,
+      ));
+    }
   }
 
   Widget grid() {
-    if (cells.length % 4 == 0) {
-      var cols = cells.length / 4;
-      for (var i = 0; i <= cols; i++) {
-        for (var i = 0; i < 5; i++) {
-          var rows = <Widget>[];
-          rows.add(cells[i]);
-          if (i == 4) {}
-        }
+    List<Widget> columnContent = [];
+    Column column = Column(children: columnContent);
+
+    List<Widget> rowContent = [];
+    Row row = Row(children: rowContent);
+    for (var i = 0; i < cells.length; i++) {
+      rowContent.add(cells[i]);
+      if (i % 3 == 0 && i != 0) {
+        rowContent = new List<Widget>.empty(growable: true);
+        row = new Row(children: rowContent);
+        columnContent.add(row);
       }
     }
-    return Row();
+    return column;
   }
 
   @override
