@@ -34,11 +34,11 @@ class _TemperaturesState extends State<Temperatures> {
             color: Color.fromARGB(46, 255, 255, 255),
             borderRadius: BorderRadius.circular(10)),
         child: Row(children: [
-          Icon(
-            Icons.thermostat,
-            size: 45,
-          ),
-          Column(children: [Text(title), Text(temp)])
+          Icon(Icons.thermostat, size: 20),
+          Column(children: [
+            Text(title, style: TextStyle(fontSize: 11, color: Colors.white)),
+            Text(temp, style: TextStyle(fontSize: 11, color: Colors.white))
+          ])
         ]));
   }
 
@@ -50,13 +50,16 @@ class _TemperaturesState extends State<Temperatures> {
     Row row = Row(children: rowContent);
     for (var i = 0; i < temps.length; i++) {
       rowContent.add(temps[i]);
-      if (i % 4 == 0) {
+      if (i % 6 == 0) {
         rowContent = List<Widget>.empty(growable: true);
         row = Row(children: rowContent);
         columnContent.add(row);
       }
     }
-    return column;
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: temps,
+    );
   }
 
   @override
@@ -67,11 +70,16 @@ class _TemperaturesState extends State<Temperatures> {
             child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
+                  width: 100,
+                  height: 80,
                   padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
                       color: Color(0x565B5B5B),
                       borderRadius: BorderRadius.circular(30)),
-                  child: grid(),
+                  child: ListView.builder(
+                      itemCount: temps.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => temps[index]),
                 ))));
   }
 }
