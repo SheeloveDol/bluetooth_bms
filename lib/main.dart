@@ -3,6 +3,7 @@ import 'package:bluetooth_bms/CState.dart';
 import 'package:bluetooth_bms/Control.dart';
 import 'package:bluetooth_bms/Records.dart';
 import 'package:bluetooth_bms/TempData.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -33,23 +34,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ScrollController controller = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
+        body: Listener(
+            child: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage("assets/bg.jpeg"), fit: BoxFit.cover)),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      child: ListView(
+          physics: const ClampingScrollPhysics(),
+          controller: controller,
           children: <Widget>[
-            BatteryControl(),
+            BatteryControl(controller: controller),
             BatteryState(),
             CellsState(),
             Temperatures(),
             Reports()
           ]),
-    ));
+    )));
   }
 }
