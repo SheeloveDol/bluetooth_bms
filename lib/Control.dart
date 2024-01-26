@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'src.dart';
 
 class BatteryControl extends StatefulWidget {
-  const BatteryControl({super.key});
+  ScrollController controller;
+
+  BatteryControl({super.key, required this.controller});
   @override
   State<StatefulWidget> createState() => _BatteryControlState();
 }
@@ -14,29 +16,34 @@ class _BatteryControlState extends State<BatteryControl> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin:
-            const EdgeInsets.only(top: 100, left: 15, right: 15, bottom: 10),
+        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
         child: ClipRect(
             child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
                     decoration: BoxDecoration(
-                        color: Color.fromARGB(63, 91, 91, 91),
+                        color: Color(0x565B5B5B),
                         borderRadius: BorderRadius.circular(30)),
                     child: Column(children: [
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [Left(), Middle(), Right()]),
-                      Text(
-                        "5H 30M To Empty",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      )
+                          children: [
+                            Left(),
+                            Middle(
+                              controller: widget.controller,
+                            ),
+                            Right()
+                          ]),
+                      Text("5H 30M To Empty",
+                          style: TextStyle(color: Colors.white, fontSize: 20))
                     ])))));
   }
 }
 
 class Right extends StatefulWidget {
-  Right({super.key});
+  Right({
+    super.key,
+  });
   double batteryH = 210;
   @override
   State<StatefulWidget> createState() => _RightState();
@@ -74,7 +81,8 @@ class _RightState extends State<Right> {
 }
 
 class Middle extends StatefulWidget {
-  Middle({super.key});
+  Middle({super.key, required this.controller});
+  ScrollController controller;
   double batteryH = 200;
   @override
   State<StatefulWidget> createState() => _MiddleState();
@@ -82,17 +90,31 @@ class Middle extends StatefulWidget {
 
 class _MiddleState extends State<Middle> {
   String battery_name = "48V 320Ah - 245";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.controller.addListener(() {
+      setState(() {
+        widget.batteryH -= widget.controller.offset;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     int level = 0;
+
     return Container(
-      padding: EdgeInsets.only(top: 20, right: 10, left: 10),
+      padding: EdgeInsets.only(top: 10, right: 10, left: 10),
       child: Column(children: [
         Text(battery_name,
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: Colors.white)),
+        Padding(padding: EdgeInsets.only(bottom: 10)),
         Stack(alignment: Alignment.bottomCenter, children: [
           Container(
             decoration: BoxDecoration(
