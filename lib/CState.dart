@@ -41,12 +41,18 @@ class _CellsStateState extends State<CellsState> {
         Stack(alignment: Alignment.center, children: [
           Image.asset(
             "assets/bat.png",
-            height: 40,
+            height: 35,
           ),
           Column(children: [
-            Text(title),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+              ),
+            ),
             Text("${volts}V",
-                style: TextStyle(height: 0, color: color, fontWeight: weight))
+                style: TextStyle(
+                    fontSize: 12, height: 0, color: color, fontWeight: weight))
           ])
         ])
       ]),
@@ -55,15 +61,24 @@ class _CellsStateState extends State<CellsState> {
 
   Widget grid() {
     List<Widget> columnContent = [];
-    Column column = Column(children: columnContent);
+    Column column = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: columnContent);
 
     List<Widget> rowContent = [];
-    Row row = Row(children: rowContent);
+    Row row = Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: rowContent);
     for (var i = 0; i < cells.length; i++) {
       rowContent.add(cells[i]);
       if (i % 4 == 0) {
         rowContent = List<Widget>.empty(growable: true);
-        row = Row(children: rowContent);
+        row = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: rowContent);
         columnContent.add(row);
       }
     }
@@ -82,32 +97,35 @@ class _CellsStateState extends State<CellsState> {
                     decoration: BoxDecoration(
                         color: Color(0x565B5B5B),
                         borderRadius: BorderRadius.circular(30)),
-                    child: Column(children: [
-                      grid(),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Column(children: [
-                              Text("Cell Difference:$celldiff",
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold)),
-                              Text("Ballance inactive",
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold))
-                            ]),
-                            Column(children: [
-                              Text("High cell group",
-                                  style: TextStyle(
-                                      color: Colors.yellow,
-                                      fontWeight: FontWeight.bold)),
-                              Text("Low cell group",
-                                  style: TextStyle(
-                                      color: Color(0xFFCA5100),
-                                      fontWeight: FontWeight.bold))
-                            ])
-                          ])
-                    ])))));
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          grid(),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Column(children: [
+                                  Text("Cell Difference:$celldiff",
+                                      style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold)),
+                                  Text("Ballance inactive",
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontWeight: FontWeight.bold))
+                                ]),
+                                Column(children: [
+                                  Text("High cell group",
+                                      style: TextStyle(
+                                          color: Colors.yellow,
+                                          fontWeight: FontWeight.bold)),
+                                  Text("Low cell group",
+                                      style: TextStyle(
+                                          color: Color(0xFFCA5100),
+                                          fontWeight: FontWeight.bold))
+                                ])
+                              ])
+                        ])))));
   }
 }

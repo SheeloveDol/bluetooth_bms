@@ -45,7 +45,8 @@ class _BatteryStateState extends State<BatteryState> {
                           padding: EdgeInsets.all(3),
                           onPressed: () {},
                           child: Text("Reset",
-                              style: TextStyle(color: Colors.black)),
+                              style:
+                                  TextStyle(fontSize: 11, color: Colors.black)),
                         )
                       ]),
                 ))));
@@ -77,7 +78,7 @@ class _ActiveStatesState extends State<ActiveStates> {
       Padding(padding: EdgeInsets.only(left: 5)),
       Text(
         description,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(fontSize: 12, color: Colors.white),
         overflow: TextOverflow.visible,
         softWrap: true,
       )

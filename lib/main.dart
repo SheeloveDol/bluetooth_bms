@@ -35,27 +35,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ScrollController controller = ScrollController();
+  double height = 0;
+  @override
+  void initState() {
+    controller.addListener(() {
+      if (controller.offset > 2) {
+        setState(() {
+          height = 105;
+        });
+        return;
+      }
+      if (controller.offset.isNegative) {
+        setState(() {
+          height = 0;
+        });
+        return;
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: GestureDetector(
-            child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/bg.jpeg"),
-                        fit: BoxFit.cover)),
-                child: Stack(children: [
-                  ListView(
-                      padding: EdgeInsets.only(top: 235),
-                      physics: const ClampingScrollPhysics(),
-                      controller: controller,
-                      children: <Widget>[
-                        BatteryState(),
-                        CellsState(),
-                        Temperatures(),
-                        Reports()
-                      ]),
-                  BatteryControl(controller: controller)
-                ]))));
+        body: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/bg.jpeg"), fit: BoxFit.cover)),
+            child: Stack(children: [
+              ListView(
+                  padding: EdgeInsets.only(top: 230 - height),
+                  physics: const BouncingScrollPhysics(),
+                  controller: controller,
+                  children: <Widget>[
+                    BatteryState(),
+                    CellsState(),
+                    Temperatures(),
+                    Reports()
+                  ]),
+              BatteryControl(height: height)
+            ])));
   }
 }
