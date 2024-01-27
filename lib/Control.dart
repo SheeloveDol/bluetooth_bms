@@ -105,7 +105,7 @@ class _MiddleState extends State<Middle> {
 
   @override
   Widget build(BuildContext context) {
-    int level = 0;
+    int level = 90;
 
     return Container(
       padding: EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -116,23 +116,20 @@ class _MiddleState extends State<Middle> {
                 fontWeight: FontWeight.bold,
                 color: Colors.white)),
         Padding(padding: EdgeInsets.only(bottom: 10)),
-        Stack(alignment: Alignment.bottomCenter, children: [
+        Stack(alignment: Alignment.centerLeft, children: [
           Container(
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 0, 193, 6),
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(30))),
-            width: (widget.batteryH - level - 30 < 0)
-                ? 0
-                : widget.batteryH - level - 30,
-            height: widget.batteryH / 2,
-          ),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 0, 193, 6),
+                  borderRadius:
+                      BorderRadius.horizontal(left: Radius.circular(30))),
+              width: (level * 1.45 - 10 < 0) ? 0 : level * 1.45 - 10,
+              height: widget.batteryH),
           Image.asset(
             "assets/bat.png",
-            height: widget.batteryH,
+            height: 80,
           ),
           Padding(
-              padding: EdgeInsets.only(bottom: 30),
+              padding: EdgeInsets.only(left: 37),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -141,6 +138,7 @@ class _MiddleState extends State<Middle> {
                       style: TextStyle(
                           fontWeight: FontWeight.w900,
                           letterSpacing: 2,
+                          height: 0,
                           fontSize: 20),
                     ),
                     Text("55.20V"),
@@ -170,24 +168,16 @@ class _LeftState extends State<Left> {
           CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {},
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.arrow_back_ios,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                  Text(
-                    "Back",
-                    style: TextStyle(color: Colors.white, fontSize: 11),
-                  )
-                ],
-              )),
-          Text(
-            "OFF",
-            style: TextStyle(
-                fontSize: 30, fontWeight: FontWeight.w900, color: Colors.red),
-          ),
+              child: Row(children: [
+                Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
+                Text("Back",
+                    style: TextStyle(color: Colors.white, fontSize: 11))
+              ])),
+          Text("OFF",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red)),
           CupertinoButton(
               color: Colors.red,
               padding: EdgeInsets.symmetric(horizontal: 15),
@@ -206,6 +196,7 @@ class BatteryControlSmall extends StatefulWidget {
 class _BatteryControlSmallState extends State<BatteryControlSmall> {
   @override
   Widget build(BuildContext context) {
+    double level = 90;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       CupertinoButton(
           color: Colors.red,
@@ -213,10 +204,19 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
           onPressed: () {},
           child: Text("Charge", style: TextStyle(fontSize: 11))),
       Padding(padding: EdgeInsets.only(right: 12)),
-      Image.asset(
-        "assets/bat.png",
-        height: 50,
-      ),
+      Stack(alignment: Alignment.centerLeft, children: [
+        Container(
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 0, 193, 3),
+                borderRadius:
+                    BorderRadius.horizontal(left: Radius.circular(30))),
+            width: (level - 15 < 0) ? 0 : level - 15,
+            height: 50),
+        Image.asset(
+          "assets/bat.png",
+          height: 50,
+        )
+      ]),
       Padding(padding: EdgeInsets.only(right: 12)),
       CupertinoButton(
           color: Colors.green,

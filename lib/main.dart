@@ -39,14 +39,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     controller.addListener(() {
-      if (controller.offset < 38) {
-        setState(() {
-          height = 0;
-        });
-      } else {
+      if (controller.offset > 2) {
         setState(() {
           height = 105;
         });
+        return;
+      }
+      if (controller.offset.isNegative) {
+        setState(() {
+          height = 0;
+        });
+        return;
       }
     });
     super.initState();
@@ -62,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Stack(children: [
               ListView(
                   padding: EdgeInsets.only(top: 230 - height),
-                  physics: const ClampingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   controller: controller,
                   children: <Widget>[
                     BatteryState(),
