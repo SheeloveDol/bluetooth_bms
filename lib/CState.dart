@@ -118,11 +118,11 @@ class _CellsStateState extends State<CellsState> {
                                 Column(children: [
                                   Text("High cell group",
                                       style: TextStyle(
-                                          color: Colors.yellow,
+                                          color: Color(0xFFCA5100),
                                           fontWeight: FontWeight.bold)),
                                   Text("Low cell group",
                                       style: TextStyle(
-                                          color: Color(0xFFCA5100),
+                                          color: Colors.yellow,
                                           fontWeight: FontWeight.bold))
                                 ])
                               ])

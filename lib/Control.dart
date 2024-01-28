@@ -89,7 +89,6 @@ class Middle extends StatefulWidget {
   Middle({
     super.key,
   });
-  double batteryH = 80;
   @override
   State<StatefulWidget> createState() => _MiddleState();
 }
@@ -123,7 +122,7 @@ class _MiddleState extends State<Middle> {
                   borderRadius:
                       BorderRadius.horizontal(left: Radius.circular(30))),
               width: (level * 1.45 - 10 < 0) ? 0 : level * 1.45 - 10,
-              height: widget.batteryH),
+              height: 79),
           Image.asset(
             "assets/bat.png",
             height: 80,
@@ -167,7 +166,7 @@ class _LeftState extends State<Left> {
             children: [
           CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: () {},
+              onPressed: () => Navigator.pop(context),
               child: Row(children: [
                 Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
                 Text("Back",
@@ -211,7 +210,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
                 borderRadius:
                     BorderRadius.horizontal(left: Radius.circular(30))),
             width: (level - 15 < 0) ? 0 : level - 15,
-            height: 50),
+            height: 49),
         Image.asset(
           "assets/bat.png",
           height: 50,
