@@ -102,7 +102,7 @@ class _ReportsState extends State<Reports> {
         Text("Cycle Count : ", style: TextStyle(color: Colors.white)),
         Text("1233", style: TextStyle(color: Colors.white))
       ]),
-      Image.asset("assets/logo.png", height: 110)
+      Image.asset("assets/logo.png", height: 100)
     ]);
     return Column(children: data);
   }
@@ -135,7 +135,7 @@ class _ReportsState extends State<Reports> {
                       alignment: Alignment.topLeft,
                       child: AnimatedContainer(
                           duration: const Duration(microseconds: 700),
-                          height: 190,
+                          height: 200,
                           padding: EdgeInsets.all(15),
                           decoration: BoxDecoration(
                               color: (bg) ? Colors.black : Color(0x565B5B5B),
