@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'src.dart';
 
 class BatteryControl extends StatefulWidget {
-  BatteryControl({super.key, required this.height});
+  BatteryControl({super.key, required this.height, required this.back});
+  final Function() back;
   double height;
   @override
   State<StatefulWidget> createState() => _BatteryControlState();
@@ -31,7 +32,11 @@ class _BatteryControlState extends State<BatteryControl> {
                         : Column(children: [
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [Left(), Middle(), Right()]),
+                                children: [
+                                  Left(back: widget.back),
+                                  Middle(),
+                                  Right()
+                                ]),
                             Text("5H 30M To Empty",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20))
@@ -150,8 +155,8 @@ class _MiddleState extends State<Middle> {
 }
 
 class Left extends StatefulWidget {
-  const Left({super.key});
-
+  const Left({super.key, required this.back});
+  final Function() back;
   @override
   State<StatefulWidget> createState() => _LeftState();
 }
@@ -166,7 +171,7 @@ class _LeftState extends State<Left> {
             children: [
           CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => widget.back(),
               child: Row(children: [
                 Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
                 Text("Back",

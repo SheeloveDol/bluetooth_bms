@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
@@ -38,7 +38,7 @@ class Be {
     return status;
   }
 
-  static scan(Function(String) onFound) async {
+  static scan(Function(String, BluetoothDevice) onFound) async {
     // listen to scan results
     // Note: `onScanResults` only returns live scan results, i.e. during scanning
     // Use: `scanResults` if you want live scan results *or* the results from a previous scan
@@ -46,9 +46,11 @@ class Be {
       (results) {
         if (results.isNotEmpty) {
           ScanResult r = results.last;
-          onFound((r.advertisementData.advName.length > 1)
-              ? r.advertisementData.advName
-              : "${r.device.remoteId}"); // the most recently found device
+          onFound(
+              (r.advertisementData.advName.length > 1)
+                  ? r.advertisementData.advName
+                  : "${r.device.remoteId}",
+              r.device); // the most recently found device
           print(
               '${r.device.remoteId}: "${r.advertisementData.advName}" found!');
         }
@@ -74,5 +76,35 @@ class Be {
 
     // wait for scanning to stop
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
+  }
+
+  static Future<StreamSubscription<BluetoothConnectionState>?> connect(
+      BluetoothDevice device) async {
+    // listen for disconnection
+    var subscription =
+        device.connectionState.listen((BluetoothConnectionState state) async {
+      if (state == BluetoothConnectionState.disconnected) {
+        // 1. typically, start a periodic timer that tries to
+        //    reconnect, or just call connect() again right now
+        // 2. you must always re-discover services after disconnection!
+        print("Device Disconnected : ${device.disconnectReason}");
+      }
+    });
+    device.cancelWhenDisconnected(subscription, delayed: true, next: true);
+    // Connect to the device
+    try {
+      await device.connect();
+      return subscription;
+    } catch (e) {
+      return Future(() => null);
+    }
+  }
+
+  static Future<void> disconnect(BluetoothDevice device,
+      StreamSubscription<BluetoothConnectionState> subscription) async {
+    // Disconnect from device
+    await device.disconnect();
+    // cancel to prevent duplicate listeners
+    subscription.cancel();
   }
 }
