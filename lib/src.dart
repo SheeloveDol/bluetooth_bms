@@ -112,4 +112,10 @@ class Be {
     // cancel to prevent duplicate listeners
     subscription.cancel();
   }
+
+  static readRawCmd() {}
+  static _getReadCharacteristics() {}
+
+  static _getReadCharacteristics() {}
+  static _getReadWriteService() {}
 }
