@@ -1,18 +1,39 @@
+import 'dart:async';
+
+import 'package:bluetooth_bms/Dashboard.dart';
 import 'package:bluetooth_bms/main.dart';
+import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:bluetooth_bms/src.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Device extends StatefulWidget {
-  const Device({super.key, required this.title});
+  Device({super.key, required this.title, required this.device});
+  final BluetoothDevice device;
   final String title;
   @override
   State<StatefulWidget> createState() => _DeviceState();
 }
 
 class _DeviceState extends State<Device> {
+  late StreamSubscription<BluetoothConnectionState> sub;
   onConnect(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DashBoard()));
+    Be.connect(widget.device).then((value) {
+      if (value == null) {
+        quicktell(context, "Could not connect to ${widget.title}");
+      } else {
+        sub = value;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DashBoard(
+                      device: widget.device,
+                      subscription: sub,
+                      title: widget.title,
+                    )));
+      }
+    });
   }
 
   @override

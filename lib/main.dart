@@ -7,6 +7,7 @@ import 'package:bluetooth_bms/TempData.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,6 +38,7 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   bool disabled = false;
   List<Widget> devices = [];
+  List<Widget> namelessDevices = [];
 
   onScan() async {
     setState(() => disabled = true);
@@ -45,11 +47,16 @@ class _ScanPageState extends State<ScanPage> {
       return;
     }
     await Be.scan(onFound);
+
     setState(() => disabled = false);
   }
 
-  void onFound(String name) async {
-    devices.add(Device(title: name));
+  void onFound(String name, BluetoothDevice device) {
+    if (device.advName.length > 1) {
+      devices.insert(0, Device(title: name, device: device));
+    } else {
+      namelessDevices.add(Device(title: name, device: device));
+    }
     setState(() {});
   }
 
@@ -63,12 +70,14 @@ class _ScanPageState extends State<ScanPage> {
   Widget build(Object context) {
     return Scaffold(
         body: Stack(children: [
+      //black bg
       Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [Color(0xFF002A4D), Colors.black]))),
+      //app title
       const Positioned(
           top: 95,
           left: 10,
@@ -77,9 +86,10 @@ class _ScanPageState extends State<ScanPage> {
                   color: Colors.white,
                   fontWeight: FontWeight.w300,
                   fontSize: 25))),
+      //Scan button
       Positioned(
           top: 90,
-          right: 60,
+          right: 10,
           child: ElevatedButton(
               onPressed: (disabled) ? null : onScan,
               child: const Text("SCAN",
@@ -88,13 +98,7 @@ class _ScanPageState extends State<ScanPage> {
                       fontWeight: FontWeight.w300,
                       fontSize: 20,
                       letterSpacing: 2)))),
-      Positioned(
-          top: 90,
-          right: 0,
-          child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: Icon(Icons.more_vert, color: Colors.white, size: 45),
-              onPressed: () {})),
+      //List of all devices
       Positioned.fill(
           top: 150,
           child: Container(
@@ -113,8 +117,8 @@ class _ScanPageState extends State<ScanPage> {
                             fontSize: 20,
                             letterSpacing: 2)),
                     Container(
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         height: 600,
                         child: ListView(
                           key: UniqueKey(),
@@ -122,58 +126,5 @@ class _ScanPageState extends State<ScanPage> {
                         ))
                   ]))),
     ]));
-  }
-}
-
-class DashBoard extends StatefulWidget {
-  const DashBoard({super.key});
-
-  @override
-  State<DashBoard> createState() => _DashBoardState();
-}
-
-class _DashBoardState extends State<DashBoard> {
-  ScrollController controller = ScrollController();
-  double height = 0;
-  @override
-  void initState() {
-    controller.addListener(() {
-      if (controller.offset > 2) {
-        setState(() {
-          height = 105;
-        });
-        return;
-      }
-      if (controller.offset.isNegative) {
-        setState(() {
-          height = 0;
-        });
-        return;
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.black,
-        body: Container(
-            decoration: const BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
-            child: Stack(children: [
-              ListView(
-                  padding: EdgeInsets.only(top: 230 - height),
-                  physics: const BouncingScrollPhysics(),
-                  controller: controller,
-                  children: <Widget>[
-                    const BatteryState(),
-                    const CellsState(),
-                    const Temperatures(),
-                    const Reports()
-                  ]),
-              BatteryControl(height: height)
-            ])));
   }
 }

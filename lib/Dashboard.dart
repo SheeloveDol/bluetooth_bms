@@ -1,12 +1,26 @@
+import 'dart:async';
+
 import 'package:bluetooth_bms/BState.dart';
 import 'package:bluetooth_bms/CState.dart';
 import 'package:bluetooth_bms/Control.dart';
 import 'package:bluetooth_bms/Records.dart';
 import 'package:bluetooth_bms/TempData.dart';
 import 'package:flutter/material.dart';
+import 'package:bluetooth_bms/utils.dart';
+
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import 'src.dart';
 
 class DashBoard extends StatefulWidget {
-  const DashBoard({super.key});
+  const DashBoard(
+      {super.key,
+      required this.title,
+      required this.device,
+      required this.subscription});
+  final String title;
+  final BluetoothDevice device;
+  final StreamSubscription<BluetoothConnectionState> subscription;
 
   @override
   State<DashBoard> createState() => _DashBoardState();
@@ -15,6 +29,14 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
   double height = 0;
+
+  onDisconnect(BuildContext context) {
+    Be.disconnect(widget.device, widget.subscription).then((value) {
+      quicktell(context, "Disconnected from ${widget.title}");
+      Navigator.pop(context);
+    });
+  }
+
   @override
   void initState() {
     controller.addListener(() {
@@ -53,7 +75,7 @@ class _DashBoardState extends State<DashBoard> {
                     const Temperatures(),
                     const Reports()
                   ]),
-              BatteryControl(height: height)
+              BatteryControl(height: height, back: () => onDisconnect(context))
             ])));
   }
 }

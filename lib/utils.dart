@@ -41,3 +41,7 @@ class _DelayedBuilderState extends State<DelayedBuilder> {
         });
   }
 }
+
+quicktell(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+}
