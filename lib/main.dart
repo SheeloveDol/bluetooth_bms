@@ -37,6 +37,7 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   bool disabled = false;
+
   List<Widget> devices = [];
   List<Widget> namelessDevices = [];
 
@@ -47,7 +48,11 @@ class _ScanPageState extends State<ScanPage> {
       return;
     }
     await Be.scan(onFound);
-
+    devices.add(CupertinoButton(
+        child: const Text("Show more"),
+        onPressed: () => setState(() {
+              devices = [...namelessDevices];
+            })));
     setState(() => disabled = false);
   }
 

@@ -81,6 +81,11 @@ class Be {
   static Future<StreamSubscription<BluetoothConnectionState>?> connect(
       BluetoothDevice device) async {
     // listen for disconnection
+
+    if (FlutterBluePlus.isScanningNow) {
+      await FlutterBluePlus.stopScan();
+    }
+
     var subscription =
         device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
