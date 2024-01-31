@@ -19,7 +19,7 @@ class Device extends StatefulWidget {
 class _DeviceState extends State<Device> {
   onConnect(BuildContext context) {
     Be.connect(widget.device).then((value) {
-      if (value) {
+      if (!value) {
         quicktell(context, "Could not connect to ${widget.title}");
       } else {
         Navigator.push(
