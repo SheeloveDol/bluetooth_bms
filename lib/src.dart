@@ -3,6 +3,12 @@ import 'dart:io';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
+  static BluetoothDevice? savedDevice;
+  static BluetoothService? service;
+  static BluetoothCharacteristic? readCharacteristics;
+  static BluetoothCharacteristic? writeCharacteristics;
+  static StreamSubscription<BluetoothConnectionState>? savedSubscription;
+
   Be() {}
 
   static Future<bool> init() async {
@@ -78,8 +84,7 @@ class Be {
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
-  static Future<StreamSubscription<BluetoothConnectionState>?> connect(
-      BluetoothDevice device) async {
+  static Future<bool> connect(BluetoothDevice device) async {
     // listen for disconnection
 
     if (FlutterBluePlus.isScanningNow) {
@@ -99,23 +104,99 @@ class Be {
     // Connect to the device
     try {
       await device.connect();
-      return subscription;
+      savedSubscription = subscription;
+      return true;
     } catch (e) {
-      return Future(() => null);
+      savedSubscription = null;
+      return false;
     }
   }
 
-  static Future<void> disconnect(BluetoothDevice device,
-      StreamSubscription<BluetoothConnectionState> subscription) async {
+  static Future<void> disconnect(BluetoothDevice device) async {
     // Disconnect from device
     await device.disconnect();
     // cancel to prevent duplicate listeners
-    subscription.cancel();
+    savedSubscription?.cancel();
+
+    savedDevice = null;
+    service = null;
+    readCharacteristics = null;
+    writeCharacteristics = null;
   }
 
-  static readRawCmd() {}
-  static _getReadCharacteristics() {}
+  static save(BluetoothDevice device) async {
+    bool check = false;
+    savedDevice = device;
+    check = await _getReadWriteService();
+    print(check);
+    if (!check) {
+      await disconnect(device);
+      print("Device is not compatible");
+      return;
+    }
+    check = _getReadCharacteristics();
+    if (!check) {
+      await disconnect(device);
+      print("Device is not compatible");
+      return;
+    }
+    check = _getWriteCharacteristics();
+    if (!check) {
+      await disconnect(device);
+      print("Device is not compatible");
+      return;
+    }
 
-  static _getReadCharacteristics() {}
-  static _getReadWriteService() {}
+    print("Service and characteristics has ben saved");
+    //dd a5 03 00 ff fd 77 : get basic info
+    writeRawCmd([0xdd, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77]);
+  }
+
+  static writeRawCmd(List<int> cmd) async {
+    writeCharacteristics!.write(cmd);
+
+    var answer = await readCharacteristics!.read(timeout: 7);
+    print(answer);
+    print("*********SUCCESS*********");
+  }
+
+  static bool _getWriteCharacteristics() {
+    // get write char
+    var characteristics = service!.characteristics;
+    for (BluetoothCharacteristic c in characteristics) {
+      if (c.characteristicUuid == Guid("FF02")) {
+        writeCharacteristics = c;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool _getReadCharacteristics() {
+    // get Read char
+    var characteristics = service!.characteristics;
+    for (BluetoothCharacteristic c in characteristics) {
+      if (c.characteristicUuid == Guid("FF01")) {
+        readCharacteristics = c;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static Future<bool> _getReadWriteService() async {
+    // Note: You must call discoverServices after every re-connection!
+    try {
+      List<BluetoothService> services = await savedDevice!.discoverServices();
+      for (var s in services) {
+        if (s.serviceUuid == Guid("FF00")) {
+          service = s;
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 }

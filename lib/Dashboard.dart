@@ -13,14 +13,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'src.dart';
 
 class DashBoard extends StatefulWidget {
-  const DashBoard(
-      {super.key,
-      required this.title,
-      required this.device,
-      required this.subscription});
+  const DashBoard({super.key, required this.title, required this.device});
   final String title;
   final BluetoothDevice device;
-  final StreamSubscription<BluetoothConnectionState> subscription;
 
   @override
   State<DashBoard> createState() => _DashBoardState();
@@ -31,7 +26,7 @@ class _DashBoardState extends State<DashBoard> {
   double height = 0;
 
   onDisconnect(BuildContext context) {
-    Be.disconnect(widget.device, widget.subscription).then((value) {
+    Be.disconnect(widget.device).then((value) {
       quicktell(context, "Disconnected from ${widget.title}");
       Navigator.pop(context);
     });
@@ -54,6 +49,8 @@ class _DashBoardState extends State<DashBoard> {
       }
     });
     super.initState();
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => Be.save(widget.device));
   }
 
   @override

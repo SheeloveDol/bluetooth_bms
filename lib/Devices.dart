@@ -17,21 +17,16 @@ class Device extends StatefulWidget {
 }
 
 class _DeviceState extends State<Device> {
-  late StreamSubscription<BluetoothConnectionState> sub;
   onConnect(BuildContext context) {
     Be.connect(widget.device).then((value) {
-      if (value == null) {
+      if (value) {
         quicktell(context, "Could not connect to ${widget.title}");
       } else {
-        sub = value;
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DashBoard(
-                      device: widget.device,
-                      subscription: sub,
-                      title: widget.title,
-                    )));
+                builder: (context) =>
+                    DashBoard(device: widget.device, title: widget.title)));
       }
     });
   }
