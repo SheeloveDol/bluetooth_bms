@@ -106,7 +106,8 @@ class Be {
       await device.connect();
       savedSubscription = subscription;
       return true;
-    } catch (e) {
+    } on Exception catch (_, e) {
+      print("Reason why it could not connect ${e.toString()}");
       savedSubscription = null;
       return false;
     }
