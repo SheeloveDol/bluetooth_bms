@@ -156,8 +156,10 @@ class Be {
   static writeRawCmd(List<int> cmd) async {
     writeCharacteristics!.write(cmd, withoutResponse: true);
 
-    var answer = await readCharacteristics!.read(timeout: 7);
-    print(answer);
+    for (var i = 0; i < 61; i++) {
+      print(await readCharacteristics!.read(timeout: 7));
+      await Future.delayed(Duration(milliseconds: 100));
+    }
     print("*********SUCCESS*********");
   }
 
