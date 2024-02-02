@@ -49,8 +49,7 @@ class _DashBoardState extends State<DashBoard> {
       }
     });
     super.initState();
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => Be.save(widget.device, setState));
+    Be.save(widget.device, setState);
   }
 
   @override

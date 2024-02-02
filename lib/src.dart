@@ -238,6 +238,8 @@ class Be {
     List<int> data = rawData.sublist(4, 4 + rawData[3]);
     Data.setBatchData(data);
     updater(() {});
+    print("Data has been updated");
+    print(Data.pack_mv);
   }
 
   static Future<List<int>> queryRawCmd(List<int> cmd) async {
@@ -269,18 +271,19 @@ class Be {
       print("Error code ${rawData[2]}");
       return false;
     }
-    /*int datasum = 0;
-    for (var i = 1; i < rawData.length - 3; i++) {
-      datasum += rawData[i];
-    }
-    if (rawData.sublist(rawData.length - 2) !=
-        [..._checksumtoRead(datasum, 0x0), 0x77]) {
-      print("corupted data ${[
-        ..._checksumtoRead(datasum, 0x0),
-        0x77
-      ]} is not ${rawData.sublist(rawData.length - 3)}");
-      return false;
-    }*/
+
+    // int datasum = 0;
+    // for (var i = 1; i < rawData.length - 3; i++) {
+    //   datasum += rawData[i];
+    // }
+    // if (rawData.sublist(rawData.length - 2) !=
+    //     [..._checksumtoRead(datasum, 0x0), 0x77]) {
+    //   print("corupted data ${[
+    //     ..._checksumtoRead(datasum, 0x0),
+    //     0x77
+    //   ]} is not ${rawData.sublist(rawData.length - 3)}");
+    //   return false;
+    // }
     return true;
   }
 }
