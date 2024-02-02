@@ -130,7 +130,7 @@ class Be {
   }
 
   static save(BluetoothDevice device, Function setstate) async {
-    /*bool check = false;
+    bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
     print(check);
@@ -154,8 +154,6 @@ class Be {
 
     print("Service and characteristics has ben saved");
     await readCharacteristics!.setNotifyValue(true);
-    //dd a5 03 00 ff fd 77 : get basic info
-    writeRawCmd([0xdd, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77]);*/
     updater = setstate;
     read(Data.basic_info);
   }
