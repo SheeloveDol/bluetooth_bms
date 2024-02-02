@@ -11,6 +11,7 @@ class Be {
   static List<int> _answer = [];
   static int times = 0;
   static int readTimes = 0;
+  static late Function updater;
 
   Be() {}
 
@@ -128,7 +129,7 @@ class Be {
     writeCharacteristics = null;
   }
 
-  static save(BluetoothDevice device) async {
+  static save(BluetoothDevice device, Function setstate) async {
     /*bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
@@ -155,6 +156,7 @@ class Be {
     await readCharacteristics!.setNotifyValue(true);
     //dd a5 03 00 ff fd 77 : get basic info
     writeRawCmd([0xdd, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77]);*/
+    updater = setstate;
     read(Data.basic_info);
   }
 
@@ -236,7 +238,8 @@ class Be {
     }
     readTimes = 0;
     List<int> data = rawData.sublist(4, 4 + rawData[3]);
-    print(data);
+    Data.setBatchData(data);
+    updater(() {});
   }
 
   static Future<List<int>> queryRawCmd(List<int> cmd) async {
@@ -299,7 +302,7 @@ class Data {
     _data[name] = value;
   }
 
-  void setBatchData(List<int> batch) {
+  static void setBatchData(List<int> batch) {
     _data["pack_mv"] = batch.sublist(0, 2);
   }
 }
