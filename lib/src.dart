@@ -245,14 +245,13 @@ class Be {
     _answer.clear();
 
     readCharacteristics!.onValueReceived.listen((event) {
-      _answer = [...event];
-    }, onDone: () {
-      if (_answer[1] == Data.basic_info && times < 1) {
-        times++;
-        return;
+      _answer.addAll(event);
+      if (_answer[1] == Data.basic_info && _answer.length > 21) {
+        completer.complete(_answer);
       }
-      times = 0;
-      completer.complete(_answer);
+      if (_answer[1] != Data.basic_info) {
+        completer.complete(_answer);
+      }
     });
 
     for (int i = 0; i < 2; i++) {
