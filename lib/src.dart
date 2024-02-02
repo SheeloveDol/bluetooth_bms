@@ -294,7 +294,8 @@ class Data {
   static final Map<String, List<int>> _data = {};
 
   static int get basic_info => _register["Basic info"]!;
-  static List<int>? get pack_mv => _data["pack_mv"];
+  static double get pack_mv =>
+      ((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01;
 
   void _setData(String name, List<int> value) {
     _data[name] = value;

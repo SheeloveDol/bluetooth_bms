@@ -145,7 +145,7 @@ class _MiddleState extends State<Middle> {
                           height: 0,
                           fontSize: 20),
                     ),
-                    Text("55.20V"),
+                    Text("${Data.pack_mv}V"),
                     Text("302/320Ah"),
                   ])),
         ])
