@@ -291,8 +291,8 @@ class Data {
     "Basic info": 0x03,
   };
 
-  static final Map<String, dynamic> _data = {
-    "pack_mv": 0.00,
+  static final Map<String, List<int>> _data = {
+    "pack_mv": [0x00, 0x00]
   };
 
   static int get basic_info => _register["Basic info"]!;
