@@ -245,10 +245,14 @@ class Be {
     readCharacteristics!.onValueReceived.listen((event) {
       _answer.addAll(event);
       if (_answer[1] == Data.basic_info && _answer.length > 21) {
-        completer.complete(_answer);
+        if (!completer.isCompleted) {
+          completer.complete(_answer);
+        }
       }
       if (_answer[1] != Data.basic_info) {
-        completer.complete(_answer);
+        if (!completer.isCompleted) {
+          completer.complete(_answer);
+        }
       }
     });
 
