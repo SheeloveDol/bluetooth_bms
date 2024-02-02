@@ -8,6 +8,9 @@ class Be {
   static BluetoothCharacteristic? readCharacteristics;
   static BluetoothCharacteristic? writeCharacteristics;
   static StreamSubscription<BluetoothConnectionState>? savedSubscription;
+  static List<int> _answer = [];
+  static int times = 0;
+  static int readTimes = 0;
 
   Be() {}
 
@@ -126,7 +129,7 @@ class Be {
   }
 
   static save(BluetoothDevice device) async {
-    bool check = false;
+    /*bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
     print(check);
@@ -149,21 +152,10 @@ class Be {
     }
 
     print("Service and characteristics has ben saved");
-    //dd a5 03 00 ff fd 77 : get basic info
-    writeRawCmd([0xdd, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77]);
-  }
-
-  static writeRawCmd(List<int> cmd) async {
     await readCharacteristics!.setNotifyValue(true);
-    readCharacteristics!.onValueReceived.listen((event) {
-      print(event);
-    });
-
-    for (int i = 0; i < 2; i++) {
-      await writeCharacteristics!.write(cmd, withoutResponse: true);
-    }
-
-    print("*********SUCCESS*********");
+    //dd a5 03 00 ff fd 77 : get basic info
+    writeRawCmd([0xdd, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77]);*/
+    read(Data.basic_info);
   }
 
   static bool _getWriteCharacteristics() {
@@ -204,5 +196,110 @@ class Be {
     } catch (e) {
       return false;
     }
+  }
+
+  static List<int> _checksumtoRead(int register, int bytelength) {
+    return _hexToIntList(0x10000 - (register + bytelength));
+  }
+
+  static List<int> _hexToIntList(int hexValue) {
+    List<int> result = [];
+    String hexString = hexValue.toRadixString(16);
+    if (hexString.length % 2 != 0) {
+      hexString = '0$hexString';
+    }
+    for (int i = 0; i < hexString.length; i += 2) {
+      result.add(int.parse(hexString.substring(i, i + 2), radix: 16));
+    }
+
+    return result;
+  }
+
+  static read(int registerToRead) async {
+    List<int> cmd = [
+      0xDD,
+      0xa5,
+      registerToRead,
+      0x00,
+      ..._checksumtoRead(registerToRead, 0x00),
+      0x77
+    ];
+
+    List<int> rawData = await queryRawCmd(cmd);
+    readTimes++;
+    bool good = _verifyReadings(rawData);
+    if (!good) {
+      (readTimes < 3)
+          ? await read(registerToRead)
+          : print("Failed to read command");
+      return;
+    }
+    readTimes = 0;
+    List<int> data = rawData.sublist(4, 4 + rawData[3]);
+    print(data);
+  }
+
+  static Future<List<int>> queryRawCmd(List<int> cmd) async {
+    Completer<List<int>> completer = Completer<List<int>>();
+    _answer.clear();
+
+    readCharacteristics!.onValueReceived.listen((event) {
+      _answer = [...event];
+    }, onDone: () {
+      if (_answer[1] == Data.basic_info && times < 1) {
+        times++;
+        return;
+      }
+      times = 0;
+      completer.complete(_answer);
+    });
+
+    for (int i = 0; i < 2; i++) {
+      await writeCharacteristics!.write(cmd, withoutResponse: true);
+    }
+    return completer.future;
+  }
+
+  static bool _verifyReadings(List<int> rawData) {
+    if (rawData[0] != 0xDD) {
+      print("Wrong starting byte");
+      return false;
+    }
+    if (rawData[2] != 0x00) {
+      print("Error code ${rawData[2]}");
+      return false;
+    }
+    /*int datasum = 0;
+    for (var i = 1; i < rawData.length - 3; i++) {
+      datasum += rawData[i];
+    }
+    if (rawData.sublist(rawData.length - 2) !=
+        [..._checksumtoRead(datasum, 0x0), 0x77]) {
+      print("corupted data ${[
+        ..._checksumtoRead(datasum, 0x0),
+        0x77
+      ]} is not ${rawData.sublist(rawData.length - 3)}");
+      return false;
+    }*/
+    return true;
+  }
+}
+
+class Data {
+  static final Map<String, int> _register = {
+    "Basic info": 0x03,
+  };
+
+  static final Map<String, List<int>> _data = {};
+
+  static int get basic_info => _register["Basic info"]!;
+  static List<int>? get pack_mv => _data["pack_mv"];
+
+  void _setData(String name, List<int> value) {
+    _data[name] = value;
+  }
+
+  void setBatchData(List<int> batch) {
+    _data["pack_mv"] = batch.sublist(0, 2);
   }
 }
