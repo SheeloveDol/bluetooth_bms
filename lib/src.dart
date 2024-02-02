@@ -129,7 +129,7 @@ class Be {
     writeCharacteristics = null;
   }
 
-  static save(BluetoothDevice device, Function setstate) async {
+  static save(BluetoothDevice device) async {
     bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
@@ -154,7 +154,6 @@ class Be {
 
     print("Service and characteristics has ben saved");
     await readCharacteristics!.setNotifyValue(true);
-    updater = setstate;
     read(Data.basic_info);
   }
 
@@ -237,9 +236,6 @@ class Be {
     readTimes = 0;
     List<int> data = rawData.sublist(4, 4 + rawData[3]);
     Data.setBatchData(data);
-    updater(() {});
-    print("Data has been updated");
-    print(Data.pack_mv);
   }
 
   static Future<List<int>> queryRawCmd(List<int> cmd) async {
@@ -285,6 +281,10 @@ class Be {
     //   return false;
     // }
     return true;
+  }
+
+  static void setUpdater(void Function() setstate) {
+    updater = setstate;
   }
 }
 
