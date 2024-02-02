@@ -245,9 +245,11 @@ class Be {
     _answer.clear();
 
     readCharacteristics!.onValueReceived.listen((event) {
+      
       _answer.addAll(event);
       if (_answer[1] == Data.basic_info && _answer.length > 21) {
         if (!completer.isCompleted) {
+          
           completer.complete(_answer);
         }
       }
