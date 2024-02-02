@@ -48,9 +48,9 @@ class _DashBoardState extends State<DashBoard> {
         return;
       }
     });
-    Be.save(widget.device);
+
     super.initState();
-    Be.setUpdater(() => setState(() {}));
+    Be.save(widget.device, () => setState(() {}));
   }
 
   @override
