@@ -10,23 +10,22 @@ class CellsState extends StatefulWidget {
 }
 
 class _CellsStateState extends State<CellsState> {
-  List<Widget> cells = [];
   double celldiff = 0.2;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    cells.add(Container());
-    cells.add(cell("Cell1", 3.44));
-    for (var i = 2; i < 16; i++) {
-      cells.add(cell("Cell$i", 3.45));
-    }
-    cells.add(cell("Cell16", 3.46));
   }
 
-  Widget cell(String title, double volts) {
+  Widget cell(String title, double volts, int index) {
     Color color = Colors.black;
+    Color titleColor = Colors.black;
     FontWeight weight = FontWeight.normal;
+    FontWeight titleWeight = FontWeight.normal;
+    if (Data.bal[index]) {
+      titleColor = Colors.blue;
+      titleWeight = FontWeight.bold;
+    }
     if (volts > 3.45) {
       color = Color(0xFFCA5100);
       weight = FontWeight.bold;
@@ -36,6 +35,7 @@ class _CellsStateState extends State<CellsState> {
       weight = FontWeight.bold;
     }
     return Container(
+      width: 75,
       padding: EdgeInsets.all(2),
       child: Row(children: [
         Stack(alignment: Alignment.center, children: [
@@ -47,8 +47,7 @@ class _CellsStateState extends State<CellsState> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 12,
-              ),
+                  fontSize: 12, color: titleColor, fontWeight: titleWeight),
             ),
             Text("${volts}V",
                 style: TextStyle(
@@ -57,32 +56,6 @@ class _CellsStateState extends State<CellsState> {
         ])
       ]),
     );
-  }
-
-  Widget grid() {
-    List<Widget> columnContent = [];
-    Column column = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: columnContent);
-
-    List<Widget> rowContent = [];
-    Row row = Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: rowContent);
-    for (var i = 0; i < cells.length; i++) {
-      rowContent.add(cells[i]);
-      if (i % 4 == 0) {
-        rowContent = List<Widget>.empty(growable: true);
-        row = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: rowContent);
-        columnContent.add(row);
-      }
-    }
-    return column;
   }
 
   @override
@@ -101,7 +74,10 @@ class _CellsStateState extends State<CellsState> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          grid(),
+                          Wrap(children: [
+                            for (int i = 1; i < Data.cell_cnt; i++)
+                              cell("cell$i", 3.45, i)
+                          ]),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [

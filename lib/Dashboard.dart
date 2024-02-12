@@ -48,31 +48,33 @@ class _DashBoardState extends State<DashBoard> {
         return;
       }
     });
-
+    Be.setUpdater(() => setState(() {}));
     super.initState();
-    Be.save(widget.device, () => setState(() {}));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
-        body: Container(
-            decoration: const BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
-            child: Stack(children: [
-              ListView(
-                  padding: EdgeInsets.only(top: 230 - height),
-                  physics: const BouncingScrollPhysics(),
-                  controller: controller,
-                  children: <Widget>[
-                    const BatteryState(),
-                    const CellsState(),
-                    const Temperatures(),
-                    const Reports()
-                  ]),
-              BatteryControl(height: height, back: () => onDisconnect(context))
-            ])));
+        body: SafeArea(
+            bottom: false,
+            child: Container(
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [Color(0xFF002A4D), Colors.black])),
+                child: Stack(children: [
+                  ListView(
+                      padding: EdgeInsets.only(top: 230 - height),
+                      physics: const BouncingScrollPhysics(),
+                      controller: controller,
+                      children: const <Widget>[
+                        BatteryState(),
+                        CellsState(),
+                        Temperatures(),
+                        Reports()
+                      ]),
+                  BatteryControl(
+                      height: height, back: () => onDisconnect(context))
+                ]))));
   }
 }

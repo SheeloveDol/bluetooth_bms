@@ -95,12 +95,12 @@ class _ReportsState extends State<Reports> {
   Column third() {
     List<Widget> data = [];
     data.addAll([
-      Text("MFG Date: 1/2/2024",
+      Text("MFG Date: ${Data.date}",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       Padding(padding: EdgeInsets.only(bottom: 10)),
       Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         Text("Cycle Count : ", style: TextStyle(color: Colors.white)),
-        Text("1233", style: TextStyle(color: Colors.white))
+        Text("${Data.cycle_cnt}", style: TextStyle(color: Colors.white))
       ]),
       Image.asset("assets/logo.png", height: 100)
     ]);

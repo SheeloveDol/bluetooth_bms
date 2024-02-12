@@ -10,23 +10,13 @@ class Temperatures extends StatefulWidget {
 }
 
 class _TemperaturesState extends State<Temperatures> {
-  List<Widget> temps = [];
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    temps.add(Container());
-    temps.add(generateTempWidget("T1", "17 C"));
-    temps.add(generateTempWidget("T2", "17 C"));
-    temps.add(generateTempWidget("T3", "-2 C"));
-
-    for (var i = 4; i <= 8; i++) {
-      temps.add(generateTempWidget("T$i", "NA"));
-    }
   }
 
-  Widget generateTempWidget(String title, String temp) {
+  Widget generateTempWidget(String title, int index) {
     return Container(
         margin: EdgeInsets.all(3),
         padding: EdgeInsets.all(3),
@@ -36,30 +26,12 @@ class _TemperaturesState extends State<Temperatures> {
         child: Row(children: [
           Icon(Icons.thermostat, size: 20),
           Column(children: [
-            Text(title, style: TextStyle(fontSize: 11, color: Colors.white)),
-            Text(temp, style: TextStyle(fontSize: 11, color: Colors.white))
+            Text(title,
+                style: const TextStyle(fontSize: 11, color: Colors.white)),
+            Text(Data.ntc_temp[index],
+                style: const TextStyle(fontSize: 11, color: Colors.white))
           ])
         ]));
-  }
-
-  Widget grid() {
-    List<Widget> columnContent = [];
-    Column column = Column(children: columnContent);
-
-    List<Widget> rowContent = [];
-    Row row = Row(children: rowContent);
-    for (var i = 0; i < temps.length; i++) {
-      rowContent.add(temps[i]);
-      if (i % 6 == 0) {
-        rowContent = List<Widget>.empty(growable: true);
-        row = Row(children: rowContent);
-        columnContent.add(row);
-      }
-    }
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: temps,
-    );
   }
 
   @override
@@ -77,9 +49,11 @@ class _TemperaturesState extends State<Temperatures> {
                       color: Color(0x565B5B5B),
                       borderRadius: BorderRadius.circular(30)),
                   child: ListView.builder(
-                      itemCount: temps.length,
+                      itemCount: Data.ntc_cnt,
                       scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) => temps[index]),
+                      itemBuilder: (context, index) {
+                        return generateTempWidget("T${index + 1}", index);
+                      }),
                 ))));
   }
 }

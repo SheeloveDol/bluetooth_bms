@@ -61,24 +61,24 @@ class ActiveStates extends StatefulWidget {
 }
 
 class _ActiveStatesState extends State<ActiveStates> {
-  List<Widget> states = [];
-  Widget generateStateElement(String title, String description) {
+  Widget generateStateElement(String title) {
+    var description = getDescription(title);
     Color color = Colors.orange;
     if (title == "SCP") {
       color = Colors.red;
     }
-    if (description.length > 35) {
+    if (description.length > 40) {
       var position = description.indexOf(" ", 23).clamp(0, description.length);
-      description = description.replaceFirst(" ", "\n", position);
+      description = description.replaceFirst(" ", "\n  ", position);
     }
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text("$title :",
+      Text("$title",
           style: TextStyle(color: color, fontWeight: FontWeight.bold)),
       Padding(padding: EdgeInsets.only(left: 5)),
       Text(
         description,
-        style: TextStyle(fontSize: 12, color: Colors.white),
+        style: const TextStyle(fontSize: 12, color: Colors.white),
         overflow: TextOverflow.visible,
         softWrap: true,
       )
@@ -86,21 +86,46 @@ class _ActiveStatesState extends State<ActiveStates> {
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-
-    states.add(generateStateElement("COBU", "Charge turned off by user"));
-    states.add(
-        generateStateElement("CLVP", "Cell low voltage protection (2.5V)"));
-    states.add(generateStateElement("SCP", "Short circuit protection (1100A)"));
-    states.add(generateStateElement(
-        "CUTP", "Charge under temperature protection (O C)"));
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: states);
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: Data.curr_err
+            .map((e) => generateStateElement(e))
+            .toList()
+            .reversed
+            .toList());
+  }
+}
+
+String getDescription(String s) {
+  switch (s) {
+    case "CHVP":
+      return ": Cell high voltage protection";
+    case "CLVP":
+      return ": Cell low voltage protection";
+    case "PHVP":
+      return ": Pack high voltage protection";
+    case "PLVP":
+      return ": Pack low voltage protection";
+    case "COTP":
+      return ": Charge over Temperature protection";
+    case "CUTP":
+      return ": Charge under temperature protection";
+    case "DOTP":
+      return ": Discharge over temperature protection";
+    case "DUTP":
+      return ": Discharge under temperature protection (0°C)";
+    case "COCP":
+      return ": Charge over current protection";
+    case "DOCP":
+      return ": Discharge over current protection";
+    case "SCP":
+      return ": Short circuit protection";
+    case "FICE":
+      return ": Frontend IC error (afe_err)";
+    case "COBU":
+      return ": Charge turned off by user (Button)";
+    default:
+      return ": Unknown Error";
   }
 }

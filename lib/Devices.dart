@@ -9,26 +9,42 @@ import 'package:bluetooth_bms/src.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Device extends StatefulWidget {
-  Device({super.key, required this.title, required this.device});
+  Device({
+    super.key,
+    required this.title,
+    required this.device,
+    required this.scafoldContextKey,
+  });
   final BluetoothDevice device;
   final String title;
+  final GlobalKey scafoldContextKey;
   @override
   State<StatefulWidget> createState() => _DeviceState();
 }
 
 class _DeviceState extends State<Device> {
-  onConnect(BuildContext context) {
-    Be.connect(widget.device).then((value) {
-      if (!value) {
-        quicktell(context, "Could not connect to ${widget.title}");
-      } else {
+  bool connecting = false;
+
+  onConnect(BuildContext context) async {
+    connecting = true;
+    setState(() {});
+    bool connected = await Be.connect(widget.device);
+    connecting = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (connected) {
+      Be.save(widget.device).then((v) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
                     DashBoard(device: widget.device, title: widget.title)));
-      }
-    });
+      });
+    } else {
+      quicktell(widget.scafoldContextKey.currentContext!,
+          "Could not connect to ${widget.title}");
+    }
   }
 
   @override
@@ -37,7 +53,7 @@ class _DeviceState extends State<Device> {
         elevation: 3,
         margin: const EdgeInsets.all(5),
         child: Padding(
-            padding: const EdgeInsets.all(7),
+            padding: const EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -52,8 +68,8 @@ class _DeviceState extends State<Device> {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     borderRadius: BorderRadius.circular(15),
                     color: Color.fromARGB(255, 13, 22, 50),
-                    child: const Text("Connect"),
-                    onPressed: () => onConnect(context))
+                    onPressed: (connecting) ? null : () => onConnect(context),
+                    child: Text((connecting) ? "Connecting" : "Connect"))
               ],
             )));
   }

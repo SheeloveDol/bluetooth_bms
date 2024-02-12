@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -65,14 +66,12 @@ class _RightState extends State<Right> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              Row(children: [
-                Icon(Icons.bolt, size: 20, color: Colors.yellow),
-                Icon(Icons.bolt, size: 20, color: Colors.green),
-                Icon(Icons.bolt, size: 20, color: Colors.green)
-              ]),
-              Text("9.54A Out",
+              bolts(),
+              Text(
+                  "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma} ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
                   style: TextStyle(fontSize: 11, color: Colors.white)),
-              Text("122W out",
+              Text(
+                  "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
                   style: TextStyle(fontSize: 11, color: Colors.white))
             ])),
         Padding(padding: EdgeInsets.symmetric(vertical: 3)),
@@ -109,7 +108,7 @@ class _MiddleState extends State<Middle> {
 
   @override
   Widget build(BuildContext context) {
-    int level = 90;
+    int level = Data.cap_pct;
 
     return Container(
       padding: EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -132,22 +131,24 @@ class _MiddleState extends State<Middle> {
             "assets/bat.png",
             height: 80,
           ),
-          Padding(
-              padding: EdgeInsets.only(left: 37),
+          Positioned.fill(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "90%",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
-                          height: 0,
-                          fontSize: 20),
-                    ),
-                    Text("${Data.pack_mv}V"),
-                    Text("302/320Ah"),
-                  ])),
+                Text(
+                  "${Data.cap_pct}%",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                      fontSize: 20),
+                ),
+                Text(
+                  "${Data.pack_mv}V",
+                  style: TextStyle(height: 0, fontSize: 10),
+                ),
+                Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah",
+                    style: TextStyle(height: 0, fontSize: 10)),
+              ]))
         ])
       ]),
     );
@@ -200,7 +201,7 @@ class BatteryControlSmall extends StatefulWidget {
 class _BatteryControlSmallState extends State<BatteryControlSmall> {
   @override
   Widget build(BuildContext context) {
-    double level = 90;
+    int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       CupertinoButton(
           color: Colors.red,
@@ -230,6 +231,61 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
             "Discharge",
             style: TextStyle(fontSize: 11),
           ))
+    ]);
+  }
+}
+
+class bolts extends StatefulWidget {
+  @override
+  _boltsState createState() => _boltsState();
+}
+
+class _boltsState extends State<bolts> {
+  List<Color> colors = [
+    Colors.yellow,
+    Colors.yellow,
+    Colors.yellow,
+    Colors.yellow
+  ];
+  int c = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Data.fet_status[0] && !Data.fet_status[1]) {
+      _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+        c++;
+        if (c > 3) {
+          c = 0;
+        }
+        setState(() {
+          colors.setAll(
+              0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
+          colors[c] = Colors.green;
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer to avoid memory leaks
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Icon(Icons.bolt,
+          size: 20, color: (!Data.fet_status[0]) ? colors[0] : colors[3]),
+      Icon(Icons.bolt,
+          size: 20, color: (!Data.fet_status[0]) ? colors[1] : colors[2]),
+      Icon(Icons.bolt,
+          size: 20, color: (!Data.fet_status[0]) ? colors[2] : colors[1]),
+      Icon(Icons.bolt,
+          size: 20, color: (!Data.fet_status[0]) ? colors[3] : colors[0])
     ]);
   }
 }
