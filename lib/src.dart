@@ -133,7 +133,7 @@ class Be {
     bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
-    /*if (!check) {
+    if (!check) {
       await disconnect(device);
       print("Device is not compatible");
       return;
@@ -149,10 +149,10 @@ class Be {
       await disconnect(device);
       print("Device is not compatible");
       return;
-    }*/
+    }
 
     print("Service and characteristics has ben saved");
-    //await readCharacteristics!.setNotifyValue(true);
+    await readCharacteristics!.setNotifyValue(true);
 
     await read(Data.BASIC_INFO);
   }
@@ -224,7 +224,7 @@ class Be {
       0x77
     ];
 
-    /*List<int> rawData = await queryRawCmd(cmd);
+    List<int> rawData = await queryRawCmd(cmd);
     readTimes++;
     bool good = _verifyReadings(rawData);
     if (!good) {
@@ -232,8 +232,8 @@ class Be {
           ? await read(registerToRead)
           : print("Failed to read command");
       return;
-    }*/
-    List<int> rawData = [
+    }
+    /*List<int> rawData = [
       221,
       3,
       0,
@@ -270,7 +270,7 @@ class Be {
       250,
       237,
       119
-    ];
+    ];8*/
     readTimes = 0;
     List<int> data = rawData.sublist(4, 4 + rawData[3]);
     Data.setBatchData(data, Data.BASIC_INFO);
