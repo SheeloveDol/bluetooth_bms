@@ -157,6 +157,9 @@ class Be {
 
     print("Service and characteristics has ben saved");
     await readCharacteristics!.setNotifyValue(true);
+    readCharacteristics!.onValueReceived.listen((event) {
+      _answer.addAll(event);
+    });
 
     return await read(Data.BASIC_INFO);
   }
@@ -229,6 +232,10 @@ class Be {
     ];
 
     List<int> rawData = await queryRawCmd(cmd);
+    while (_answer[_answer.length - 1] != 0x77) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
     readTimes++;
     bool good = _verifyReadings(rawData);
     if (!good) {
@@ -282,23 +289,12 @@ class Be {
     return true;
   }
 
-  static Future<List<int>> queryRawCmd(List<int> cmd) async {
-    Completer<List<int>> completer = Completer<List<int>>();
+  static Future queryRawCmd(List<int> cmd) async {
     _answer.clear();
-
-    readCharacteristics!.onValueReceived.listen((event) {
-      _answer.addAll(event);
-      if (event[event.length - 1] == 0x77) {
-        if (!completer.isCompleted) {
-          completer.complete(_answer);
-        }
-      }
-    });
-
     for (int i = 0; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
     }
-    return completer.future;
+    return;
   }
 
   static bool _verifyReadings(List<int> rawData) {
