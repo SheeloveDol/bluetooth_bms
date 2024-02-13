@@ -288,12 +288,7 @@ class Be {
 
     readCharacteristics!.onValueReceived.listen((event) {
       _answer.addAll(event);
-      if (_answer[1] == Data.BASIC_INFO && _answer.length > 21) {
-        if (!completer.isCompleted) {
-          completer.complete(_answer);
-        }
-      }
-      if (_answer[1] != Data.BASIC_INFO) {
+      if (event[event.length - 1] == 0x77) {
         if (!completer.isCompleted) {
           completer.complete(_answer);
         }
@@ -310,16 +305,19 @@ class Be {
     if (rawData[0] != 0xDD) {
       print(rawData);
       print("Wrong starting byte");
+      _answer.clear();
       return false;
     }
     if (rawData[2] != 0x00) {
       print(rawData);
       print("Error code ${rawData[2]}");
+      _answer.clear();
       return false;
     }
     if (rawData[rawData.length - 1] != 0x77) {
       print(rawData);
       print("wrong ending byte");
+      _answer.clear();
       return false;
     }
 
@@ -327,14 +325,15 @@ class Be {
     for (var i = 2; i < rawData.length - 3; i++) {
       datasum += rawData[i];
     }
-    if (rawData.sublist(rawData.length - 2)[0] !=
+    if (rawData.sublist(rawData.length - 3)[0] !=
             _checksumtoRead(datasum, 0x0)[0] ||
-        rawData.sublist(rawData.length - 2)[1] !=
+        rawData.sublist(rawData.length - 3)[1] !=
             _checksumtoRead(datasum, 0x0)[1]) {
       print("corupted data ${[
         ..._checksumtoRead(datasum, 0x0),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)}");
+      _answer.clear();
       return false;
     }
     return true;
