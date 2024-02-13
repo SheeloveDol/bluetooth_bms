@@ -154,8 +154,7 @@ class Be {
     print("Service and characteristics has ben saved");
     await readCharacteristics!.setNotifyValue(true);
 
-    await read(Data.BASIC_INFO);
-    return true;
+    return await read(Data.BASIC_INFO);
   }
 
   static bool _getWriteCharacteristics() {
