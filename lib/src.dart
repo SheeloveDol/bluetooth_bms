@@ -129,32 +129,33 @@ class Be {
     updater = null;
   }
 
-  static Future save(BluetoothDevice device) async {
+  static Future<bool> save(BluetoothDevice device) async {
     bool check = false;
     savedDevice = device;
     check = await _getReadWriteService();
     if (!check) {
       await disconnect(device);
       print("Device is not compatible");
-      return;
+      return false;
     }
     check = _getReadCharacteristics();
     if (!check) {
       await disconnect(device);
       print("Device is not compatible");
-      return;
+      return false;
     }
     check = _getWriteCharacteristics();
     if (!check) {
       await disconnect(device);
       print("Device is not compatible");
-      return;
+      return false;
     }
 
     print("Service and characteristics has ben saved");
     await readCharacteristics!.setNotifyValue(true);
 
     await read(Data.BASIC_INFO);
+    return true;
   }
 
   static bool _getWriteCharacteristics() {
@@ -214,7 +215,7 @@ class Be {
     return result;
   }
 
-  static read(int registerToRead) async {
+  static Future<bool> read(int registerToRead) async {
     List<int> cmd = [
       0xDD,
       0xa5,
@@ -231,7 +232,7 @@ class Be {
       (readTimes < 3)
           ? await read(registerToRead)
           : print("Failed to read command");
-      return;
+      return false;
     }
     /*List<int> rawData = [
       221,
@@ -277,6 +278,7 @@ class Be {
     if (updater != null) {
       updater!();
     }
+    return true;
   }
 
   static Future<List<int>> queryRawCmd(List<int> cmd) async {
@@ -312,19 +314,23 @@ class Be {
       print("Error code ${rawData[2]}");
       return false;
     }
+    if (rawData[rawData.length - 1] != 0x77) {
+      print("wrong ending byte");
+      return false;
+    }
 
-    // int datasum = 0;
-    // for (var i = 1; i < rawData.length - 3; i++) {
-    //   datasum += rawData[i];
-    // }
-    // if (rawData.sublist(rawData.length - 2) !=
-    //     [..._checksumtoRead(datasum, 0x0), 0x77]) {
-    //   print("corupted data ${[
-    //     ..._checksumtoRead(datasum, 0x0),
-    //     0x77
-    //   ]} is not ${rawData.sublist(rawData.length - 3)}");
-    //   return false;
-    // }
+    int datasum = 0;
+    for (var i = 1; i < rawData.length - 3; i++) {
+      datasum += rawData[i];
+    }
+    if (rawData.sublist(rawData.length - 2) !=
+        [..._checksumtoRead(datasum, 0x0), 0x77]) {
+      print("corupted data ${[
+        ..._checksumtoRead(datasum, 0x0),
+        0x77
+      ]} is not ${rawData.sublist(rawData.length - 3)}");
+      return false;
+    }
     return true;
   }
 
@@ -499,7 +505,6 @@ class Data {
   }
 
   static int get cap_pct => _data["cap_pct"]![0];
-
   static int get cell_cnt => _data["cell_cnt"]![0];
   static int get ntc_cnt => _data["ntc_cnt"]![0];
   static List<String> get ntc_temp {
@@ -516,7 +521,6 @@ class Data {
   }
 
   static int get device_name_lenght => _data["device_name_lenght"]![0];
-
   static String get watts {
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);

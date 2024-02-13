@@ -34,12 +34,17 @@ class _DeviceState extends State<Device> {
       setState(() {});
     }
     if (connected) {
-      Be.save(widget.device).then((v) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DashBoard(device: widget.device, title: widget.title)));
+      Be.save(widget.device).then((firstDataRead) {
+        if (firstDataRead) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DashBoard(device: widget.device, title: widget.title)));
+        } else {
+          quicktell(widget.scafoldContextKey.currentContext!,
+              "Could not read to ${widget.title} maybe try again");
+        }
       });
     } else {
       quicktell(widget.scafoldContextKey.currentContext!,
