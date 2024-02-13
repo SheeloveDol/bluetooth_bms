@@ -50,9 +50,13 @@ class Be {
   }
 
   static scan(Function(String, BluetoothDevice) onFound) async {
-    // listen to scan results
-    // Note: `onScanResults` only returns live scan results, i.e. during scanning
-    // Use: `scanResults` if you want live scan results *or* the results from a previous scan
+    try {
+      if (savedDevice != null) {
+        disconnect(savedDevice!);
+      }
+    } catch (e) {
+      print("maybe it is already disconnected");
+    }
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
@@ -322,11 +326,13 @@ class Be {
     }
 
     int datasum = 0;
-    for (var i = 1; i < rawData.length - 3; i++) {
+    for (var i = 2; i < rawData.length - 3; i++) {
       datasum += rawData[i];
     }
-    if (rawData.sublist(rawData.length - 2) !=
-        [..._checksumtoRead(datasum, 0x0), 0x77]) {
+    if (rawData.sublist(rawData.length - 2)[0] !=
+            _checksumtoRead(datasum, 0x0)[0] ||
+        rawData.sublist(rawData.length - 2)[1] !=
+            _checksumtoRead(datasum, 0x0)[1]) {
       print("corupted data ${[
         ..._checksumtoRead(datasum, 0x0),
         0x77
