@@ -231,13 +231,13 @@ class Be {
       0x77
     ];
 
-    List<int> rawData = await queryRawCmd(cmd);
+    await queryRawCmd(cmd);
     while (_answer[_answer.length - 1] != 0x77) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
     readTimes++;
-    bool good = _verifyReadings(rawData);
+    bool good = _verifyReadings(_answer);
     if (!good) {
       print("failed to read");
       return false;
@@ -281,7 +281,7 @@ class Be {
       119
     ];8*/
     readTimes = 0;
-    List<int> data = rawData.sublist(4, 4 + rawData[3]);
+    List<int> data = _answer.sublist(4, 4 + _answer[3]);
     Data.setBatchData(data, Data.BASIC_INFO);
     if (updater != null) {
       updater!();
@@ -289,12 +289,11 @@ class Be {
     return true;
   }
 
-  static Future queryRawCmd(List<int> cmd) async {
+  static queryRawCmd(List<int> cmd) async {
     _answer.clear();
     for (int i = 0; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
     }
-    return;
   }
 
   static bool _verifyReadings(List<int> rawData) {
