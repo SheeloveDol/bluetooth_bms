@@ -233,7 +233,8 @@ class Be {
 
     await queryRawCmd(cmd);
     while (_answer[_answer.length - 1] != 0x77) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(seconds: 1));
+      print(_answer);
     }
 
     readTimes++;
