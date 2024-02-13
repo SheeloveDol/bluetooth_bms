@@ -232,9 +232,7 @@ class Be {
     readTimes++;
     bool good = _verifyReadings(rawData);
     if (!good) {
-      (readTimes < 3)
-          ? await read(registerToRead)
-          : print("Failed to read command");
+      print("failed to read");
       return false;
     }
     /*List<int> rawData = [
