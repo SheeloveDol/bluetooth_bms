@@ -29,12 +29,13 @@ class _DeviceState extends State<Device> {
     connecting = true;
     setState(() {});
     bool connected = await Be.connect(widget.device);
-    connecting = false;
-    if (mounted) {
-      setState(() {});
-    }
+
     if (connected) {
       Be.save(widget.device).then((firstDataRead) {
+        connecting = false;
+        if (mounted) {
+          setState(() {});
+        }
         if (firstDataRead) {
           Navigator.push(
               context,
@@ -47,6 +48,10 @@ class _DeviceState extends State<Device> {
         }
       });
     } else {
+      connecting = false;
+      if (mounted) {
+        setState(() {});
+      }
       quicktell(widget.scafoldContextKey.currentContext!,
           "Could not connect to ${widget.title}");
     }

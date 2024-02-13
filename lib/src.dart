@@ -306,14 +306,17 @@ class Be {
 
   static bool _verifyReadings(List<int> rawData) {
     if (rawData[0] != 0xDD) {
+      print(rawData);
       print("Wrong starting byte");
       return false;
     }
     if (rawData[2] != 0x00) {
+      print(rawData);
       print("Error code ${rawData[2]}");
       return false;
     }
     if (rawData[rawData.length - 1] != 0x77) {
+      print(rawData);
       print("wrong ending byte");
       return false;
     }
