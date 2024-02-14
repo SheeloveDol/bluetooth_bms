@@ -292,8 +292,9 @@ class Be {
 
   static queryRawCmd(List<int> cmd) async {
     _answer.clear();
-    for (int i = 0; i < 2; i++) {
-      await writeCharacteristics!.write(cmd, withoutResponse: true);
+    for (int i = 1; i < 2; i++) {
+      await writeCharacteristics!
+          .write(cmd, allowLongWrite: true, withoutResponse: true);
     }
   }
 
