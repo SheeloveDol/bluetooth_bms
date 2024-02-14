@@ -62,8 +62,8 @@ class AppState extends State<App> {
               child: Text("scan")),
           Wrap(children: [...devices]),
           ElevatedButton(
-              onPressed: () {
-                read(currentDevice);
+              onPressed: () async {
+                data = await read(currentDevice);
                 setState(() {});
               },
               child: Text("read")),
