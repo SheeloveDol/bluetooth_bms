@@ -34,6 +34,7 @@ class AppState extends State<App> {
   List<int> data = [];
   BluetoothDevice? currentDevice;
   dynamic currentSub;
+  dynamic currentChar;
   @override
   void initState() {
     init();
@@ -51,8 +52,11 @@ class AppState extends State<App> {
                 var devicesRaw = await scan();
                 for (var device in devicesRaw) {
                   devices.add(TextButton(
-                      onPressed: () {
-                        currentSub = connect(device);
+                      onPressed: () async {
+                        var map =
+                            await connect(device, data, () => setState(() {}));
+                        currentChar = map["char"];
+                        currentSub = map["sub"];
                         currentDevice = device;
                       },
                       child: Text("${device.advName}")));
@@ -63,8 +67,7 @@ class AppState extends State<App> {
           Wrap(children: [...devices]),
           ElevatedButton(
               onPressed: () async {
-                data = await read(currentDevice);
-                setState(() {});
+                read(currentDevice, currentChar);
               },
               child: Text("read")),
           Text("$data"),
@@ -130,8 +133,9 @@ Future<List<BluetoothDevice>> scan() async {
   return devices;
 }
 
-Future<StreamSubscription<BluetoothConnectionState>> connect(
-    BluetoothDevice device) async {
+Future<Map<String, dynamic>> connect(
+    BluetoothDevice device, List<int> data, Function state) async {
+  data.clear();
   // listen for disconnection
 
   if (FlutterBluePlus.isScanningNow) {
@@ -151,14 +155,11 @@ Future<StreamSubscription<BluetoothConnectionState>> connect(
   // Connect to the device
 
   await device.connect();
-  return subscription;
-}
 
-Future<List<int>> read(device) async {
   late BluetoothService service;
   late BluetoothCharacteristic readCharacteristics;
   late BluetoothCharacteristic writeCharacteristics;
-  List<int> answer = [];
+
   //get service
   List<BluetoothService> services = await device.discoverServices();
   for (var s in services) {
@@ -184,18 +185,21 @@ Future<List<int>> read(device) async {
   //subscribe to read char
   await readCharacteristics!.setNotifyValue(true);
   readCharacteristics.onValueReceived.listen((event) {
-    answer.addAll(event);
+    data.addAll(event);
+    state();
     print(event);
   });
 
+  return {"sub": subscription, "char": writeCharacteristics};
+}
+
+read(device, writeCharacteristics) async {
   //write something to write and wait for read
   List<int> cmd = [0xDD, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77];
   for (var i = 0; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
   }
   await Future.delayed(const Duration(seconds: 2));
-
-  return answer;
 }
 
 disconnect(BluetoothDevice device, sub) async {
