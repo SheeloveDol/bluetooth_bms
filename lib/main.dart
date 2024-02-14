@@ -62,13 +62,18 @@ class AppState extends State<App> {
               child: Text("scan")),
           Wrap(children: [...devices]),
           ElevatedButton(
-              onPressed: () => read(currentDevice), child: Text("read")),
+              onPressed: () {
+                read(currentDevice);
+                setState(() {});
+              },
+              child: Text("read")),
           Text("$data"),
           ElevatedButton(
               onPressed: () async {
                 await disconnect(currentDevice!, currentSub);
                 currentDevice = null;
                 devices.clear();
+                setState(() {});
               },
               child: Text("disconnect"))
         ])));
@@ -178,8 +183,9 @@ Future<List<int>> read(device) async {
 
   //subscribe to read char
   await readCharacteristics!.setNotifyValue(true);
-  readCharacteristics!.onValueReceived.listen((event) {
+  readCharacteristics.onValueReceived.listen((event) {
     answer.addAll(event);
+    print(event);
   });
 
   //write something to write and wait for read
