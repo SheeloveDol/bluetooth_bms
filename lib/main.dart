@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
-
-import 'package:bluetooth_bms/Devices.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
@@ -188,7 +184,9 @@ Future<List<int>> read(device) async {
 
   //write something to write and wait for read
   List<int> cmd = [0xDD, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77];
-  writeCharacteristics.write(cmd, withoutResponse: true);
+  for (var i = 0; i < 2; i++) {
+    writeCharacteristics.write(cmd, withoutResponse: true);
+  }
   await Future.delayed(const Duration(seconds: 2));
 
   return answer;
