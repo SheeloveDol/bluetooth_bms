@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bluetooth_bms/Dashboard.dart';
-import 'package:bluetooth_bms/main.dart';
 import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

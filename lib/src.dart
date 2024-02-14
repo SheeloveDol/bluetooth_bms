@@ -107,6 +107,7 @@ class Be {
         print("Device Disconnected : ${device.disconnectReason}");
       }
     });
+
     device.cancelWhenDisconnected(subscription, delayed: true, next: true);
     // Connect to the device
     try {
@@ -232,7 +233,7 @@ class Be {
     ];
 
     await queryRawCmd(cmd);
-    while (_answer[_answer.length - 1] != 0x77) {
+    while (_answer.isEmpty && _answer[_answer.length - 1] != 0x77) {
       await Future.delayed(const Duration(seconds: 1));
       print(_answer);
     }
@@ -292,9 +293,8 @@ class Be {
 
   static queryRawCmd(List<int> cmd) async {
     _answer.clear();
-    for (int i = 1; i < 2; i++) {
-      await writeCharacteristics!
-          .write(cmd, allowLongWrite: true, withoutResponse: true);
+    for (int i = 0; i < 2; i++) {
+      await writeCharacteristics!.write(cmd, withoutResponse: true);
     }
   }
 
