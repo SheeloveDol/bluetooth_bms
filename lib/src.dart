@@ -78,7 +78,7 @@ class Be {
     // Note: scan filters use an *or* behavior. i.e. if you set `withServices` & `withNames`
     //   we return all the advertisments that match any of the specified services *or* any
     //   of the specified names.
-    await FlutterBluePlus.startScan(timeout: Duration(seconds: 10));
+    await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
 
     // wait for scanning to stop
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
@@ -151,6 +151,7 @@ class Be {
     }
 
     try {
+      print("trying to read");
       var good = await read(device, writeCharacteristics, true);
       if (!good) {
         throw Exception();
@@ -159,7 +160,8 @@ class Be {
       return {"error": " failed to read device"};
     }
 
-    await Future.delayed(const Duration(seconds: 2));
+    print("trying to read");
+    await Future.delayed(const Duration(seconds: 5));
 
     return {
       "sub": subscription,
@@ -198,7 +200,7 @@ class Be {
       [bool wake = false]) async {
     //write something to write and wait for read
     // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-    List<int> payload = [0xfb, 0x02, 0x03, 0x01];
+    List<int> payload = [Data.BASIC_INFO, 0x0];
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics.write(cmd, withoutResponse: true);
