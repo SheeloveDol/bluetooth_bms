@@ -197,7 +197,7 @@ class Be {
     return result;
   }
 
-  static Future<bool> read(writeCharacteristics, [wake = false]) async {
+  static read(writeCharacteristics, [wake = false]) async {
     //write something to write and wait for read
     // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
     List<int> payload = [0x03, 0x00];
