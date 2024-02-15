@@ -202,10 +202,29 @@ Future<Map<String, dynamic>> connect(
   };
 }
 
+List<int> checksumtoRead(List<int> payload) {
+  int sum = 0;
+  for (var i in payload) {
+    sum += i;
+  }
+  int check = 0x10000 - sum;
+  List<int> result = [];
+  String hexString = check.toRadixString(16);
+  if (hexString.length % 2 != 0) {
+    hexString = '0$hexString';
+  }
+  for (int i = 0; i < hexString.length; i += 2) {
+    result.add(int.parse(hexString.substring(i, i + 2), radix: 16));
+  }
+
+  return result;
+}
+
 read(device, writeCharacteristics) async {
   //write something to write and wait for read
   // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-  List<int> cmd = [0xDD, 0x5a, 0xfb, 0x02, 0x03, 0x01, 0xff, 0x01, 0x77];
+  List<int> payload = [0xfb, 0x02, 0x03, 0x01];
+  List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
   for (var i = 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
   }
