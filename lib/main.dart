@@ -1,11 +1,5 @@
-import 'package:bluetooth_bms/BState.dart';
-import 'package:bluetooth_bms/CState.dart';
-import 'package:bluetooth_bms/Control.dart';
-import 'package:bluetooth_bms/Devices.dart';
-import 'package:bluetooth_bms/Records.dart';
-import 'package:bluetooth_bms/TempData.dart';
-import 'package:bluetooth_bms/src.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -24,121 +18,226 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1645BC)),
           useMaterial3: true,
         ),
-        home: const ScanPage(title: 'Home Page'));
+        home: const App());
   }
 }
 
-class ScanPage extends StatefulWidget {
-  const ScanPage({super.key, required this.title});
-  final String title;
+class App extends StatefulWidget {
+  const App();
+
   @override
-  State<ScanPage> createState() => _ScanPageState();
+  State<StatefulWidget> createState() => AppState();
 }
 
-class _ScanPageState extends State<ScanPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  bool disabled = false;
-
+class AppState extends State<App> {
   List<Widget> devices = [];
-  List<Widget> namelessDevices = [];
-
-  onScan() async {
-    setState(() => disabled = true);
-    setState(() => devices.clear());
-    if (!await Be.init()) {
-      return;
-    }
-    await Be.scan(onFound);
-    devices.add(CupertinoButton(
-        child: const Text("Show more"),
-        onPressed: () {
-          devices.removeLast();
-          devices = [...devices, ...namelessDevices];
-          setState(() {});
-        }));
-    setState(() => disabled = false);
-  }
-
-  void onFound(String name, BluetoothDevice device) {
-    if (device.advName.length > 1) {
-      devices.insert(0,
-          Device(title: name, device: device, scafoldContextKey: _scaffoldKey));
-    } else {
-      namelessDevices.add(
-          Device(title: name, device: device, scafoldContextKey: _scaffoldKey));
-    }
-    setState(() {});
-  }
-
+  List<int> data = [];
+  BluetoothDevice? currentDevice;
+  dynamic currentSub;
+  dynamic currentChar;
+  dynamic currentNotify;
   @override
   void initState() {
+    init();
     super.initState();
-    Be.init();
   }
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        body: SafeArea(
-            bottom: false,
-            child: Stack(children: [
-              //black bg
-              Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFF002A4D), Colors.black]))),
-              //app title
-              const Positioned(
-                  top: 15,
-                  left: 10,
-                  child: Text("Bluetooth BMS",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
-                          fontSize: 25))),
-              //Scan button
-              Positioned(
-                  top: 10,
-                  right: 10,
-                  child: ElevatedButton(
-                      onPressed: (disabled) ? null : onScan,
-                      child: const Text("SCAN",
-                          style: TextStyle(
-                              color: Color(0xEC121315),
-                              fontWeight: FontWeight.w300,
-                              fontSize: 20,
-                              letterSpacing: 2)))),
-              //List of all devices
-              Positioned.fill(
-                  top: 60,
-                  child: Container(
-                      decoration: const BoxDecoration(
-                          color: Color(0xAE121315),
-                          borderRadius:
-                              BorderRadius.only(topLeft: Radius.circular(45))),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Padding(padding: EdgeInsets.only(bottom: 10)),
-                            const Text("Devices",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 20,
-                                    letterSpacing: 2)),
-                            Container(
-                                padding: const EdgeInsets.all(10),
-                                margin: const EdgeInsets.all(10),
-                                height: 560,
-                                child: ListView(
-                                  key: UniqueKey(),
-                                  children: devices,
-                                ))
-                          ])))
-            ])));
+        appBar: AppBar(title: const Text("With flutter bleu")),
+        body: Center(
+            child: Column(children: [
+          ElevatedButton(
+              onPressed: () async {
+                var devicesRaw = await scan();
+                for (var device in devicesRaw) {
+                  devices.add(TextButton(
+                      onPressed: () async {
+                        var map =
+                            await connect(device, data, () => setState(() {}));
+                        currentChar = map["char"];
+                        currentSub = map["sub"];
+                        currentNotify = map["notify"];
+                        currentDevice = device;
+                      },
+                      child: Text("${device.advName}")));
+                }
+                setState(() {});
+              },
+              child: Text("scan")),
+          Wrap(children: [...devices]),
+          ElevatedButton(
+              onPressed: () async {
+                read(currentChar);
+              },
+              child: Text("read")),
+          ElevatedButton(
+              onPressed: () async {
+                read(currentChar, true);
+              },
+              child: Text("wake & read")),
+          Text("$data"),
+          ElevatedButton(
+              onPressed: () async {
+                await disconnect(currentDevice!, currentSub);
+                currentChar = null;
+                currentSub = null;
+                currentDevice = null;
+                currentNotify.cancel();
+                currentNotify = null;
+                devices.clear();
+                setState(() {});
+              },
+              child: Text("disconnect"))
+        ])));
   }
+}
+
+Future<bool> init() async {
+  bool status = false;
+  // first, check if bluetooth is supported by your hardware
+  // Note: The platform is initialized on the first call to any FlutterBluePlus method.
+  if (await FlutterBluePlus.isSupported == false) {
+    print("Bluetooth not supported by this device");
+    return false;
+  }
+  var subscription =
+      FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+    if (state == BluetoothAdapterState.on) {
+      status = true;
+    } else {
+      status = false;
+    }
+  });
+
+// turn on bluetooth ourself if we can
+// for iOS, the user controls bluetooth enable/disable
+  if (Platform.isAndroid) {
+    await FlutterBluePlus.turnOn();
+  }
+
+// cancel to prevent duplicate listeners
+  subscription.cancel();
+  return status;
+}
+
+Future<List<BluetoothDevice>> scan() async {
+  List<BluetoothDevice> devices = [];
+  var subscription = FlutterBluePlus.onScanResults.listen(
+    (results) async {
+      if (results.isNotEmpty) {
+        ScanResult r = results.last;
+        devices.add(r.device);
+      }
+    },
+    onError: (e) => print(e),
+  );
+  FlutterBluePlus.cancelWhenScanComplete(subscription);
+  await FlutterBluePlus.adapterState
+      .where((val) => val == BluetoothAdapterState.on)
+      .first;
+  await FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+
+  // wait for scanning to stop
+  await FlutterBluePlus.isScanning.where((val) => val == false).first;
+  return devices;
+}
+
+Future<Map<String, dynamic>> connect(
+    BluetoothDevice device, List<int> data, Function state) async {
+  // listen for disconnection
+
+  if (FlutterBluePlus.isScanningNow) {
+    await FlutterBluePlus.stopScan();
+  }
+
+  var subscription =
+      device.connectionState.listen((BluetoothConnectionState state) async {
+    if (state == BluetoothConnectionState.disconnected) {
+      // 1. typically, start a periodic timer that tries to
+      //    reconnect, or just call connect() again right now
+      // 2. you must always re-discover services after disconnection!
+      print("Device Disconnected : ${device.disconnectReason}");
+    }
+  });
+  device.cancelWhenDisconnected(subscription, delayed: true, next: true);
+  // Connect to the device
+
+  await device.connect();
+
+  late BluetoothService service;
+  late BluetoothCharacteristic readCharacteristics;
+  late BluetoothCharacteristic writeCharacteristics;
+
+  //get service
+  List<BluetoothService> services = await device.discoverServices();
+  for (var s in services) {
+    if (s.serviceUuid == Guid("FF00")) {
+      service = s;
+    }
+  }
+  //get write charac
+  var characteristics = service.characteristics;
+  for (BluetoothCharacteristic c in characteristics) {
+    if (c.characteristicUuid == Guid("FF01")) {
+      readCharacteristics = c;
+    }
+  }
+  //get read charac
+  characteristics = service.characteristics;
+  for (BluetoothCharacteristic c in characteristics) {
+    if (c.characteristicUuid == Guid("FF02")) {
+      writeCharacteristics = c;
+    }
+  }
+
+  //subscribe to read char
+  await readCharacteristics.setNotifyValue(true);
+  var notifySub = readCharacteristics.onValueReceived.listen((event) {
+    data.addAll(event);
+    state();
+    print(event);
+  });
+
+  return {
+    "sub": subscription,
+    "char": writeCharacteristics,
+    "notify": notifySub
+  };
+}
+
+List<int> checksumtoRead(List<int> payload) {
+  int sum = 0;
+  for (var i in payload) {
+    sum += i;
+  }
+  int check = 0x10000 - sum;
+  List<int> result = [];
+  String hexString = check.toRadixString(16);
+  if (hexString.length % 2 != 0) {
+    hexString = '0$hexString';
+  }
+  for (int i = 0; i < hexString.length; i += 2) {
+    result.add(int.parse(hexString.substring(i, i + 2), radix: 16));
+  }
+
+  return result;
+}
+
+read(writeCharacteristics, [wake = false]) {
+  //write something to write and wait for read
+  // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
+  List<int> payload = [0xfb, 0x02, 0x03, 0x01];
+  List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+  for (var i = (wake) ? 0 : 1; i < 2; i++) {
+    writeCharacteristics.write(cmd, withoutResponse: true);
+  }
+}
+
+disconnect(BluetoothDevice device, sub) async {
+// Disconnect from device
+  await device.disconnect();
+  // cancel to prevent duplicate listeners
+  sub.cancel();
 }
