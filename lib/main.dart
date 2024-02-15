@@ -35,6 +35,7 @@ class AppState extends State<App> {
   BluetoothDevice? currentDevice;
   dynamic currentSub;
   dynamic currentChar;
+  dynamic currentNotify;
   @override
   void initState() {
     init();
@@ -57,6 +58,7 @@ class AppState extends State<App> {
                             await connect(device, data, () => setState(() {}));
                         currentChar = map["char"];
                         currentSub = map["sub"];
+                        currentNotify = map["notify"];
                         currentDevice = device;
                       },
                       child: Text("${device.advName}")));
@@ -74,7 +76,11 @@ class AppState extends State<App> {
           ElevatedButton(
               onPressed: () async {
                 await disconnect(currentDevice!, currentSub);
+                currentChar = null;
+                currentSub = null;
                 currentDevice = null;
+                currentNotify.cancel();
+                currentNotify = null;
                 devices.clear();
                 setState(() {});
               },
@@ -135,7 +141,6 @@ Future<List<BluetoothDevice>> scan() async {
 
 Future<Map<String, dynamic>> connect(
     BluetoothDevice device, List<int> data, Function state) async {
-  data.clear();
   // listen for disconnection
 
   if (FlutterBluePlus.isScanningNow) {
@@ -184,13 +189,17 @@ Future<Map<String, dynamic>> connect(
 
   //subscribe to read char
   await readCharacteristics!.setNotifyValue(true);
-  readCharacteristics.onValueReceived.listen((event) {
+  var notifySub = readCharacteristics.onValueReceived.listen((event) {
     data.addAll(event);
     state();
     print(event);
   });
 
-  return {"sub": subscription, "char": writeCharacteristics};
+  return {
+    "sub": subscription,
+    "char": writeCharacteristics,
+    "notify": notifySub
+  };
 }
 
 read(device, writeCharacteristics) async {
@@ -206,5 +215,5 @@ disconnect(BluetoothDevice device, sub) async {
 // Disconnect from device
   await device.disconnect();
   // cancel to prevent duplicate listeners
-  sub?.cancel();
+  sub.cancel();
 }
