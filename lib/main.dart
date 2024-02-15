@@ -204,8 +204,9 @@ Future<Map<String, dynamic>> connect(
 
 read(device, writeCharacteristics) async {
   //write something to write and wait for read
-  List<int> cmd = [0xDD, 0xa5, 0x03, 0x00, 0xff, 0xfd, 0x77];
-  for (var i = 0; i < 2; i++) {
+  // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
+  List<int> cmd = [0xDD, 0x5a, 0xfb, 0x02, 0x03, 0x01, 0xff, 0x01, 0x77];
+  for (var i = 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
   }
   await Future.delayed(const Duration(seconds: 2));
