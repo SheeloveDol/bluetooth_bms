@@ -50,6 +50,9 @@ class Be {
   }
 
   static scan(Function(String, BluetoothDevice) onFound) async {
+    for (var device in FlutterBluePlus.connectedDevices) {
+      await device.disconnect();
+    }
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
@@ -140,6 +143,7 @@ class Be {
         print(event);
         if (answer[answer.length - 1] == 0x77) {
           var data = answer.sublist(4, answer.length - 4);
+          print(data);
           Data.setBatchData(data, Data.BASIC_INFO);
           answer.clear();
         }
