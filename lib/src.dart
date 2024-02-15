@@ -151,7 +151,7 @@ class Be {
     }
 
     try {
-      var good = await read(device, writeCharacteristics, true);
+      var good = await read(device, writeCharacteristics, false);
       if (!good) {
         throw Exception();
       }
