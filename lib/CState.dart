@@ -75,7 +75,7 @@ class _CellsStateState extends State<CellsState> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Wrap(children: [
-                            for (int i = 1; i < Data.cell_cnt; i++)
+                            for (int i = 1; i <= Data.cell_cnt; i++)
                               cell("cell$i", 3.45, i)
                           ]),
                           Row(
