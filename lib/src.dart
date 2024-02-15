@@ -159,6 +159,8 @@ class Be {
       return {"error": " failed to read device"};
     }
 
+    await Future.delayed(const Duration(seconds: 2));
+
     return {
       "sub": subscription,
       "char": writeCharacteristics,
