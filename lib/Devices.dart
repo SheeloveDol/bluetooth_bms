@@ -28,7 +28,6 @@ class _DeviceState extends State<Device> {
     connecting = true;
     setState(() {});
     var map = await Be.connect(widget.device);
-
     if (map["error"] == null) {
       connecting = false;
       if (mounted) {
@@ -45,7 +44,7 @@ class _DeviceState extends State<Device> {
         setState(() {});
       }
       quicktell(widget.scafoldContextKey.currentContext!,
-          "Could not connect to ${widget.title}");
+          "Could not connect to ${widget.title} ${map["error"]}");
     }
   }
 
