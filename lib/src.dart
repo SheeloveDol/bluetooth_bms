@@ -152,7 +152,7 @@ class Be {
 
     try {
       print("trying to read");
-      var good = await read(device, writeCharacteristics, true);
+      var good = await read(writeCharacteristics, true);
       if (!good) {
         throw Exception();
       }
@@ -161,7 +161,7 @@ class Be {
     }
 
     print("trying to read");
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 1));
 
     return {
       "sub": subscription,
@@ -196,16 +196,26 @@ class Be {
     return result;
   }
 
-  static Future<bool> read(device, writeCharacteristics,
-      [bool wake = false]) async {
+  static read(writeCharacteristics, [wake = false]) async {
     //write something to write and wait for read
     // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-    List<int> payload = [Data.BASIC_INFO, 0x0];
+    List<int> payload = [0x03, 0x00];
+    List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+    for (var i = (wake) ? 0 : 1; i < 2; i++) {
+      writeCharacteristics.write(cmd, withoutResponse: true);
+      await Future.delayed(Duration(milliseconds: 700));
+    }
+  }
+
+  static write(writeCharacteristics, [wake = false]) async {
+    //write something to write and wait for read
+    // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
+    List<int> payload = [0x03, 0x00];
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      await writeCharacteristics.write(cmd, withoutResponse: true);
+      writeCharacteristics.write(cmd, withoutResponse: true);
+      await Future.delayed(Duration(milliseconds: 700));
     }
-    return true;
   }
 
   static bool _verifyReadings(List<int> rawData) {
