@@ -151,7 +151,7 @@ class Be {
     }
 
     try {
-      var good = await read(device, writeCharacteristics, false);
+      var good = await read(device, writeCharacteristics, true);
       if (!good) {
         throw Exception();
       }
@@ -200,7 +200,7 @@ class Be {
     // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
     List<int> payload = [0xfb, 0x02, 0x03, 0x01];
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
-    for (var i = (wake) ? 2 : 1; i < 2; i++) {
+    for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics.write(cmd, withoutResponse: true);
     }
     return true;
