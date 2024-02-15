@@ -220,7 +220,7 @@ List<int> checksumtoRead(List<int> payload) {
   return result;
 }
 
-read(device, writeCharacteristics) async {
+read(device, writeCharacteristics) {
   //write something to write and wait for read
   // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
   List<int> payload = [0xfb, 0x02, 0x03, 0x01];
@@ -228,7 +228,6 @@ read(device, writeCharacteristics) async {
   for (var i = 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
   }
-  await Future.delayed(const Duration(seconds: 2));
 }
 
 disconnect(BluetoothDevice device, sub) async {
