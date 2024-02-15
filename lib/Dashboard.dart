@@ -13,8 +13,13 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'src.dart';
 
 class DashBoard extends StatefulWidget {
-  const DashBoard({super.key, required this.title, required this.device});
+  const DashBoard(
+      {super.key,
+      required this.title,
+      required this.device,
+      required this.configMap});
   final String title;
+  final Map<String, dynamic> configMap;
   final BluetoothDevice device;
 
   @override
@@ -26,7 +31,7 @@ class _DashBoardState extends State<DashBoard> {
   double height = 0;
 
   onDisconnect(BuildContext context) {
-    Be.disconnect(widget.device).then((value) {
+    Be.disconnect(widget.device, widget.configMap["sub"]).then((value) {
       quicktell(context, "Disconnected from ${widget.title}");
       Navigator.pop(context);
     });

@@ -10,7 +10,7 @@ class Be {
   static BluetoothCharacteristic? readCharacteristics;
   static BluetoothCharacteristic? writeCharacteristics;
   static StreamSubscription<BluetoothConnectionState>? savedSubscription;
-  static List<int> _answer = [];
+  static List<int> answer = [];
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
@@ -50,13 +50,6 @@ class Be {
   }
 
   static scan(Function(String, BluetoothDevice) onFound) async {
-    try {
-      if (savedDevice != null) {
-        disconnect(savedDevice!);
-      }
-    } catch (e) {
-      print("maybe it is already disconnected");
-    }
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
@@ -91,7 +84,7 @@ class Be {
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
-  static Future<bool> connect(BluetoothDevice device) async {
+  static Future<Map<String, dynamic>> connect(BluetoothDevice device) async {
     // listen for disconnection
 
     if (FlutterBluePlus.isScanningNow) {
@@ -107,111 +100,88 @@ class Be {
         print("Device Disconnected : ${device.disconnectReason}");
       }
     });
-
     device.cancelWhenDisconnected(subscription, delayed: true, next: true);
     // Connect to the device
-    try {
-      await device.connect();
-      savedSubscription = subscription;
-      return true;
-    } on Exception catch (_, e) {
-      print("Reason why it could not connect ${e.toString()}");
-      savedSubscription = null;
-      return false;
-    }
-  }
 
-  static Future<void> disconnect(BluetoothDevice device) async {
-    // Disconnect from device
-    await device.disconnect();
-    // cancel to prevent duplicate listeners
-    savedSubscription?.cancel();
+    await device.connect();
 
-    savedDevice = null;
-    service = null;
-    readCharacteristics = null;
-    writeCharacteristics = null;
-    updater = null;
-  }
+    late BluetoothService service;
+    late BluetoothCharacteristic readCharacteristics;
+    late BluetoothCharacteristic writeCharacteristics;
+    late StreamSubscription<List<int>> notifySub;
 
-  static Future<bool> save(BluetoothDevice device) async {
-    bool check = false;
-    savedDevice = device;
-    check = await _getReadWriteService();
-    if (!check) {
-      await disconnect(device);
-      print("Device is not compatible");
-      return false;
-    }
-    check = _getReadCharacteristics();
-    if (!check) {
-      await disconnect(device);
-      print("Device is not compatible");
-      return false;
-    }
-    check = _getWriteCharacteristics();
-    if (!check) {
-      await disconnect(device);
-      print("Device is not compatible");
-      return false;
-    }
-
-    print("Service and characteristics has ben saved");
-    await readCharacteristics!.setNotifyValue(true);
-    readCharacteristics!.onValueReceived.listen((event) {
-      _answer.addAll(event);
-    });
-
-    return await read(Data.BASIC_INFO);
-  }
-
-  static bool _getWriteCharacteristics() {
-    // get write char
-    var characteristics = service!.characteristics;
-    for (BluetoothCharacteristic c in characteristics) {
-      if (c.characteristicUuid == Guid("FF02")) {
-        writeCharacteristics = c;
-        return true;
+    //get service
+    List<BluetoothService> services = await device.discoverServices();
+    for (var s in services) {
+      if (s.serviceUuid == Guid("FF00")) {
+        service = s;
       }
     }
-    return false;
-  }
-
-  static bool _getReadCharacteristics() {
-    // get Read char
-    var characteristics = service!.characteristics;
+    //get write charac
+    var characteristics = service.characteristics;
     for (BluetoothCharacteristic c in characteristics) {
       if (c.characteristicUuid == Guid("FF01")) {
         readCharacteristics = c;
-        return true;
       }
     }
-    return false;
-  }
+    //get read charac
+    characteristics = service.characteristics;
+    for (BluetoothCharacteristic c in characteristics) {
+      if (c.characteristicUuid == Guid("FF02")) {
+        writeCharacteristics = c;
+      }
+    }
 
-  static Future<bool> _getReadWriteService() async {
-    // Note: You must call discoverServices after every re-connection!
     try {
-      List<BluetoothService> services = await savedDevice!.discoverServices();
-      for (var s in services) {
-        if (s.serviceUuid == Guid("FF00")) {
-          service = s;
-          return true;
+      //subscribe to read charac
+      await readCharacteristics.setNotifyValue(true);
+      notifySub = readCharacteristics.onValueReceived.listen((event) {
+        answer.addAll(event);
+        if (answer[answer.length - 1] == 0x77) {
+          var data = answer.sublist(4, answer.length - 4);
+          Data.setBatchData(data, Data.BASIC_INFO);
         }
-      }
-      return false;
+        if (updater != null) {
+          updater!();
+        }
+        print(event);
+      });
     } catch (e) {
-      return false;
+      return {"error": "imcompatible device"};
     }
+
+    try {
+      var good = await read(device, writeCharacteristics, true);
+      if (!good) {
+        throw Exception();
+      }
+    } catch (e) {
+      return {"error": " failed to read device"};
+    }
+
+    return {
+      "sub": subscription,
+      "char": writeCharacteristics,
+      "notify": notifySub
+    };
   }
 
-  static List<int> _checksumtoRead(int register, int bytelength) {
-    return _hexToIntList(0x10000 - (register + bytelength));
+  static Future<void> disconnect(BluetoothDevice device,
+      StreamSubscription<BluetoothConnectionState> sub) async {
+    // Disconnect from device
+    await device.disconnect();
+    // cancel to prevent duplicate listeners
+    sub.cancel();
   }
 
-  static List<int> _hexToIntList(int hexValue) {
+  static List<int> checksumtoRead(List<int> payload) {
+    int sum = 0;
+    for (var i in payload) {
+      sum += i;
+    }
+    int check = 0x10000 - sum;
     List<int> result = [];
-    String hexString = hexValue.toRadixString(16);
+    String hexString = check.toRadixString(16);
     if (hexString.length % 2 != 0) {
       hexString = '0$hexString';
     }
@@ -222,115 +192,42 @@ class Be {
     return result;
   }
 
-  static Future<bool> read(int registerToRead) async {
-    List<int> cmd = [
-      0xDD,
-      0xa5,
-      registerToRead,
-      0x00,
-      ..._checksumtoRead(registerToRead, 0x00),
-      0x77
-    ];
-
-    await queryRawCmd(cmd);
-    while (_answer.isEmpty && _answer[_answer.length - 1] != 0x77) {
-      await Future.delayed(const Duration(seconds: 1));
-      print(_answer);
-    }
-
-    readTimes++;
-    bool good = _verifyReadings(_answer);
-    if (!good) {
-      print("failed to read");
-      return false;
-    }
-    /*List<int> rawData = [
-      221,
-      3,
-      0,
-      29,
-      5,
-      50,
-      0,
-      0,
-      46,
-      122,
-      66,
-      104,
-      0,
-      1,
-      46,
-      187,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      97,
-      70,
-      1,
-      4,
-      3,
-      11,
-      148,
-      11,
-      143,
-      11,
-      144,
-      250,
-      237,
-      119
-    ];8*/
-    readTimes = 0;
-    List<int> data = _answer.sublist(4, 4 + _answer[3]);
-    Data.setBatchData(data, Data.BASIC_INFO);
-    if (updater != null) {
-      updater!();
+  static Future<bool> read(device, writeCharacteristics,
+      [bool wake = false]) async {
+    //write something to write and wait for read
+    // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
+    List<int> payload = [0xfb, 0x02, 0x03, 0x01];
+    List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+    for (var i = (wake) ? 2 : 1; i < 2; i++) {
+      await writeCharacteristics.write(cmd, withoutResponse: true);
     }
     return true;
-  }
-
-  static queryRawCmd(List<int> cmd) async {
-    _answer.clear();
-    for (int i = 0; i < 2; i++) {
-      await writeCharacteristics!.write(cmd, withoutResponse: true);
-    }
   }
 
   static bool _verifyReadings(List<int> rawData) {
     if (rawData[0] != 0xDD) {
       print(rawData);
       print("Wrong starting byte");
-      _answer.clear();
       return false;
     }
     if (rawData[2] != 0x00) {
       print(rawData);
       print("Error code ${rawData[2]}");
-      _answer.clear();
       return false;
     }
     if (rawData[rawData.length - 1] != 0x77) {
       print(rawData);
       print("wrong ending byte");
-      _answer.clear();
       return false;
     }
 
-    int datasum = 0;
-    for (var i = 2; i < rawData.length - 3; i++) {
-      datasum += rawData[i];
-    }
-    if (rawData.sublist(rawData.length - 3)[0] !=
-            _checksumtoRead(datasum, 0x0)[0] ||
-        rawData.sublist(rawData.length - 3)[1] !=
-            _checksumtoRead(datasum, 0x0)[1]) {
+    var payload = rawData.sublist(3, rawData.length - 4);
+    if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
+        rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
       print("corupted data ${[
-        ..._checksumtoRead(datasum, 0x0),
+        ...checksumtoRead(payload),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)}");
-      _answer.clear();
       return false;
     }
     return true;

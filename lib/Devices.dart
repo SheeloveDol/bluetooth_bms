@@ -27,25 +27,18 @@ class _DeviceState extends State<Device> {
   onConnect(BuildContext context) async {
     connecting = true;
     setState(() {});
-    bool connected = await Be.connect(widget.device);
+    var map = await Be.connect(widget.device);
 
-    if (connected) {
-      Be.save(widget.device).then((firstDataRead) {
-        connecting = false;
-        if (mounted) {
-          setState(() {});
-        }
-        if (firstDataRead) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DashBoard(device: widget.device, title: widget.title)));
-        } else {
-          quicktell(widget.scafoldContextKey.currentContext!,
-              "Could not read to ${widget.title} maybe try again");
-        }
-      });
+    if (map["error"] == null) {
+      connecting = false;
+      if (mounted) {
+        setState(() {});
+      }
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DashBoard(
+                  device: widget.device, title: widget.title, configMap: map)));
     } else {
       connecting = false;
       if (mounted) {

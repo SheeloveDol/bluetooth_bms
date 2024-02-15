@@ -188,7 +188,7 @@ Future<Map<String, dynamic>> connect(
   }
 
   //subscribe to read char
-  await readCharacteristics!.setNotifyValue(true);
+  await readCharacteristics.setNotifyValue(true);
   var notifySub = readCharacteristics.onValueReceived.listen((event) {
     data.addAll(event);
     state();
