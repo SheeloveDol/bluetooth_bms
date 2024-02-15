@@ -137,14 +137,15 @@ class Be {
       await readCharacteristics.setNotifyValue(true);
       notifySub = readCharacteristics.onValueReceived.listen((event) {
         answer.addAll(event);
+        print(event);
         if (answer[answer.length - 1] == 0x77) {
           var data = answer.sublist(4, answer.length - 4);
           Data.setBatchData(data, Data.BASIC_INFO);
+          answer.clear();
         }
         if (updater != null) {
           updater!();
         }
-        print(event);
       });
     } catch (e) {
       return {"error": "imcompatible device"};
