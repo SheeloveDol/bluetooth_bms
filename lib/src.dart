@@ -142,7 +142,7 @@ class Be {
         answer.addAll(event);
         print(event);
         if (answer[answer.length - 1] == 0x77) {
-          var data = answer.sublist(4, answer.length - 4);
+          var data = answer.sublist(4, answer.length - 3);
           print(data);
           Data.setBatchData(data, Data.BASIC_INFO);
           answer.clear();
