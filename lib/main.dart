@@ -225,13 +225,14 @@ List<int> checksumtoRead(List<int> payload) {
   return result;
 }
 
-read(writeCharacteristics, [wake = false]) {
+read(writeCharacteristics, [wake = false]) async {
   //write something to write and wait for read
   // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-  List<int> payload = [0xfb, 0x02, 0x03, 0x01];
-  List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+  List<int> payload = [0x03, 0x00];
+  List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
   for (var i = (wake) ? 0 : 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
+    await Future.delayed(Duration(milliseconds: 700));
   }
 }
 
