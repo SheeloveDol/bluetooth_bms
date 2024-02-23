@@ -164,7 +164,7 @@ class Be {
     }
   }
 
-  static Future<void> getBasicInfo() async {
+  static Future<bool> getBasicInfo() async {
     try {
       await read(Data.BASIC_INFO_PAYLOAD);
       int i = 0;
@@ -177,7 +177,7 @@ class Be {
       }
       if (readSuccessFully == null) {
         print("time out reading basic info");
-        return;
+        return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
       }
@@ -186,9 +186,10 @@ class Be {
       readSuccessFully = null;
       print("failed to read basic info");
     }
+    return true;
   }
 
-  static Future<void> getCellInfo() async {
+  static Future<bool> getCellInfo() async {
     try {
       await read(Data.CELL_INFO_PAYLOAD);
       int i = 0;
@@ -201,7 +202,7 @@ class Be {
       }
       if (readSuccessFully == null) {
         print("timeout reading  Cells info");
-        return;
+        return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
       }
@@ -210,9 +211,10 @@ class Be {
       readSuccessFully = null;
       print("failed to cells info");
     }
+    return true;
   }
 
-  static Future<void> getStatsReport() async {
+  static Future<bool> getStatsReport() async {
     try {
       await read(Data.STATS_PAYLOAD);
       int i = 0;
@@ -225,7 +227,7 @@ class Be {
       }
       if (readSuccessFully == null) {
         print("timeout reading  Statistics");
-        return;
+        return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
       }
@@ -234,6 +236,7 @@ class Be {
       readSuccessFully = null;
       print("failed to Statistics");
     }
+    return true;
   }
 
   static Future<void> disconnect(BluetoothDevice device,
