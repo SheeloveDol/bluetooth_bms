@@ -28,6 +28,8 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
+  dynamic cellInfo;
+  dynamic statsreports;
   double height = 0;
 
   onDisconnect(BuildContext context) {
@@ -55,6 +57,8 @@ class _DashBoardState extends State<DashBoard> {
     });
     Be.setUpdater(() => setState(() {}));
     super.initState();
+    cellInfo = Be.getCellInfo();
+    statsreports = Be.getStatsReport();
   }
 
   @override
@@ -74,15 +78,15 @@ class _DashBoardState extends State<DashBoard> {
                       controller: controller,
                       children: <Widget>[
                         const BatteryState(),
-                        FutureBuilder(
-                          future: Be.getCellInfo(),
+                        FutureBuilder<bool>(
+                          future: cellInfo,
                           builder: (context, snapshot) {
                             return CellsState();
                           },
                         ),
                         Temperatures(),
-                        FutureBuilder(
-                            future: Be.getStatsReport(),
+                        FutureBuilder<bool>(
+                            future: statsreports,
                             builder: (context, snapshot) {
                               return Reports();
                             })
