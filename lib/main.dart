@@ -78,7 +78,7 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
@@ -117,7 +117,9 @@ class _ScanPageState extends State<ScanPage> {
                   top: 60,
                   child: Container(
                       decoration: const BoxDecoration(
-                          color: Color(0xAE121315),
+                          gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              colors: [Color(0xAE121315), Colors.black]),
                           borderRadius:
                               BorderRadius.only(topLeft: Radius.circular(45))),
                       child: Column(
@@ -138,7 +140,11 @@ class _ScanPageState extends State<ScanPage> {
                                   key: UniqueKey(),
                                   children: devices,
                                 ))
-                          ])))
+                          ]))),
+              Positioned(
+                  bottom: 40,
+                  left: (MediaQuery.sizeOf(context).width / 2) - 50,
+                  child: Image.asset("assets/logo.png", height: 100))
             ])));
   }
 }
