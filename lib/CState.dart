@@ -17,7 +17,7 @@ class _CellsStateState extends State<CellsState> {
     super.initState();
   }
 
-  Widget cell(String title, double volts, int index) {
+  Widget cell(String title, int index) {
     Color color = Colors.black;
     Color titleColor = Colors.black;
     FontWeight weight = FontWeight.normal;
@@ -26,11 +26,11 @@ class _CellsStateState extends State<CellsState> {
       titleColor = Colors.blue;
       titleWeight = FontWeight.bold;
     }
-    if (volts > 3.45) {
+    if (Data.cell_mv[index] > 3.45) {
       color = Color(0xFFCA5100);
       weight = FontWeight.bold;
     }
-    if (volts < 3.45) {
+    if (Data.cell_mv[index] < 3.45) {
       color = Colors.yellow;
       weight = FontWeight.bold;
     }
@@ -49,7 +49,7 @@ class _CellsStateState extends State<CellsState> {
               style: TextStyle(
                   fontSize: 12, color: titleColor, fontWeight: titleWeight),
             ),
-            Text("${volts}V",
+            Text("${Data.cell_mv[index].toStringAsFixed(2)}V",
                 style: TextStyle(
                     fontSize: 12, height: 0, color: color, fontWeight: weight))
           ])
@@ -75,23 +75,23 @@ class _CellsStateState extends State<CellsState> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Wrap(children: [
-                            for (int i = 1; i <= Data.cell_cnt; i++)
-                              cell("cell$i", 3.45, i)
+                            for (int i = 0; i <= Data.cell_cnt; i++)
+                              cell("cell${i + 1}", i)
                           ]),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Column(children: [
                                   Text("Cell Difference:$celldiff",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.green,
                                           fontWeight: FontWeight.bold)),
-                                  Text("Ballance inactive",
+                                  const Text("Ballance inactive",
                                       style: TextStyle(
                                           color: Colors.blue,
                                           fontWeight: FontWeight.bold))
                                 ]),
-                                Column(children: [
+                                const Column(children: [
                                   Text("High cell group",
                                       style: TextStyle(
                                           color: Color(0xFFCA5100),

@@ -62,7 +62,8 @@ class _DeviceState extends State<Device> {
                   Icon(Icons.bluetooth),
                   Text(
                     widget.title,
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(
+                        fontSize: (widget.title.length < 20) ? 17 : 12),
                   )
                 ]),
                 CupertinoButton(

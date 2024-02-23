@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
@@ -11,9 +12,11 @@ class Be {
   static BluetoothCharacteristic? writeCharacteristics;
   static StreamSubscription<BluetoothConnectionState>? savedSubscription;
   static List<int> answer = [];
+  static bool wake = true;
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
+  static bool? readSuccessFully;
 
   Be() {}
 
@@ -66,30 +69,15 @@ class Be {
       },
       onError: (e) => print(e),
     );
-
-    // cleanup: cancel subscription when scanning stops
     FlutterBluePlus.cancelWhenScanComplete(subscription);
-
-    // Wait for Bluetooth enabled & permission granted
-    // In your real app you should use `FlutterBluePlus.adapterState.listen` to handle all states
     await FlutterBluePlus.adapterState
         .where((val) => val == BluetoothAdapterState.on)
         .first;
-
-    // Start scanning w/ timeout
-    // Optional: you can use `stopScan()` as an alternative to using a timeout
-    // Note: scan filters use an *or* behavior. i.e. if you set `withServices` & `withNames`
-    //   we return all the advertisments that match any of the specified services *or* any
-    //   of the specified names.
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
-
-    // wait for scanning to stop
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
   static Future<Map<String, dynamic>> connect(BluetoothDevice device) async {
-    // listen for disconnection
-
     if (FlutterBluePlus.isScanningNow) {
       await FlutterBluePlus.stopScan();
     }
@@ -97,54 +85,52 @@ class Be {
     var subscription =
         device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
-        // 1. typically, start a periodic timer that tries to
-        //    reconnect, or just call connect() again right now
-        // 2. you must always re-discover services after disconnection!
         print("Device Disconnected : ${device.disconnectReason}");
       }
     });
     device.cancelWhenDisconnected(subscription, delayed: true, next: true);
+
     // Connect to the device
-
-    await device.connect();
-
-    late BluetoothService service;
-    late BluetoothCharacteristic readCharacteristics;
-    late BluetoothCharacteristic writeCharacteristics;
+    String? error;
+    await device.connect().catchError((e) => error = "failed to connect");
+    if (error != null) {
+      return {"error": error};
+    }
     late StreamSubscription<List<int>> notifySub;
 
-    //get service
-    List<BluetoothService> services = await device.discoverServices();
-    for (var s in services) {
-      if (s.serviceUuid == Guid("FF00")) {
-        service = s;
-      }
-    }
-    //get write charac
-    var characteristics = service.characteristics;
-    for (BluetoothCharacteristic c in characteristics) {
-      if (c.characteristicUuid == Guid("FF01")) {
-        readCharacteristics = c;
-      }
-    }
-    //get read charac
-    characteristics = service.characteristics;
-    for (BluetoothCharacteristic c in characteristics) {
-      if (c.characteristicUuid == Guid("FF02")) {
-        writeCharacteristics = c;
-      }
-    }
-
     try {
+      //get service
+      List<BluetoothService> services = await device.discoverServices();
+      for (var s in services) {
+        if (s.serviceUuid == Guid("FF00")) {
+          service = s;
+        }
+      }
+      //get write charac
+      var characteristics = service!.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        if (c.characteristicUuid == Guid("FF01")) {
+          readCharacteristics = c;
+        }
+      }
+      //get read charac
+      characteristics = service!.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        if (c.characteristicUuid == Guid("FF02")) {
+          writeCharacteristics = c;
+        }
+      }
+
       //subscribe to read charac
-      await readCharacteristics.setNotifyValue(true);
-      notifySub = readCharacteristics.onValueReceived.listen((event) {
+      await readCharacteristics!.setNotifyValue(true);
+      notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
         print(event);
-        if (answer[answer.length - 1] == 0x77) {
-          var data = answer.sublist(4, answer.length - 3);
-          print(data);
-          Data.setBatchData(data, Data.BASIC_INFO);
+        if (answer[0] == 0xDD && answer[answer.length - 1] == 0x77) {
+          if (_verifyReadings(answer)) {
+            var data = answer.sublist(4, answer.length - 3);
+            readSuccessFully = Data.setBatchData(data, Data.BASIC_INFO);
+          }
           answer.clear();
         }
         if (updater != null) {
@@ -156,19 +142,100 @@ class Be {
     }
 
     try {
-      print("trying to read");
-      await read(writeCharacteristics, true);
+      //getting first basic info
+      await read(Data.BASIC_INFO_PAYLOAD);
+      int i = 0;
+      while (i < 10) {
+        if (readSuccessFully != null) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+        i++;
+      }
+      if (readSuccessFully == null) {
+        return {"error": "Timeout on reading"};
+      } else if (readSuccessFully!) {
+        readSuccessFully = null;
+        return {"error": null, "sub": subscription, "notify": notifySub};
+      }
+      readSuccessFully = null;
+      return {"error": "could not read device"};
     } catch (e) {
-      return {"error": " failed to read device"};
+      readSuccessFully = null;
+      return {"error": "failed to read device"};
     }
-    await Future.delayed(const Duration(seconds: 1));
+  }
 
-    return {
-      "error": null,
-      "sub": subscription,
-      "char": writeCharacteristics,
-      "notify": notifySub
-    };
+  static Future<void> getBasicInfo() async {
+    try {
+      await read(Data.BASIC_INFO_PAYLOAD);
+      int i = 0;
+      while (i < 10) {
+        if (readSuccessFully != null) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+        i++;
+      }
+      if (readSuccessFully == null) {
+        print("time out reading basic info");
+        return;
+      } else if (readSuccessFully!) {
+        readSuccessFully = null;
+      }
+      print("could not read basic info");
+    } catch (e) {
+      readSuccessFully = null;
+      print("failed to read basic info");
+    }
+  }
+
+  static Future<void> getCellInfo() async {
+    try {
+      await read(Data.CELL_INFO_PAYLOAD);
+      int i = 0;
+      while (i < 10) {
+        if (readSuccessFully != null) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+        i++;
+      }
+      if (readSuccessFully == null) {
+        print("timeout reading  Cells info");
+        return;
+      } else if (readSuccessFully!) {
+        readSuccessFully = null;
+      }
+      print("could not read Cells info");
+    } catch (e) {
+      readSuccessFully = null;
+      print("failed to cells info");
+    }
+  }
+
+  static Future<void> getStatsReport() async {
+    try {
+      await read(Data.STATS_PAYLOAD);
+      int i = 0;
+      while (i < 10) {
+        if (readSuccessFully != null) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+        i++;
+      }
+      if (readSuccessFully == null) {
+        print("timeout reading  Statistics");
+        return;
+      } else if (readSuccessFully!) {
+        readSuccessFully = null;
+      }
+      print("could not read Statistics");
+    } catch (e) {
+      readSuccessFully = null;
+      print("failed to Statistics");
+    }
   }
 
   static Future<void> disconnect(BluetoothDevice device,
@@ -197,26 +264,26 @@ class Be {
     return result;
   }
 
-  static read(writeCharacteristics, [wake = false]) async {
-    //write something to write and wait for read
-    // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-    List<int> payload = [0x03, 0x00];
+  static Future<void> read(List<int> payload) async {
+    Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+    print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      await writeCharacteristics.write(cmd, withoutResponse: true);
-      await Future.delayed(Duration(milliseconds: 700));
+      await writeCharacteristics!.write(cmd, withoutResponse: true);
+      await Future.delayed(const Duration(milliseconds: 300));
     }
+    _setWake(false);
   }
 
-  static write(writeCharacteristics, [wake = false]) async {
-    //write something to write and wait for read
-    // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-    List<int> payload = [0x03, 0x00];
+  static write(List<int> payload) async {
+    Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+    print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      writeCharacteristics.write(cmd, withoutResponse: true);
-      await Future.delayed(Duration(milliseconds: 700));
+      writeCharacteristics!.write(cmd, withoutResponse: true);
+      await Future.delayed(const Duration(milliseconds: 300));
     }
+    _setWake(false);
   }
 
   static bool _verifyReadings(List<int> rawData) {
@@ -251,12 +318,17 @@ class Be {
   static void setUpdater(void Function() setstate) {
     updater = setstate;
   }
+
+  static void _setWake(bool wakeValue) {
+    wake = wakeValue;
+  }
 }
 
 class Data {
   static const BASIC_INFO = 0x03;
   static const CELL_VOLTAGE = 0x04;
   static const DEVICE_NAME = 0x05;
+  static const STAT_INFO = 0xAA;
   static const int DESIGN_CAP = 0x10;
   static const int CYCLE_CAP = 0x11;
   static const int CAP_100 = 0x12;
@@ -308,12 +380,14 @@ class Data {
   static const int MFG_NAME = 0xA0;
   static const int DEVICE_NAME_FULL = 0xA1;
   static const int BARCODE = 0xA2;
-  static const int ERROR_CNTS = 0xAA;
   static const CLEAR_PASSWORD = 0x09;
   static const ENTER_FACTORY_MODE = 0x00;
   static const EXIT_FACTORY_MODE = 0x01;
 
   static final Map<String, List<int>> _data = {};
+  static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
+  static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
+  static const STATS_PAYLOAD = [STAT_INFO, 0x00];
 
   static String get pack_mv =>
       (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
@@ -411,8 +485,9 @@ class Data {
 
   static List<bool> get bal {
     List<bool> bal = [];
-    for (int i = 15; i >= 0; i--) {
-      bool bit = (((_data["bal"]![0] << 8) + _data["bal"]![1]) & (1 << i)) != 0;
+    int combined = ((_data["bal"]![0] << 8) + _data["bal"]![1]);
+    for (int i = 0; i < 16; i++) {
+      bool bit = (combined & (1 << i)) != 0;
       bal.add(bit);
     }
     return bal;
@@ -434,6 +509,31 @@ class Data {
     return temps;
   }
 
+  static List<double> get cell_mv {
+    return [
+      for (int i = 0; i < cell_cnt; i++)
+        (((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001)
+    ];
+  }
+
+  static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]!);
+  static int get chgoc_err_cnt => _getIntValue(_data["chgoc_err_cnt"]!);
+  static int get dsgoc_err_cnt => _getIntValue(_data["dsgoc_err_cnt"]!);
+  static int get covp_err_cnt => _getIntValue(_data["covp_err_cnt"]!);
+  static int get cuvp_err_cnt => _getIntValue(_data["cuvp_err_cnt"]!);
+  static int get chgot_err_cnt => _getIntValue(_data["chgot_err_cnt"]!);
+  static int get chgut_err_cnt => _getIntValue(_data["chgut_err_cnt"]!);
+  static int get dsgot_err_cnt => _getIntValue(_data["dsgot_err_cnt"]!);
+  static int get dsgut_err_cnt => _getIntValue(_data["dsgut_err_cnt"]!);
+  static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]!);
+  static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]!);
+  static int get unknown => 0;
+
+  static int _getIntValue(List<int> bytes) {
+    int value = (bytes[0] << 8) + bytes[1];
+    return value;
+  }
+
   static int get device_name_lenght => _data["device_name_lenght"]![0];
   static String get watts {
     int result =
@@ -450,24 +550,29 @@ class Data {
         .toString();
   }
 
-  static void setBatchData(List<int> batch, int register) {
+  static bool setBatchData(List<int> batch, int register) {
     switch (register) {
       case BASIC_INFO:
-        _data["pack_mv"] = batch.sublist(0, 2);
-        _data["pack_ma"] = batch.sublist(0x2, 0x4);
-        _data["cycle_cap"] = batch.sublist(0x4, 0x6);
-        _data["design_cap"] = batch.sublist(0x6, 0x8);
-        _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
-        _data["date"] = batch.sublist(0xA, 0xC);
-        _data["bal"] = batch.sublist(0xC, 0x10);
-        _data["curr_err"] = batch.sublist(0x10, 0x12);
-        _data["version"] = [batch[0x12]];
-        _data["cap_pct"] = [batch[0x13]];
-        _data["fet_status"] = [batch[0x14]];
-        _data["cell_cnt"] = [batch[0x15]];
-        _data["ntc_cnt"] = [batch[0x16]];
-        int afterNtc = 0x017 + ntc_cnt * 2;
-        _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
+        int afterNtc = 0;
+        try {
+          _data["pack_mv"] = batch.sublist(0, 2);
+          _data["pack_ma"] = batch.sublist(0x2, 0x4);
+          _data["cycle_cap"] = batch.sublist(0x4, 0x6);
+          _data["design_cap"] = batch.sublist(0x6, 0x8);
+          _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
+          _data["date"] = batch.sublist(0xA, 0xC);
+          _data["bal"] = batch.sublist(0xC, 0x10);
+          _data["curr_err"] = batch.sublist(0x10, 0x12);
+          _data["version"] = [batch[0x12]];
+          _data["cap_pct"] = [batch[0x13]];
+          _data["fet_status"] = [batch[0x14]];
+          _data["cell_cnt"] = [batch[0x15]];
+          _data["ntc_cnt"] = [batch[0x16]];
+          int afterNtc = 0x017 + ntc_cnt * 2;
+          _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
+        } catch (e) {
+          return false;
+        }
         try {
           _data["humidity"] = [batch[afterNtc]];
           _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
@@ -480,24 +585,51 @@ class Data {
           print(
               "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
         }
-        break;
-
+        return true;
       case CELL_VOLTAGE:
-        int j = 0;
-        for (int i = 0; i < cell_cnt; i++) {
-          _data["cell${i}_mv"] = batch.sublist(j, j + 2);
-          j += 2;
+        try {
+          int j = 0;
+          for (int i = 0; i < cell_cnt; i++) {
+            _data["cell${i}_mv"] = batch.sublist(j, j + 2);
+            j += 2;
+          }
+        } catch (e) {
+          return false;
         }
-        break;
+        return true;
 
-      case DEVICE_NAME:
-        _data["device_name_lenght"] = [batch[0x0]];
-        _data["device_name"] = batch.sublist(0x1, 0x1 + device_name_lenght);
-        break;
+      case STAT_INFO:
+        try {
+          List<String> keys = [
+            "sc_err_cnt",
+            "chgoc_err_cnt",
+            "dsgoc_err_cnt",
+            "covp_err_cnt",
+            "cuvp_err_cnt",
+            "chgot_err_cnt",
+            "chgut_err_cnt",
+            "dsgot_err_cnt",
+            "dsgut_err_cnt",
+            "povp_err_cnt",
+            "puvp_err_cnt"
+          ];
+
+          int startOffset = 0;
+          int endOffset = 2;
+
+          for (String key in keys) {
+            _data[key] = batch.sublist(startOffset, endOffset);
+            startOffset += 2;
+            endOffset += 2;
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
 
       default:
         print("unknown registery");
-        break;
+        return false;
     }
   }
 }

@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 import 'src.dart';
 
 class BatteryControl extends StatefulWidget {
-  BatteryControl({super.key, required this.height, required this.back});
+  BatteryControl(
+      {super.key,
+      required this.height,
+      required this.back,
+      required this.title});
   final Function() back;
+  final String title;
   double height;
   @override
   State<StatefulWidget> createState() => _BatteryControlState();
@@ -18,7 +23,7 @@ class _BatteryControlState extends State<BatteryControl> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         margin: const EdgeInsets.only(top: 40, left: 15, right: 15, bottom: 10),
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         height: 180 - widget.height,
         child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
@@ -35,7 +40,7 @@ class _BatteryControlState extends State<BatteryControl> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Left(back: widget.back),
-                                  Middle(),
+                                  Middle(title: widget.title),
                                   Right()
                                 ]),
                             Text("5H 30M To Empty",
@@ -90,16 +95,13 @@ class _RightState extends State<Right> {
 }
 
 class Middle extends StatefulWidget {
-  Middle({
-    super.key,
-  });
+  Middle({super.key, required this.title});
+  final String title;
   @override
   State<StatefulWidget> createState() => _MiddleState();
 }
 
 class _MiddleState extends State<Middle> {
-  String battery_name = "48V 320Ah - 245";
-
   @override
   void initState() {
     // TODO: implement initState
@@ -113,7 +115,7 @@ class _MiddleState extends State<Middle> {
     return Container(
       padding: EdgeInsets.only(top: 10, right: 10, left: 10),
       child: Column(children: [
-        Text(battery_name,
+        Text(widget.title,
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   convert: ^3.1.1
   intl: ^0.19.0
+  flutter_native_splash: ^2.3.11
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -47,10 +49,19 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/logo.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_native_splash:
+  color: "#000000"
+  image: assets/logo.png
 # The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is

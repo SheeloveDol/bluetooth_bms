@@ -72,14 +72,25 @@ class _DashBoardState extends State<DashBoard> {
                       padding: EdgeInsets.only(top: 230 - height),
                       physics: const BouncingScrollPhysics(),
                       controller: controller,
-                      children: const <Widget>[
-                        BatteryState(),
-                        CellsState(),
+                      children: <Widget>[
+                        const BatteryState(),
+                        FutureBuilder(
+                          future: Be.getCellInfo(),
+                          builder: (context, snapshot) {
+                            return CellsState();
+                          },
+                        ),
                         Temperatures(),
-                        Reports()
+                        FutureBuilder(
+                            future: Be.getStatsReport(),
+                            builder: (context, snapshot) {
+                              return Reports();
+                            })
                       ]),
                   BatteryControl(
-                      height: height, back: () => onDisconnect(context))
+                      title: widget.title,
+                      height: height,
+                      back: () => onDisconnect(context))
                 ]))));
   }
 }
