@@ -127,10 +127,8 @@ class Be {
         answer.addAll(event);
         print(event);
         if (answer[0] == 0xDD && answer[answer.length - 1] == 0x77) {
-          if (_verifyReadings(answer)) {
-            var data = answer.sublist(4, answer.length - 3);
-            readSuccessFully = Data.setBatchData(data, Data.BASIC_INFO);
-          }
+          var data = answer.sublist(4, answer.length - 3);
+          readSuccessFully = Data.setBatchData(data, answer[1]);
           answer.clear();
         }
         if (updater != null) {
