@@ -2,6 +2,7 @@ import 'package:bluetooth_bms/Devices.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
@@ -79,18 +80,19 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.bottom]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF002A4D),
+      systemNavigationBarColor: Colors.transparent, // Navigation bar color
+    ));
     return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
             bottom: false,
             child: Stack(children: [
               //black bg
-              Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFF002A4D), Colors.black]))),
+              Container(color: const Color(0xFF002A4D)),
               //app title
               const Positioned(
                   top: 15,
@@ -119,6 +121,7 @@ class _ScanPageState extends State<ScanPage> {
                       decoration: const BoxDecoration(
                           gradient: LinearGradient(
                               begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
                               colors: [Color(0xAE121315), Colors.black]),
                           borderRadius:
                               BorderRadius.only(topLeft: Radius.circular(45))),

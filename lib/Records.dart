@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'src.dart';
@@ -63,8 +61,9 @@ class _ReportsState extends State<Reports> {
   Column second() {
     List<Widget> data = [];
     data.addAll([
-      const Text("Device Name: Mini48V320Ah-245",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      Text("Device Name: ${Data.device_name}",
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(bottom: 10)),
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         const Text("Short Circuit Times :",
@@ -140,46 +139,39 @@ class _ReportsState extends State<Reports> {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: ClipRect(
-            child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Stack(children: [
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: AnimatedContainer(
-                          duration: const Duration(microseconds: 700),
-                          height: 200,
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                              color:
-                                  (bg) ? Colors.black : const Color(0x565B5B5B),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: PageView(
-                              controller: controller,
-                              children: [first(), second(), third()]))),
-                  Positioned(
-                      top: 10,
-                      right: 20,
-                      child: CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            if (controller.page == 2) {
-                              controller.animateTo(0,
-                                  curve: Easing.standard,
-                                  duration: Durations.short1);
-                            } else {
-                              controller.nextPage(
-                                  duration: Durations.short1,
-                                  curve: Easing.standard);
-                            }
-                          },
-                          child: const Row(children: [
-                            Text("Next",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 11)),
-                            Icon(Icons.arrow_forward_ios,
-                                size: 20, color: Colors.white)
-                          ])))
-                ]))));
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
+        child: Stack(children: [
+          Align(
+              alignment: Alignment.topLeft,
+              child: AnimatedContainer(
+                  duration: const Duration(seconds: 1),
+                  height: 200,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: (bg) ? Colors.black : const Color(0x565B5B5B),
+                      borderRadius: BorderRadius.circular(30)),
+                  child: PageView(
+                      controller: controller,
+                      children: [first(), second(), third()]))),
+          Positioned(
+              top: 10,
+              right: 20,
+              child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    if (controller.page == 2) {
+                      controller.animateTo(0,
+                          curve: Easing.standard, duration: Durations.short1);
+                    } else {
+                      controller.nextPage(
+                          duration: Durations.short1, curve: Easing.standard);
+                    }
+                  },
+                  child: const Row(children: [
+                    Text("Next",
+                        style: TextStyle(color: Colors.white, fontSize: 11)),
+                    Icon(Icons.arrow_forward_ios, size: 20, color: Colors.white)
+                  ])))
+        ]));
   }
 }

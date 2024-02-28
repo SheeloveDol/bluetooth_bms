@@ -552,7 +552,6 @@ class Data {
   static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]);
   static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
   static int get unknown => 0;
-
   static int _getIntValue(List<int>? bytes) {
     if (!availableData) {
       return 0;
@@ -563,6 +562,8 @@ class Data {
 
   static int get device_name_lenght =>
       (!availableData) ? 0 : _data["device_name_lenght"]![0];
+  static String get device_name =>
+      (!availableData) ? "" : String.fromCharCodes(_data["device_name"]!);
   static String get watts {
     if (!availableData) {
       return "0.0";
@@ -579,6 +580,41 @@ class Data {
             0.01)
         .round()
         .toString();
+  }
+
+  static String get timeLeft {
+    if (!availableData) {
+      return "0 Minutes left";
+    }
+    var timeHours =
+        ((_data["pack_ma"]![1] & 0xFF) | (_data["pack_ma"]![0] << 8) & 0xFF00) /
+            ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
+    double timeMinutes = timeHours * 60.0;
+    return "$timeMinutes minutes left";
+  }
+
+  static double get celldif {
+    if (!availableData) {
+      return 0;
+    }
+    var current = cell_mv[0];
+    for (var i = 0; i < cell_cnt; i++) {
+      if (current > cell_mv[i]) {
+        current = cell_mv[i];
+      }
+    }
+
+    var smallest = current;
+    print(smallest);
+    current = cell_mv[0];
+    for (var i = 0; i < cell_cnt; i++) {
+      if (current < cell_mv[i]) {
+        current = cell_mv[i];
+      }
+    }
+    var biggest = current;
+    print(biggest);
+    return biggest - smallest;
   }
 
   static bool setBatchData(List<int> batch, int register) {
@@ -628,7 +664,6 @@ class Data {
           return false;
         }
         return true;
-
       case STAT_INFO:
         try {
           List<String> keys = [
@@ -653,6 +688,14 @@ class Data {
             startOffset += 2;
             endOffset += 2;
           }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      case DEVICE_NAME:
+        try {
+          _data["device_name_lenght"] = [batch[0]];
+          _data["device_name"] = batch.sublist(0x1, device_name_lenght);
           return true;
         } catch (e) {
           return false;

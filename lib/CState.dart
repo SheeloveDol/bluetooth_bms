@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'src.dart';
 
@@ -10,7 +8,7 @@ class CellsState extends StatefulWidget {
 }
 
 class _CellsStateState extends State<CellsState> {
-  double celldiff = 0.2;
+  double celldiff = Data.celldif;
   @override
   void initState() {
     // TODO: implement initState
@@ -62,46 +60,36 @@ class _CellsStateState extends State<CellsState> {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: ClipRect(
-            child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        color: Color(0x565B5B5B),
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Wrap(children: [
-                            for (int i = 0; i < Data.cell_cnt; i++)
-                              cell("cell${i + 1}", i)
-                          ]),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(children: [
-                                  Text("Cell Difference:$celldiff",
-                                      style: const TextStyle(
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.bold)),
-                                  const Text("Ballance inactive",
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold))
-                                ]),
-                                const Column(children: [
-                                  Text("High cell group",
-                                      style: TextStyle(
-                                          color: Color(0xFFCA5100),
-                                          fontWeight: FontWeight.bold)),
-                                  Text("Low cell group",
-                                      style: TextStyle(
-                                          color: Colors.yellow,
-                                          fontWeight: FontWeight.bold))
-                                ])
-                              ])
-                        ])))));
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: const Color(0x565B5B5B),
+            borderRadius: BorderRadius.circular(30)),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Wrap(children: [
+                for (int i = 0; i < Data.cell_cnt; i++) cell("cell${i + 1}", i)
+              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                Column(children: [
+                  Text("Cell Difference:${celldiff.toStringAsFixed(1)}",
+                      style: const TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold)),
+                  const Text("Ballance inactive",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold))
+                ]),
+                const Column(children: [
+                  Text("High cell group",
+                      style: TextStyle(
+                          color: Color(0xFFCA5100),
+                          fontWeight: FontWeight.bold)),
+                  Text("Low cell group",
+                      style: TextStyle(
+                          color: Colors.yellow, fontWeight: FontWeight.bold))
+                ])
+              ])
+            ]));
   }
 }

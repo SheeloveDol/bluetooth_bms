@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'src.dart';
@@ -14,42 +12,35 @@ class _BatteryStateState extends State<BatteryState> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: ClipRect(
-            child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      color: const Color(0x565B5B5B),
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "State",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              ActiveStates()
-                            ]),
-                        CupertinoButton(
+        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 5),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: const Color(0x565B5B5B),
+            borderRadius: BorderRadius.circular(30)),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "State",
+                      style: TextStyle(
                           color: Colors.white,
-                          padding: const EdgeInsets.all(3),
-                          onPressed: () {},
-                          child: const Text("Reset",
-                              style:
-                                  TextStyle(fontSize: 11, color: Colors.black)),
-                        )
-                      ]),
-                ))));
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    ActiveStates()
+                  ]),
+              CupertinoButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(3),
+                  onPressed: () {},
+                  child: const Text("Reset",
+                      style: TextStyle(fontSize: 11, color: Colors.black)))
+            ]));
   }
 }
 

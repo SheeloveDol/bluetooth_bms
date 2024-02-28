@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bluetooth_bms/BState.dart';
 import 'package:bluetooth_bms/CState.dart';
 import 'package:bluetooth_bms/Control.dart';
@@ -33,10 +31,14 @@ class _DashBoardState extends State<DashBoard> {
   late Map<String, dynamic> configMap;
   onDisconnect() {
     Navigator.pop(context);
-    Be.disconnect(widget.device, configMap["sub"], configMap["notify"])
-        .then((value) {
-      quicktell(context, "Disconnected from ${widget.title}");
-    });
+    try {
+      Be.disconnect(widget.device, configMap["sub"], configMap["notify"])
+          .then((value) {
+        quicktell(context, "Disconnected from ${widget.title}");
+      });
+    } catch (e) {
+      print("object");
+    }
   }
 
   @override
@@ -91,14 +93,14 @@ class _DashBoardState extends State<DashBoard> {
                         FutureBuilder<bool>(
                           future: cellInfo,
                           builder: (context, snapshot) {
-                            return CellsState();
+                            return const CellsState();
                           },
                         ),
-                        Temperatures(),
+                        const Temperatures(),
                         FutureBuilder<bool>(
                             future: statsreports,
                             builder: (context, snapshot) {
-                              return Reports();
+                              return const Reports();
                             })
                       ]),
                   BatteryControl(
