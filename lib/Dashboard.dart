@@ -59,12 +59,13 @@ class _DashBoardState extends State<DashBoard> {
     });
     Be.setUpdater(() => setState(() {}));
     super.initState();
-    Be.connect(widget.device).then((map) {
+    Be.connect(widget.device).then((map) async {
       configMap = map;
       if (map["error"] == null) {
-        Data.setAvailableData(true);
-        cellInfo = Be.getCellInfo();
-        statsreports = Be.getStatsReport();
+        cellInfo = await Be.getCellInfo();
+        statsreports = await Be.getStatsReport();
+
+        Data.setAvailableData(cellInfo && statsreports == true);
         setState(() {});
       } else {
         quicktell(
