@@ -62,6 +62,9 @@ class Right extends StatefulWidget {
 class _RightState extends State<Right> {
   @override
   Widget build(BuildContext context) {
+    var ma =
+        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma} ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,9 +75,7 @@ class _RightState extends State<Right> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
               bolts(),
-              Text(
-                  "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma} ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
-                  style: TextStyle(fontSize: 11, color: Colors.white)),
+              Text(ma, style: TextStyle(fontSize: 11, color: Colors.white)),
               Text(
                   "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
                   style: TextStyle(fontSize: 11, color: Colors.white))
@@ -117,7 +118,7 @@ class _MiddleState extends State<Middle> {
       child: Column(children: [
         Text(widget.title,
             style: TextStyle(
-                fontSize: 15,
+                fontSize: (widget.title.length > 20) ? 10 : 15,
                 fontWeight: FontWeight.bold,
                 color: Colors.white)),
         Padding(padding: EdgeInsets.only(bottom: 10)),

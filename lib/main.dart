@@ -1,9 +1,4 @@
-import 'package:bluetooth_bms/BState.dart';
-import 'package:bluetooth_bms/CState.dart';
-import 'package:bluetooth_bms/Control.dart';
 import 'package:bluetooth_bms/Devices.dart';
-import 'package:bluetooth_bms/Records.dart';
-import 'package:bluetooth_bms/TempData.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +6,14 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class DeviceElement {
+  final String title;
+  final BluetoothDevice device;
+  final GlobalKey<State<StatefulWidget>> contextkey;
+
+  const DeviceElement(this.title, this.device, this.contextkey);
 }
 
 class MyApp extends StatelessWidget {
@@ -39,9 +42,9 @@ class _ScanPageState extends State<ScanPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool disabled = false;
-
-  List<Widget> devices = [];
-  List<Widget> namelessDevices = [];
+  bool visible = false;
+  List<DeviceElement> devices = [];
+  List<DeviceElement> namelessDevices = [];
 
   onScan() async {
     setState(() => disabled = true);
@@ -49,26 +52,23 @@ class _ScanPageState extends State<ScanPage> {
     if (!await Be.init()) {
       return;
     }
-    await Be.scan(onFound);
-    devices.add(CupertinoButton(
-        child: const Text("Show more"),
-        onPressed: () {
-          devices.removeLast();
-          devices = [...devices, ...namelessDevices];
-          setState(() {});
-        }));
-    setState(() => disabled = false);
+    setState(() => visible = false);
+    Be.scan(onFound);
+    await Future.delayed(const Duration(seconds: 5)).then((value) {
+      setState(() {
+        visible = true;
+        disabled = false;
+      });
+    });
   }
 
   void onFound(String name, BluetoothDevice device) {
     if (device.advName.length > 1) {
-      devices.insert(0,
-          Device(title: name, device: device, scafoldContextKey: _scaffoldKey));
+      devices.insert(0, DeviceElement(name, device, _scaffoldKey));
+      setState(() {});
     } else {
-      namelessDevices.add(
-          Device(title: name, device: device, scafoldContextKey: _scaffoldKey));
+      namelessDevices.add(DeviceElement(name, device, _scaffoldKey));
     }
-    setState(() {});
   }
 
   @override
@@ -138,7 +138,24 @@ class _ScanPageState extends State<ScanPage> {
                                 height: 560,
                                 child: ListView(
                                   key: UniqueKey(),
-                                  children: devices,
+                                  children: [
+                                    for (var d in devices)
+                                      Device(
+                                          title: d.title,
+                                          device: d.device,
+                                          scafoldContextKey: d.contextkey),
+                                    if (visible)
+                                      CupertinoButton(
+                                          child: const Text("Show more"),
+                                          onPressed: () {
+                                            devices = [
+                                              ...devices,
+                                              ...namelessDevices
+                                            ];
+                                            visible = false;
+                                            setState(() {});
+                                          })
+                                  ],
                                 ))
                           ]))),
               Positioned(

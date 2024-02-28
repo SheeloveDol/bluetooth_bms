@@ -13,13 +13,12 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'src.dart';
 
 class DashBoard extends StatefulWidget {
-  const DashBoard(
-      {super.key,
-      required this.title,
-      required this.device,
-      required this.configMap});
+  const DashBoard({
+    super.key,
+    required this.title,
+    required this.device,
+  });
   final String title;
-  final Map<String, dynamic> configMap;
   final BluetoothDevice device;
 
   @override
@@ -31,11 +30,12 @@ class _DashBoardState extends State<DashBoard> {
   dynamic cellInfo;
   dynamic statsreports;
   double height = 0;
-
-  onDisconnect(BuildContext context) {
-    Be.disconnect(widget.device, widget.configMap["sub"]).then((value) {
+  late Map<String, dynamic> configMap;
+  onDisconnect() {
+    Navigator.pop(context);
+    Be.disconnect(widget.device, configMap["sub"], configMap["notify"])
+        .then((value) {
       quicktell(context, "Disconnected from ${widget.title}");
-      Navigator.pop(context);
     });
   }
 
@@ -57,8 +57,18 @@ class _DashBoardState extends State<DashBoard> {
     });
     Be.setUpdater(() => setState(() {}));
     super.initState();
-    cellInfo = Be.getCellInfo();
-    statsreports = Be.getStatsReport();
+    Be.connect(widget.device).then((map) {
+      configMap = map;
+      if (map["error"] == null) {
+        Data.setAvailableData(true);
+        cellInfo = Be.getCellInfo();
+        statsreports = Be.getStatsReport();
+        setState(() {});
+      } else {
+        quicktell(
+            context, "Could not connect to ${widget.title} ${map["error"]}");
+      }
+    });
   }
 
   @override
@@ -94,7 +104,7 @@ class _DashBoardState extends State<DashBoard> {
                   BatteryControl(
                       title: widget.title,
                       height: height,
-                      back: () => onDisconnect(context))
+                      back: () => onDisconnect())
                 ]))));
   }
 }

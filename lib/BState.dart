@@ -19,15 +19,15 @@ class _BatteryStateState extends State<BatteryState> {
             child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                      color: Color(0x565B5B5B),
+                      color: const Color(0x565B5B5B),
                       borderRadius: BorderRadius.circular(30)),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        const Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -42,9 +42,9 @@ class _BatteryStateState extends State<BatteryState> {
                             ]),
                         CupertinoButton(
                           color: Colors.white,
-                          padding: EdgeInsets.all(3),
+                          padding: const EdgeInsets.all(3),
                           onPressed: () {},
-                          child: Text("Reset",
+                          child: const Text("Reset",
                               style:
                                   TextStyle(fontSize: 11, color: Colors.black)),
                         )
@@ -75,7 +75,7 @@ class _ActiveStatesState extends State<ActiveStates> {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text("$title",
           style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-      Padding(padding: EdgeInsets.only(left: 5)),
+      const Padding(padding: EdgeInsets.only(left: 5)),
       Text(
         description,
         style: const TextStyle(fontSize: 12, color: Colors.white),

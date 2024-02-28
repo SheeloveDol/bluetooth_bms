@@ -26,26 +26,22 @@ class _DeviceState extends State<Device> {
 
   onConnect(BuildContext context) async {
     connecting = true;
+    await Be.stopScan();
     setState(() {});
-    var map = await Be.connect(widget.device);
-    if (map["error"] == null) {
-      connecting = false;
-      if (mounted) {
-        setState(() {});
-      }
+
+    Future.delayed(const Duration(milliseconds: 600)).then((value) {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => DashBoard(
-                  device: widget.device, title: widget.title, configMap: map)));
-    } else {
-      connecting = false;
-      if (mounted) {
-        setState(() {});
-      }
-      quicktell(widget.scafoldContextKey.currentContext!,
-          "Could not connect to ${widget.title} ${map["error"]}");
-    }
+              builder: (context) =>
+                  DashBoard(device: widget.device, title: widget.title)));
+    });
+  }
+
+  @override
+  void initState() {
+    connecting = false;
+    super.initState();
   }
 
   @override

@@ -77,11 +77,13 @@ class Be {
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
-  static Future<Map<String, dynamic>> connect(BluetoothDevice device) async {
+  static stopScan() async {
     if (FlutterBluePlus.isScanningNow) {
       await FlutterBluePlus.stopScan();
     }
+  }
 
+  static Future<Map<String, dynamic>> connect(BluetoothDevice device) async {
     var subscription =
         device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
@@ -125,8 +127,7 @@ class Be {
       await readCharacteristics!.setNotifyValue(true);
       notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
-        print(event);
-        if (answer[0] == 0xDD && answer[answer.length - 1] == 0x77) {
+        if (_verifyReadings(answer)) {
           var data = answer.sublist(4, answer.length - 3);
           readSuccessFully = Data.setBatchData(data, answer[1]);
           answer.clear();
@@ -142,14 +143,7 @@ class Be {
     try {
       //getting first basic info
       await read(Data.BASIC_INFO_PAYLOAD);
-      int i = 0;
-      while (i < 10) {
-        if (readSuccessFully != null) {
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        i++;
-      }
+
       if (readSuccessFully == null) {
         return {"error": "Timeout on reading"};
       } else if (readSuccessFully!) {
@@ -167,84 +161,71 @@ class Be {
   static Future<bool> getBasicInfo() async {
     try {
       await read(Data.BASIC_INFO_PAYLOAD);
-      int i = 0;
-      while (i < 10) {
-        if (readSuccessFully != null) {
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        i++;
-      }
+
       if (readSuccessFully == null) {
         print("time out reading basic info");
         return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
+        return true;
       }
       print("could not read basic info");
+      return false;
     } catch (e) {
       readSuccessFully = null;
       print("failed to read basic info");
     }
-    return true;
+    return false;
   }
 
   static Future<bool> getCellInfo() async {
     try {
       await read(Data.CELL_INFO_PAYLOAD);
-      int i = 0;
-      while (i < 10) {
-        if (readSuccessFully != null) {
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        i++;
-      }
+
       if (readSuccessFully == null) {
         print("timeout reading  Cells info");
         return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
+        return true;
       }
       print("could not read Cells info");
+      return false;
     } catch (e) {
       readSuccessFully = null;
-      print("failed to cells info");
+      print("failed to read cells info");
     }
-    return true;
+    return false;
   }
 
   static Future<bool> getStatsReport() async {
     try {
       await read(Data.STATS_PAYLOAD);
-      int i = 0;
-      while (i < 10) {
-        if (readSuccessFully != null) {
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        i++;
-      }
+
       if (readSuccessFully == null) {
         print("timeout reading  Statistics");
         return false;
       } else if (readSuccessFully!) {
         readSuccessFully = null;
+        return true;
       }
       print("could not read Statistics");
+      return false;
     } catch (e) {
       readSuccessFully = null;
-      print("failed to Statistics");
+      print("failed to read Statistics");
     }
-    return true;
+    return false;
   }
 
-  static Future<void> disconnect(BluetoothDevice device,
-      StreamSubscription<BluetoothConnectionState> sub) async {
+  static Future<void> disconnect(
+      BluetoothDevice device,
+      StreamSubscription<BluetoothConnectionState> sub,
+      StreamSubscription<List<int>> notif) async {
     // Disconnect from device
     await device.disconnect();
-    // cancel to prevent duplicate listeners
-    sub.cancel();
+    await sub.cancel();
+    await notif.cancel();
   }
 
   static List<int> checksumtoRead(List<int> payload) {
@@ -274,6 +255,14 @@ class Be {
       await Future.delayed(const Duration(milliseconds: 300));
     }
     _setWake(false);
+    int i = 0;
+    while (i < 10) {
+      if (readSuccessFully != null) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      i++;
+    }
   }
 
   static write(List<int> payload) async {
@@ -283,6 +272,14 @@ class Be {
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       writeCharacteristics!.write(cmd, withoutResponse: true);
       await Future.delayed(const Duration(milliseconds: 300));
+    }
+    int i = 0;
+    while (i < 10) {
+      if (readSuccessFully != null) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      i++;
     }
     _setWake(false);
   }
@@ -304,13 +301,14 @@ class Be {
       return false;
     }
 
-    var payload = rawData.sublist(3, rawData.length - 4);
+    var payload = rawData.sublist(3, rawData.length - 3);
     if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
         rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
       print("corupted data ${[
         ...checksumtoRead(payload),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)}");
+      answer.clear();
       return false;
     }
     return true;
@@ -390,11 +388,16 @@ class Data {
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
 
-  static String get pack_mv =>
-      (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
+  static bool availableData = false;
+  static bool get isBLEConnected => availableData;
+  static String get pack_mv => (!availableData)
+      ? "0.0"
+      : (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
           .toStringAsFixed(2);
   static String get pack_ma {
-    // Combine the bytes to form a 16-bit integer
+    if (!availableData) {
+      return "0.0";
+    }
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
     // Check the sign bit (MSB)
@@ -404,20 +407,28 @@ class Data {
     return (result * 0.01).toStringAsFixed(2);
   }
 
-  static String get cycle_cap =>
-      (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
+  static String get cycle_cap => (!availableData)
+      ? "0.0"
+      : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
-  static String get design_cap =>
-      (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
+  static String get design_cap => (!availableData)
+      ? "0.0"
+      : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
-  static String get cycle_cnt =>
-      (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
-  static List<bool> get fet_status => [
-        (_data["fet_status"]![0] & 0x0) != 0,
-        (_data["fet_status"]![0] & 0x1) != 0
-      ];
+  static String get cycle_cnt => (!availableData)
+      ? "0"
+      : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
+  static List<bool> get fet_status => (!availableData)
+      ? [false, false]
+      : [
+          (_data["fet_status"]![0] & 0x0) != 0,
+          (_data["fet_status"]![0] & 0x1) != 0
+        ];
   static List<String> get curr_err {
     List<String> err = [];
+    if (!availableData) {
+      return [];
+    }
     for (int i = 15; i >= 0; i--) {
       bool bit =
           (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) !=
@@ -473,6 +484,9 @@ class Data {
   }
 
   static String get date {
+    if (!availableData) {
+      return "";
+    }
     var dateData = ((_data["date"]![0] << 8) + _data["date"]![1]);
     // Extract year, month, and day components using bitwise operations and bit masking
     int year = (dateData >> 9) & 0x7F;
@@ -485,6 +499,9 @@ class Data {
   }
 
   static List<bool> get bal {
+    if (!availableData) {
+      return [];
+    }
     List<bool> bal = [];
     int combined = ((_data["bal"]![0] << 8) + _data["bal"]![1]);
     for (int i = 0; i < 16; i++) {
@@ -494,10 +511,13 @@ class Data {
     return bal;
   }
 
-  static int get cap_pct => _data["cap_pct"]![0];
-  static int get cell_cnt => _data["cell_cnt"]![0];
-  static int get ntc_cnt => _data["ntc_cnt"]![0];
+  static int get cap_pct => (!availableData) ? 0 : _data["cap_pct"]![0];
+  static int get cell_cnt => (!availableData) ? 0 : _data["cell_cnt"]![0];
+  static int get ntc_cnt => (!availableData) ? 0 : _data["ntc_cnt"]![0];
   static List<String> get ntc_temp {
+    if (!availableData) {
+      return [];
+    }
     List<String> temps = [];
     int j = 0;
     for (var i = 0; i < ntc_cnt; i++) {
@@ -511,32 +531,42 @@ class Data {
   }
 
   static List<double> get cell_mv {
+    if (!availableData) {
+      return [];
+    }
     return [
       for (int i = 0; i < cell_cnt; i++)
         (((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001)
     ];
   }
 
-  static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]!);
-  static int get chgoc_err_cnt => _getIntValue(_data["chgoc_err_cnt"]!);
-  static int get dsgoc_err_cnt => _getIntValue(_data["dsgoc_err_cnt"]!);
-  static int get covp_err_cnt => _getIntValue(_data["covp_err_cnt"]!);
-  static int get cuvp_err_cnt => _getIntValue(_data["cuvp_err_cnt"]!);
-  static int get chgot_err_cnt => _getIntValue(_data["chgot_err_cnt"]!);
-  static int get chgut_err_cnt => _getIntValue(_data["chgut_err_cnt"]!);
-  static int get dsgot_err_cnt => _getIntValue(_data["dsgot_err_cnt"]!);
-  static int get dsgut_err_cnt => _getIntValue(_data["dsgut_err_cnt"]!);
-  static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]!);
-  static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]!);
+  static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]);
+  static int get chgoc_err_cnt => _getIntValue(_data["chgoc_err_cnt"]);
+  static int get dsgoc_err_cnt => _getIntValue(_data["dsgoc_err_cnt"]);
+  static int get covp_err_cnt => _getIntValue(_data["covp_err_cnt"]);
+  static int get cuvp_err_cnt => _getIntValue(_data["cuvp_err_cnt"]);
+  static int get chgot_err_cnt => _getIntValue(_data["chgot_err_cnt"]);
+  static int get chgut_err_cnt => _getIntValue(_data["chgut_err_cnt"]);
+  static int get dsgot_err_cnt => _getIntValue(_data["dsgot_err_cnt"]);
+  static int get dsgut_err_cnt => _getIntValue(_data["dsgut_err_cnt"]);
+  static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]);
+  static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
   static int get unknown => 0;
 
-  static int _getIntValue(List<int> bytes) {
-    int value = (bytes[0] << 8) + bytes[1];
+  static int _getIntValue(List<int>? bytes) {
+    if (!availableData) {
+      return 0;
+    }
+    int value = (bytes![0] << 8) + bytes![1];
     return value;
   }
 
-  static int get device_name_lenght => _data["device_name_lenght"]![0];
+  static int get device_name_lenght =>
+      (!availableData) ? 0 : _data["device_name_lenght"]![0];
   static String get watts {
+    if (!availableData) {
+      return "0.0";
+    }
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
 
@@ -632,5 +662,9 @@ class Data {
         print("unknown registery");
         return false;
     }
+  }
+
+  static setAvailableData(bool isBLEConnected) {
+    availableData = isBLEConnected;
   }
 }
