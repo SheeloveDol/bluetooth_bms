@@ -586,95 +586,98 @@ class Data {
   }
 
   static bool setBatchData(List<int> batch, int register) {
-    switch (register) {
-      case BASIC_INFO:
-        int afterNtc = 0;
-        try {
-          _data["pack_mv"] = batch.sublist(0, 2);
-          _data["pack_ma"] = batch.sublist(0x2, 0x4);
-          _data["cycle_cap"] = batch.sublist(0x4, 0x6);
-          _data["design_cap"] = batch.sublist(0x6, 0x8);
-          _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
-          _data["date"] = batch.sublist(0xA, 0xC);
-          _data["bal"] = batch.sublist(0xC, 0x10);
-          _data["curr_err"] = batch.sublist(0x10, 0x12);
-          _data["version"] = [batch[0x12]];
-          _data["cap_pct"] = [batch[0x13]];
-          _data["fet_status"] = [batch[0x14]];
-          _data["cell_cnt"] = [batch[0x15]];
-          _data["ntc_cnt"] = [batch[0x16]];
-          int afterNtc = 0x017 + ntc_cnt * 2;
-          _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
-        } catch (e) {
-          print(e.toString());
-          return false;
-        }
-        try {
-          _data["humidity"] = [batch[afterNtc]];
-          _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
-          _data["full_charge_capacity"] =
-              batch.sublist(afterNtc + 1, afterNtc + 3);
-          _data["remaining_capacity"] =
-              batch.sublist(afterNtc + 3, afterNtc + 5);
-          _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
-        } catch (e) {
-          print(e.toString());
-          print(
-              "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
-        }
-        return true;
-      case CELL_VOLTAGE:
-        int j = 0;
-        for (int i = 0; i < cell_cnt; i++) {
-          var key = "cell${i}_mv";
-          print(key);
-          _data[key] = batch.sublist(j, j + 2);
-          j += 2;
-        }
-        return true;
-      case STAT_INFO:
-        try {
-          List<String> keys = [
-            "sc_err_cnt",
-            "chgoc_err_cnt",
-            "dsgoc_err_cnt",
-            "covp_err_cnt",
-            "cuvp_err_cnt",
-            "chgot_err_cnt",
-            "chgut_err_cnt",
-            "dsgot_err_cnt",
-            "dsgut_err_cnt",
-            "povp_err_cnt",
-            "puvp_err_cnt"
-          ];
-
-          int startOffset = 0;
-          int endOffset = 2;
-
-          for (String key in keys) {
-            _data[key] = batch.sublist(startOffset, endOffset);
-            startOffset += 2;
-            endOffset += 2;
-          }
-        } catch (e) {
-          print(e.toString());
-          return false;
-        }
-        return true;
-      case DEVICE_NAME:
-        try {
-          _data["device_name_lenght"] = [batch[0]];
-          _data["device_name"] = batch.sublist(0x1, device_name_lenght);
-          return true;
-        } catch (e) {
-          print(e.toString());
-          return false;
-        }
-
-      default:
-        print("unknown registery");
+    if (register == BASIC_INFO) {
+      int afterNtc = 0;
+      try {
+        _data["pack_mv"] = batch.sublist(0, 2);
+        _data["pack_ma"] = batch.sublist(0x2, 0x4);
+        _data["cycle_cap"] = batch.sublist(0x4, 0x6);
+        _data["design_cap"] = batch.sublist(0x6, 0x8);
+        _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
+        _data["date"] = batch.sublist(0xA, 0xC);
+        _data["bal"] = batch.sublist(0xC, 0x10);
+        _data["curr_err"] = batch.sublist(0x10, 0x12);
+        _data["version"] = [batch[0x12]];
+        _data["cap_pct"] = [batch[0x13]];
+        _data["fet_status"] = [batch[0x14]];
+        _data["cell_cnt"] = [batch[0x15]];
+        _data["ntc_cnt"] = [batch[0x16]];
+        int afterNtc = 0x017 + ntc_cnt * 2;
+        _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
+      } catch (e) {
+        print(e.toString());
         return false;
+      }
+      try {
+        _data["humidity"] = [batch[afterNtc]];
+        _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
+        _data["full_charge_capacity"] =
+            batch.sublist(afterNtc + 1, afterNtc + 3);
+        _data["remaining_capacity"] = batch.sublist(afterNtc + 3, afterNtc + 5);
+        _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
+      } catch (e) {
+        print(e.toString());
+        print(
+            "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
+      }
+      return true;
     }
+
+    if (register == CELL_VOLTAGE) {
+      int j = 0;
+      for (int i = 0; i < cell_cnt; i++) {
+        var key = "cell${i}_mv";
+        print(key);
+        _data[key] = batch.sublist(j, j + 2);
+        j += 2;
+      }
+      return true;
+    }
+
+    if (register == STAT_INFO) {
+      try {
+        List<String> keys = [
+          "sc_err_cnt",
+          "chgoc_err_cnt",
+          "dsgoc_err_cnt",
+          "covp_err_cnt",
+          "cuvp_err_cnt",
+          "chgot_err_cnt",
+          "chgut_err_cnt",
+          "dsgot_err_cnt",
+          "dsgut_err_cnt",
+          "povp_err_cnt",
+          "puvp_err_cnt"
+        ];
+
+        int startOffset = 0;
+        int endOffset = 2;
+
+        for (String key in keys) {
+          _data[key] = batch.sublist(startOffset, endOffset);
+          startOffset += 2;
+          endOffset += 2;
+        }
+      } catch (e) {
+        print(e.toString());
+        return false;
+      }
+      return true;
+    }
+
+    if (register == DEVICE_NAME) {
+      try {
+        _data["device_name_lenght"] = [batch[0]];
+        _data["device_name"] = batch.sublist(0x1, device_name_lenght);
+        return true;
+      } catch (e) {
+        print(e.toString());
+        return false;
+      }
+    }
+
+    print("unknown registery");
+    return false;
   }
 
   static setAvailableData(bool isBLEConnected) {
