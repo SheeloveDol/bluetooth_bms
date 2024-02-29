@@ -65,7 +65,7 @@ class _DashBoardState extends State<DashBoard> {
         cellInfo = Be.getCellInfo();
         statsreports = Be.getStatsReport();
 
-        Data.setAvailableData(cellInfo && statsreports == true);
+        Data.setAvailableData(await cellInfo && await statsreports == true);
         setState(() {});
       } else {
         quicktell(
