@@ -12,9 +12,9 @@ class Device extends StatefulWidget {
     required this.title,
     required this.device,
     required this.scafoldContextKey,
-    required this.refresh,
+    required this.rescan,
   });
-  final Function refresh;
+  final Function rescan;
   final BluetoothDevice device;
   final String title;
   final GlobalKey scafoldContextKey;
@@ -30,10 +30,13 @@ class _DeviceState extends State<Device> {
     connecting = true;
     textValue = "Connecting";
     Be.stopScan().then((value) => setState(() {}));
-
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return DashBoard(device: widget.device, title: widget.title);
-    }));
+    Future.delayed(
+        Durations.medium2,
+        () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return DashBoard(device: widget.device, title: widget.title);
+            })).then((value) {
+              widget.rescan();
+            }));
   }
 
   @override
