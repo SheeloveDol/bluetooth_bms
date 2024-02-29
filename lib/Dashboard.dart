@@ -29,6 +29,10 @@ class _DashBoardState extends State<DashBoard> {
   late Map<String, dynamic> configMap;
   onDisconnect() {
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
     try {
       Be.disconnect(widget.device, configMap["sub"]).then((value) {
         quicktell(context, "Disconnected from ${widget.title}");
@@ -36,6 +40,7 @@ class _DashBoardState extends State<DashBoard> {
     } catch (e) {
       print("Disconnected but with error");
     }
+    super.dispose();
   }
 
   @override

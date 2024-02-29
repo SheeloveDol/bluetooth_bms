@@ -75,7 +75,7 @@ class Be {
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
-  static stopScan() async {
+  static Future<void> stopScan() async {
     if (FlutterBluePlus.isScanningNow) {
       await FlutterBluePlus.stopScan();
     }
@@ -207,7 +207,7 @@ class Be {
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
     print(answer);
-    return Data.setBatchData(data, answer[1]);
+    return good && Data.setBatchData(data, answer[1]);
   }
 
   static write(List<int> payload) async {

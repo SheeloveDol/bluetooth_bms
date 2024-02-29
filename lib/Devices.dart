@@ -26,23 +26,14 @@ class _DeviceState extends State<Device> {
   bool connecting = false;
   String textValue = "Connect";
 
-  onConnect(BuildContext context) async {
+  onConnect() {
     connecting = true;
     textValue = "Connecting";
-    await Be.stopScan();
-    setState(() {});
+    Be.stopScan().then((value) => setState(() {}));
 
-    Future.delayed(const Duration(milliseconds: 600)).then((value) {
-      Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DashBoard(device: widget.device, title: widget.title)))
-          .then((value) {
-        textValue = "Connected";
-        widget.refresh(() {});
-      });
-    });
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return DashBoard(device: widget.device, title: widget.title);
+    }));
   }
 
   @override
@@ -73,7 +64,7 @@ class _DeviceState extends State<Device> {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     borderRadius: BorderRadius.circular(15),
                     color: Color.fromARGB(255, 13, 22, 50),
-                    onPressed: (connecting) ? null : () => onConnect(context),
+                    onPressed: (connecting) ? null : () => onConnect(),
                     child: Text(textValue))
               ],
             )));

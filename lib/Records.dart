@@ -161,7 +161,7 @@ class _ReportsState extends State<Reports> {
                   onPressed: () {
                     if (controller.page == 2) {
                       controller.animateTo(0,
-                          curve: Easing.standard, duration: Durations.short1);
+                          curve: Easing.standard, duration: Durations.short3);
                     } else {
                       controller.nextPage(
                           duration: Durations.short1, curve: Easing.standard);

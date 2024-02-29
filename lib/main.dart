@@ -148,7 +148,7 @@ class _ScanPageState extends State<ScanPage> {
                                           title: d.title,
                                           device: d.device,
                                           scafoldContextKey: d.contextkey,
-                                          refresh: d.setState),
+                                          rescan: onScan),
                                     if (visible)
                                       CupertinoButton(
                                           child: const Text("Show more"),
