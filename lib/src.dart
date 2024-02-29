@@ -198,10 +198,12 @@ class Be {
     print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
-      await Future.delayed(const Duration(milliseconds: 300));
+      if (wake) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
     }
     _setWake(false);
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 700));
     notifySub.cancel();
     var good = _verifyReadings(answer);
     if (good) {

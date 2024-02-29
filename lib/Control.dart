@@ -17,6 +17,17 @@ class BatteryControl extends StatefulWidget {
 }
 
 class _BatteryControlState extends State<BatteryControl> {
+  bool render = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(const Duration(seconds: 1), () {
+      render = true;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -45,9 +56,10 @@ class _BatteryControlState extends State<BatteryControl> {
                           Middle(title: widget.title),
                           Right()
                         ]),
-                    Text(Data.timeLeft,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 20))
+                    if (render)
+                      Text(Data.timeLeft,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20))
                   ]));
   }
 }
