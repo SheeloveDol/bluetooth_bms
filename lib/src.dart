@@ -203,7 +203,12 @@ class Be {
     _setWake(false);
     await Future.delayed(const Duration(seconds: 1));
     notifySub.cancel();
-    return _verifyReadings(answer);
+    var good = _verifyReadings(answer);
+    if (good) {
+      var data = answer.sublist(4, answer.length - 3);
+      Data.setBatchData(data, answer[1]);
+    }
+    return good;
   }
 
   static write(List<int> payload) async {
