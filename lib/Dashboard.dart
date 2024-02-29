@@ -25,8 +25,8 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
-  dynamic cellInfo;
-  dynamic statsreports;
+  bool cellInfo = false;
+  bool statsreports = false;
   double height = 0;
   late Map<String, dynamic> configMap;
   onDisconnect() {
@@ -61,9 +61,8 @@ class _DashBoardState extends State<DashBoard> {
     Be.connect(widget.device).then((map) async {
       configMap = map;
       if (map["error"] == null) {
-        cellInfo = Be.getCellInfo().then((value) {
-          statsreports = Be.getStatsReport();
-        });
+        cellInfo = await Be.getCellInfo();
+        statsreports = await Be.getStatsReport();
 
         Data.setAvailableData(true);
         setState(() {});
@@ -91,24 +90,9 @@ class _DashBoardState extends State<DashBoard> {
                       controller: controller,
                       children: <Widget>[
                         const BatteryState(),
-                        FutureBuilder<bool>(
-                          future: cellInfo,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data!) {
-                              return const CellsState();
-                            }
-                            return Container();
-                          },
-                        ),
+                        if (cellInfo) const CellsState(),
                         const Temperatures(),
-                        FutureBuilder<bool>(
-                            future: statsreports,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData && snapshot.data!) {
-                                return const Reports();
-                              }
-                              return Container();
-                            })
+                        if (statsreports) const Reports()
                       ]),
                   BatteryControl(
                       title: widget.title,
