@@ -92,12 +92,10 @@ class Be {
 
     // Connect to the device
     String? error;
-    await device.connect();
-    if (FlutterBluePlus.connectedDevices.isEmpty) {
+    try {
+      await device.connect();
+    } catch (e) {
       error = "failed to connect";
-    }
-
-    if (error != null) {
       return {"error": error};
     }
 
