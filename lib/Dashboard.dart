@@ -34,6 +34,7 @@ class _DashBoardState extends State<DashBoard> {
   @override
   void dispose() {
     try {
+      Data.setAvailableData(false);
       Be.disconnect(widget.device, configMap["sub"]).then((value) {
         quicktell(context, "Disconnected from ${widget.title}");
       });

@@ -141,28 +141,25 @@ class _ScanPageState extends State<ScanPage> {
                                 padding: const EdgeInsets.all(10),
                                 margin: const EdgeInsets.all(10),
                                 height: 560,
-                                child: ListView(
-                                  key: UniqueKey(),
-                                  children: [
-                                    for (var d in devices)
-                                      Device(
-                                          title: d.title,
-                                          device: d.device,
-                                          scafoldContextKey: d.contextkey,
-                                          rescan: onScan),
-                                    if (visible)
-                                      CupertinoButton(
-                                          child: const Text("Show more"),
-                                          onPressed: () {
-                                            devices = [
-                                              ...devices,
-                                              ...namelessDevices
-                                            ];
-                                            visible = false;
-                                            setState(() {});
-                                          })
-                                  ],
-                                ))
+                                child: ListView(key: UniqueKey(), children: [
+                                  for (var d in devices)
+                                    Device(
+                                        title: d.title,
+                                        device: d.device,
+                                        scafoldContextKey: d.contextkey,
+                                        rescan: onScan),
+                                  if (visible)
+                                    CupertinoButton(
+                                        child: const Text("Show more"),
+                                        onPressed: () {
+                                          devices = [
+                                            ...devices,
+                                            ...namelessDevices
+                                          ];
+                                          visible = false;
+                                          setState(() {});
+                                        })
+                                ]))
                           ]))),
               Positioned(
                   bottom: 40,
