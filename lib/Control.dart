@@ -22,7 +22,7 @@ class _BatteryControlState extends State<BatteryControl> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 5), () {
       render = true;
       setState(() {});
     });
