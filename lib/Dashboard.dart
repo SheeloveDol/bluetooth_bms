@@ -25,8 +25,6 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
-  bool cellInfo = false;
-  bool statsreports = false;
   double height = 0;
   late Map<String, dynamic> configMap;
   onDisconnect() {
@@ -36,7 +34,7 @@ class _DashBoardState extends State<DashBoard> {
         quicktell(context, "Disconnected from ${widget.title}");
       });
     } catch (e) {
-      print("object");
+      print("Disconnected but with error");
     }
   }
 
@@ -57,13 +55,9 @@ class _DashBoardState extends State<DashBoard> {
       }
     });
     Be.setUpdater(() => setState(() {}));
-    super.initState();
     Be.connect(widget.device).then((map) async {
       configMap = map;
       if (map["error"] == null) {
-        cellInfo = await Be.getCellInfo();
-        statsreports = await Be.getStatsReport();
-
         Data.setAvailableData(true);
         setState(() {});
       } else {
@@ -71,6 +65,7 @@ class _DashBoardState extends State<DashBoard> {
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }
     });
+    super.initState();
   }
 
   @override
@@ -88,11 +83,11 @@ class _DashBoardState extends State<DashBoard> {
                       padding: EdgeInsets.only(top: 230 - height),
                       physics: const BouncingScrollPhysics(),
                       controller: controller,
-                      children: <Widget>[
-                        const BatteryState(),
-                        if (cellInfo) const CellsState(),
-                        const Temperatures(),
-                        if (statsreports) const Reports()
+                      children: const <Widget>[
+                        BatteryState(),
+                        CellsState(),
+                        Temperatures(),
+                        Reports()
                       ]),
                   BatteryControl(
                       title: widget.title,

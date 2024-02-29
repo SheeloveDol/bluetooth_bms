@@ -11,7 +11,6 @@ class _CellsStateState extends State<CellsState> {
   double celldiff = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     //celldiff = Data.celldif;
   }

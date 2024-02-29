@@ -130,6 +130,8 @@ class Be {
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
+      await getCellInfo();
+      await getStatsReport();
 
       if (readSuccessFully) {
         return {"error": null, "sub": subscription};
@@ -156,7 +158,6 @@ class Be {
 
   static Future<bool> getStatsReport() async {
     var readSuccesFully = await read(Data.STATS_PAYLOAD);
-
     return readSuccesFully;
   }
 
@@ -206,12 +207,9 @@ class Be {
     await Future.delayed(const Duration(milliseconds: 700));
     notifySub.cancel();
     var good = _verifyReadings(answer);
-    if (good) {
-      var data = answer.sublist(3, answer.length - 3);
-      print(answer);
-      Data.setBatchData(data, answer[1]);
-    }
-    return good;
+    var data = answer.sublist(4, answer.length - 3);
+    print(answer);
+    return Data.setBatchData(data, answer[1]);
   }
 
   static write(List<int> payload) async {
@@ -243,15 +241,15 @@ class Be {
       return false;
     }
 
-    /*var payload = rawData.sublist(3, rawData.length - 3);
+    var payload = rawData.sublist(3, rawData.length - 3);
     if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
         rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
       print("corupted data ${[
         ...checksumtoRead(payload),
         0x77
-      ]} is not ${rawData.sublist(rawData.length - 3)}");
+      ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
       return false;
-    }*/
+    }
     return true;
   }
 
@@ -294,6 +292,7 @@ class Data {
   static const CELL_VOLTAGE = 0x04;
   static const DEVICE_NAME = 0x05;
   static const STAT_INFO = 0xAA;
+
   static const int DESIGN_CAP = 0x10;
   static const int CYCLE_CAP = 0x11;
   static const int CAP_100 = 0x12;
