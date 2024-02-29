@@ -651,10 +651,11 @@ class Data {
             startOffset += 2;
             endOffset += 2;
           }
-          return true;
         } catch (e) {
+          print(e.toString());
           return false;
         }
+        return true;
       case DEVICE_NAME:
         try {
           _data["device_name_lenght"] = [batch[0]];

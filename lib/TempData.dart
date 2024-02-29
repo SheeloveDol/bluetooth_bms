@@ -9,6 +9,7 @@ class Temperatures extends StatefulWidget {
 
 class _TemperaturesState extends State<Temperatures> {
   Widget generateTempWidget(String title, int index) {
+    print("$title ${Data.ntc_temp[index]}");
     return Container(
         margin: const EdgeInsets.all(3),
         padding: const EdgeInsets.all(3),
