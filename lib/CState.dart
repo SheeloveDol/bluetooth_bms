@@ -8,11 +8,12 @@ class CellsState extends StatefulWidget {
 }
 
 class _CellsStateState extends State<CellsState> {
-  double celldiff = Data.celldif;
+  double celldiff = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    celldiff = Data.celldif;
   }
 
   Widget cell(String title, int index) {
