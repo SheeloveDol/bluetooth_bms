@@ -31,7 +31,7 @@ class _TemperaturesState extends State<Temperatures> {
     return Container(
       margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
       padding: const EdgeInsets.all(15),
-      height: 500,
+      height: 100,
       width: 80,
       decoration: BoxDecoration(
           color: const Color(0x565B5B5B),

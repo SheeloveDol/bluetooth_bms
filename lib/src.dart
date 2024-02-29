@@ -94,7 +94,11 @@ class Be {
 
     // Connect to the device
     String? error;
-    await device.connect().catchError((e) => error = "failed to connect");
+    await device.connect();
+    if (FlutterBluePlus.connectedDevices.isEmpty) {
+      error = "failed to connect";
+    }
+
     if (error != null) {
       return {"error": error};
     }
@@ -156,6 +160,10 @@ class Be {
       readSuccessFully = null;
       return {"error": "failed to read device"};
     }
+  }
+
+  static void setCharge(bool charge) {
+    //changeBit(bitIndex: bitIndex, bitValue: bitValue, byteToChange: byteToChange)
   }
 
   static Future<bool> getBasicInfo() async {
@@ -320,6 +328,31 @@ class Be {
 
   static void _setWake(bool wakeValue) {
     wake = wakeValue;
+  }
+
+  static int changeBit(
+      {required int bitIndex,
+      required int bitValue,
+      required int byteToChange}) {
+    // Check if the bitIndex is within the valid range (0 to 7 for a byte)
+    if (bitIndex < 0 || bitIndex > 7) {
+      throw ArgumentError(
+          'Invalid bit index. Bit index must be between 0 and 7.');
+    }
+
+    // Check if the bitValue is valid (0 or 1)
+    if (bitValue != 0 && bitValue != 1) {
+      throw ArgumentError('Invalid bit value. Bit value must be 0 or 1.');
+    }
+
+    // Clear the bit at the specified index
+    int mask = ~(1 << bitIndex);
+    int result = byteToChange & mask;
+
+    // Set the bit to the desired value
+    result |= (bitValue << bitIndex);
+
+    return result;
   }
 }
 

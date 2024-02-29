@@ -22,7 +22,7 @@ class _BatteryControlState extends State<BatteryControl> {
     return AnimatedContainer(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 40),
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.only(left: 20, right: 15, bottom: 15),
+        padding: const EdgeInsets.only(left: 10, right: 15, bottom: 15),
         height: 185 - widget.height,
         decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -176,7 +176,7 @@ class _LeftState extends State<Left> {
               onPressed: () => widget.back(),
               child: const Row(children: [
                 Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
-                Text("Back",
+                Text("Disconnect",
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
           Text((Data.fet_status[0]) ? "ON" : "OFF",

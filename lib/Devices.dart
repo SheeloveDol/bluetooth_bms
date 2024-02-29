@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bluetooth_bms/Dashboard.dart';
-import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bluetooth_bms/src.dart';
@@ -13,7 +12,9 @@ class Device extends StatefulWidget {
     required this.title,
     required this.device,
     required this.scafoldContextKey,
+    required this.refresh,
   });
+  final Function refresh;
   final BluetoothDevice device;
   final String title;
   final GlobalKey scafoldContextKey;
@@ -23,18 +24,24 @@ class Device extends StatefulWidget {
 
 class _DeviceState extends State<Device> {
   bool connecting = false;
+  String textValue = "Connect";
 
   onConnect(BuildContext context) async {
     connecting = true;
+    textValue = "Connecting";
     await Be.stopScan();
     setState(() {});
 
     Future.delayed(const Duration(milliseconds: 600)).then((value) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DashBoard(device: widget.device, title: widget.title)));
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DashBoard(device: widget.device, title: widget.title)))
+          .then((value) {
+        textValue = "Connected";
+        widget.refresh(() {});
+      });
     });
   }
 
@@ -67,7 +74,7 @@ class _DeviceState extends State<Device> {
                     borderRadius: BorderRadius.circular(15),
                     color: Color.fromARGB(255, 13, 22, 50),
                     onPressed: (connecting) ? null : () => onConnect(context),
-                    child: Text((connecting) ? "Connecting" : "Connect"))
+                    child: Text(textValue))
               ],
             )));
   }

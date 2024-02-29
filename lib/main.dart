@@ -13,8 +13,9 @@ class DeviceElement {
   final String title;
   final BluetoothDevice device;
   final GlobalKey<State<StatefulWidget>> contextkey;
+  final Function setState;
 
-  const DeviceElement(this.title, this.device, this.contextkey);
+  const DeviceElement(this.title, this.device, this.contextkey, this.setState);
 }
 
 class MyApp extends StatelessWidget {
@@ -65,10 +66,10 @@ class _ScanPageState extends State<ScanPage> {
 
   void onFound(String name, BluetoothDevice device) {
     if (device.advName.length > 1) {
-      devices.insert(0, DeviceElement(name, device, _scaffoldKey));
+      devices.insert(0, DeviceElement(name, device, _scaffoldKey, setState));
       setState(() {});
     } else {
-      namelessDevices.add(DeviceElement(name, device, _scaffoldKey));
+      namelessDevices.add(DeviceElement(name, device, _scaffoldKey, setState));
     }
   }
 
@@ -146,7 +147,8 @@ class _ScanPageState extends State<ScanPage> {
                                       Device(
                                           title: d.title,
                                           device: d.device,
-                                          scafoldContextKey: d.contextkey),
+                                          scafoldContextKey: d.contextkey,
+                                          refresh: d.setState),
                                     if (visible)
                                       CupertinoButton(
                                           child: const Text("Show more"),
