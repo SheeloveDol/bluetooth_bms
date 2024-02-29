@@ -136,7 +136,7 @@ class Be {
       }
       return {"error": "could not read device"};
     } catch (e) {
-      return {"error": "failed to read device"};
+      return {"error": "failed to read device $e"};
     }
   }
 
@@ -601,6 +601,7 @@ class Data {
           int afterNtc = 0x017 + ntc_cnt * 2;
           _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
         } catch (e) {
+          print(e.toString());
           return false;
         }
         try {
@@ -612,6 +613,7 @@ class Data {
               batch.sublist(afterNtc + 3, afterNtc + 5);
           _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
         } catch (e) {
+          print(e.toString());
           print(
               "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
         }
@@ -665,6 +667,7 @@ class Data {
           _data["device_name"] = batch.sublist(0x1, device_name_lenght);
           return true;
         } catch (e) {
+          print(e.toString());
           return false;
         }
 
