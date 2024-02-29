@@ -207,7 +207,7 @@ class Be {
     notifySub.cancel();
     var good = _verifyReadings(answer);
     if (good) {
-      var data = answer.sublist(4, answer.length - 3);
+      var data = answer.sublist(3, answer.length - 3);
       print(answer);
       Data.setBatchData(data, answer[1]);
     }
