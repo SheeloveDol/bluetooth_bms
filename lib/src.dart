@@ -136,7 +136,7 @@ class Be {
       }
       return {"error": "could not read device"};
     } catch (e) {
-      return {"error": "failed to read device $e"};
+      return {"error": "failed to read device"};
     }
   }
 
@@ -202,7 +202,7 @@ class Be {
       }
     }
     _setWake(false);
-    await Future.delayed(const Duration(milliseconds: 700));
+    await Future.delayed(const Duration(seconds: 2));
     notifySub.cancel();
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
