@@ -284,14 +284,6 @@ class Be {
       writeCharacteristics!.write(cmd, withoutResponse: true);
       await Future.delayed(const Duration(milliseconds: 300));
     }
-    int i = 0;
-    while (i < 10) {
-      if (readSuccessFully != null) {
-        break;
-      }
-      await Future.delayed(const Duration(milliseconds: 500));
-      i++;
-    }
     _setWake(false);
   }
 
