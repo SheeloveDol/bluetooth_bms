@@ -497,10 +497,15 @@ class Data {
     if (!availableData) {
       return [];
     }
-    return [
-      for (int i = 0; i < cell_cnt; i++)
-        (((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001)
-    ];
+    List<double> cells = [];
+    for (int i = 0; i < cell_cnt; i++) {
+      print(
+          "$cells $_data _data['cell${i}_mv']![0]=${_data["cell${i}_mv"]?[0]} _data['cell${i}_mv']![1]=${_data["cell${i}_mv"]?[1]}");
+      cells.add(
+          ((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001);
+    }
+
+    return cells;
   }
 
   static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]);
