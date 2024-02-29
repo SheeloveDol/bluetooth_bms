@@ -131,13 +131,16 @@ class Be {
       await readCharacteristics!.setNotifyValue(true);
       notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
-        if (_verifyReadings(answer)) {
-          var data = answer.sublist(4, answer.length - 3);
-          readSuccessFully = Data.setBatchData(data, answer[1]);
+        if (answer[answer.length - 1] == 0x77 && answer[0] == 0xDD) {
+          if (_verifyReadings(answer)) {
+            var data = answer.sublist(4, answer.length - 3);
+            readSuccessFully = Data.setBatchData(data, answer[1]);
+          }
+
           answer.clear();
-        }
-        if (updater != null) {
-          updater!();
+          if (updater != null) {
+            updater!();
+          }
         }
       });
     } catch (e) {
