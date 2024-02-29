@@ -284,6 +284,7 @@ class Be {
       writeCharacteristics!.write(cmd, withoutResponse: true);
       await Future.delayed(const Duration(milliseconds: 300));
     }
+    await Future.delayed(const Duration(milliseconds: 700));
     _setWake(false);
   }
 
