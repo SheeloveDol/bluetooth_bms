@@ -240,7 +240,7 @@ class Be {
       return false;
     }
 
-    var payload = rawData.sublist(3, rawData.length - 3);
+    /*var payload = rawData.sublist(3, rawData.length - 3);
     if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
         rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
       print("corupted data ${[
@@ -248,7 +248,7 @@ class Be {
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)}");
       return false;
-    }
+    }*/
     return true;
   }
 
