@@ -254,7 +254,7 @@ class _boltsState extends State<bolts> {
   @override
   void initState() {
     super.initState();
-    if (!Data.fet_status[0] && !Data.fet_status[1]) {
+    if (Data.fet_status[1]) {
       _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
         c++;
         if (c > 3) {

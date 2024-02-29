@@ -76,7 +76,7 @@ class _ScanPageState extends State<ScanPage> {
   @override
   void initState() {
     super.initState();
-    Be.init();
+    Be.init().then((value) => onScan());
   }
 
   @override
@@ -89,6 +89,7 @@ class _ScanPageState extends State<ScanPage> {
     ));
     return Scaffold(
         key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
             bottom: false,
             child: Stack(children: [

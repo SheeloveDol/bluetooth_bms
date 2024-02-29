@@ -47,29 +47,32 @@ class _DeviceState extends State<Device> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 3,
-        margin: const EdgeInsets.all(5),
-        child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  Icon(Icons.bluetooth),
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                        fontSize: (widget.title.length < 20) ? 17 : 12),
-                  )
-                ]),
-                CupertinoButton(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color.fromARGB(255, 13, 22, 50),
-                    onPressed: (connecting) ? null : () => onConnect(),
-                    child: Text(textValue))
-              ],
-            )));
+    return GestureDetector(
+        onLongPress: () => onConnect(),
+        child: Card(
+            elevation: 3,
+            margin: const EdgeInsets.all(5),
+            child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(children: [
+                      Icon(Icons.bluetooth),
+                      Text(
+                        widget.title,
+                        style: TextStyle(
+                            fontSize: (widget.title.length < 20) ? 17 : 12),
+                      )
+                    ]),
+                    CupertinoButton(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        borderRadius: BorderRadius.circular(15),
+                        color: Color.fromARGB(255, 13, 22, 50),
+                        onPressed: (connecting) ? null : () => onConnect(),
+                        child: Text(textValue))
+                  ],
+                ))));
   }
 }

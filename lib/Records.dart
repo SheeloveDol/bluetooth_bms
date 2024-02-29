@@ -161,10 +161,12 @@ class _ReportsState extends State<Reports> {
                   onPressed: () {
                     if (controller.page == 2) {
                       controller.animateTo(0,
-                          curve: Easing.standard, duration: Durations.short3);
+                          curve: Easing.standard,
+                          duration: Durations.extralong1);
                     } else {
                       controller.nextPage(
-                          duration: Durations.short1, curve: Easing.standard);
+                          duration: Durations.extralong1,
+                          curve: Easing.standard);
                     }
                   },
                   child: const Row(children: [
