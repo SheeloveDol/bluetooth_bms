@@ -13,7 +13,7 @@ class _CellsStateState extends State<CellsState> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    celldiff = Data.celldif;
+    //celldiff = Data.celldif;
   }
 
   Widget cell(String title, int index) {
