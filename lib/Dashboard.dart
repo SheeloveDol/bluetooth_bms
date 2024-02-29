@@ -93,14 +93,20 @@ class _DashBoardState extends State<DashBoard> {
                         FutureBuilder<bool>(
                           future: cellInfo,
                           builder: (context, snapshot) {
-                            return const CellsState();
+                            if (snapshot.hasData && snapshot.data!) {
+                              return const CellsState();
+                            }
+                            return Container();
                           },
                         ),
                         const Temperatures(),
                         FutureBuilder<bool>(
                             future: statsreports,
                             builder: (context, snapshot) {
-                              return const Reports();
+                              if (snapshot.hasData && snapshot.data!) {
+                                return const Reports();
+                              }
+                              return Container();
                             })
                       ]),
                   BatteryControl(
