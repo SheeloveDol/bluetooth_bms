@@ -61,7 +61,7 @@ class _ReportsState extends State<Reports> {
   Column second() {
     List<Widget> data = [];
     data.addAll([
-      Text("Device Name: ${Data.device_name}",
+      Text("Device Name: {Data.device_name}",
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(bottom: 10)),

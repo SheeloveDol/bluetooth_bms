@@ -500,7 +500,7 @@ class Data {
     List<double> cells = [];
     for (int i = 0; i < cell_cnt; i++) {
       print(
-          "$cells $_data _data['cell${i}_mv']![0]=${_data["cell${i}_mv"]?[0]} _data['cell${i}_mv']![1]=${_data["cell${i}_mv"]?[1]}");
+          "$cells _data['cell${i}_mv']![0]=${_data["cell${i}_mv"]?[0]} _data['cell${i}_mv']![1]=${_data["cell${i}_mv"]?[1]}");
       cells.add(
           ((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001);
     }
@@ -624,17 +624,12 @@ class Data {
         }
         return true;
       case CELL_VOLTAGE:
-        try {
-          int j = 0;
-          for (int i = 0; i < cell_cnt; i++) {
-            var key = "cell${i}_mv";
-            print(key);
-            _data[key] = batch.sublist(j, j + 2);
-            j += 2;
-          }
-        } catch (e) {
-          print(e.toString());
-          return false;
+        int j = 0;
+        for (int i = 0; i < cell_cnt; i++) {
+          var key = "cell${i}_mv";
+          print(key);
+          _data[key] = batch.sublist(j, j + 2);
+          j += 2;
         }
         return true;
       case STAT_INFO:
