@@ -11,12 +11,10 @@ class Be {
   static BluetoothCharacteristic? readCharacteristics;
   static BluetoothCharacteristic? writeCharacteristics;
   static StreamSubscription<BluetoothConnectionState>? savedSubscription;
-  static List<int> answer = [];
   static bool wake = true;
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
-  static bool? readSuccessFully;
 
   Be() {}
 
@@ -102,7 +100,6 @@ class Be {
     if (error != null) {
       return {"error": error};
     }
-    late StreamSubscription<List<int>> notifySub;
 
     try {
       //get service
@@ -126,41 +123,19 @@ class Be {
           writeCharacteristics = c;
         }
       }
-
-      //subscribe to read charac
-      await readCharacteristics!.setNotifyValue(true);
-      notifySub = readCharacteristics!.onValueReceived.listen((event) {
-        answer.addAll(event);
-        if (answer[answer.length - 1] == 0x77 && answer[0] == 0xDD) {
-          if (_verifyReadings(answer)) {
-            var data = answer.sublist(4, answer.length - 3);
-            readSuccessFully = Data.setBatchData(data, answer[1]);
-          }
-
-          answer.clear();
-          if (updater != null) {
-            updater!();
-          }
-        }
-      });
     } catch (e) {
       return {"error": "imcompatible device"};
     }
 
     try {
       //getting first basic info
-      await read(Data.BASIC_INFO_PAYLOAD);
+      var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
 
-      if (readSuccessFully == null) {
-        return {"error": "Timeout on reading"};
-      } else if (readSuccessFully!) {
-        readSuccessFully = null;
-        return {"error": null, "sub": subscription, "notify": notifySub};
+      if (readSuccessFully) {
+        return {"error": null, "sub": subscription};
       }
-      readSuccessFully = null;
       return {"error": "could not read device"};
     } catch (e) {
-      readSuccessFully = null;
       return {"error": "failed to read device"};
     }
   }
@@ -170,73 +145,26 @@ class Be {
   }
 
   static Future<bool> getBasicInfo() async {
-    try {
-      await read(Data.BASIC_INFO_PAYLOAD);
-
-      if (readSuccessFully == null) {
-        print("time out reading basic info");
-        return false;
-      } else if (readSuccessFully!) {
-        readSuccessFully = null;
-        return true;
-      }
-      print("could not read basic info");
-      return false;
-    } catch (e) {
-      readSuccessFully = null;
-      print("failed to read basic info");
-    }
-    return false;
+    var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
+    return readSuccessFully;
   }
 
   static Future<bool> getCellInfo() async {
-    try {
-      await read(Data.CELL_INFO_PAYLOAD);
-
-      if (readSuccessFully == null) {
-        print("timeout reading  Cells info");
-        return false;
-      } else if (readSuccessFully!) {
-        readSuccessFully = null;
-        return true;
-      }
-      print("could not read Cells info");
-      return false;
-    } catch (e) {
-      readSuccessFully = null;
-      print("failed to read cells info");
-    }
-    return false;
+    var readSuccessFully = await read(Data.CELL_INFO_PAYLOAD);
+    return readSuccessFully;
   }
 
   static Future<bool> getStatsReport() async {
-    try {
-      await read(Data.STATS_PAYLOAD);
+    var readSuccesFully = await read(Data.STATS_PAYLOAD);
 
-      if (readSuccessFully == null) {
-        print("timeout reading  Statistics");
-        return false;
-      } else if (readSuccessFully!) {
-        readSuccessFully = null;
-        return true;
-      }
-      print("could not read Statistics");
-      return false;
-    } catch (e) {
-      readSuccessFully = null;
-      print("failed to read Statistics");
-    }
-    return false;
+    return readSuccesFully;
   }
 
-  static Future<void> disconnect(
-      BluetoothDevice device,
-      StreamSubscription<BluetoothConnectionState> sub,
-      StreamSubscription<List<int>> notif) async {
+  static Future<void> disconnect(BluetoothDevice device,
+      StreamSubscription<BluetoothConnectionState> sub) async {
     // Disconnect from device
     await device.disconnect();
     await sub.cancel();
-    await notif.cancel();
   }
 
   static List<int> checksumtoRead(List<int> payload) {
@@ -257,8 +185,15 @@ class Be {
     return result;
   }
 
-  static Future<void> read(List<int> payload) async {
+  static Future<bool> read(List<int> payload) async {
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
+    List<int> answer = [];
+    //subscribe to read charac
+    await readCharacteristics!.setNotifyValue(true);
+    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
+      answer.addAll(event);
+    });
+
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
     print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -266,14 +201,9 @@ class Be {
       await Future.delayed(const Duration(milliseconds: 300));
     }
     _setWake(false);
-    int i = 0;
-    while (i < 10) {
-      if (readSuccessFully != null) {
-        break;
-      }
-      await Future.delayed(const Duration(milliseconds: 500));
-      i++;
-    }
+    await Future.delayed(const Duration(seconds: 1));
+    notifySub.cancel();
+    return _verifyReadings(answer);
   }
 
   static write(List<int> payload) async {
@@ -312,7 +242,6 @@ class Be {
         ...checksumtoRead(payload),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)}");
-      answer.clear();
       return false;
     }
     return true;

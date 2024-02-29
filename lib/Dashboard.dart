@@ -32,8 +32,7 @@ class _DashBoardState extends State<DashBoard> {
   onDisconnect() {
     Navigator.pop(context);
     try {
-      Be.disconnect(widget.device, configMap["sub"], configMap["notify"])
-          .then((value) {
+      Be.disconnect(widget.device, configMap["sub"]).then((value) {
         quicktell(context, "Disconnected from ${widget.title}");
       });
     } catch (e) {
