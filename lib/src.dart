@@ -623,10 +623,13 @@ class Data {
         try {
           int j = 0;
           for (int i = 0; i < cell_cnt; i++) {
-            _data["cell${i}_mv"] = batch.sublist(j, j + 2);
+            var key = "cell${i}_mv";
+            print(key);
+            _data[key] = batch.sublist(j, j + 2);
             j += 2;
           }
         } catch (e) {
+          print(e.toString());
           return false;
         }
         return true;
