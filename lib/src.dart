@@ -194,9 +194,8 @@ class Be {
       }
       await Future.delayed(Duration(seconds: 1 + j));
       j++;
-    } while (!_verifyReadings(answer) || j > 5);
+    } while (answer.isEmpty || j > 5);
 
-    print(answer);
     notifySub.cancel();
 
     var data = answer.sublist(4, answer.length - 3);
