@@ -586,6 +586,7 @@ class Data {
   }
 
   static bool setBatchData(List<int> batch, int register) {
+    setAvailableData(true);
     if (register == BASIC_INFO) {
       int afterNtc = 0;
 
@@ -617,6 +618,7 @@ class Data {
         print(
             "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
       }
+      setAvailableData(false);
       return true;
     }
 
@@ -628,6 +630,7 @@ class Data {
         _data[key] = batch.sublist(j, j + 2);
         j += 2;
       }
+      setAvailableData(false);
       return true;
     }
 
@@ -654,17 +657,19 @@ class Data {
         startOffset += 2;
         endOffset += 2;
       }
-
+      setAvailableData(false);
       return true;
     }
 
     if (register == DEVICE_NAME) {
       _data["device_name_lenght"] = [batch[0]];
       _data["device_name"] = batch.sublist(0x1, device_name_lenght);
+      setAvailableData(false);
       return true;
     }
 
     print("unknown registery");
+    setAvailableData(false);
     return false;
   }
 
