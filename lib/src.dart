@@ -182,7 +182,7 @@ class Be {
     });
 
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-    var j = 0;
+    int j = 0;
     do {
       print("sending command : $cmd");
       for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -192,7 +192,7 @@ class Be {
         }
         _setWake(false);
       }
-      await Future.delayed(const Duration(seconds: 1 + j));
+      await Future.delayed(Duration(seconds: 1 + j));
       j++;
     } while (_verifyReadings(answer) || j > 5);
 
