@@ -92,13 +92,19 @@ class Be {
 
     // Connect to the device
     String? error;
-    try {
-      await device.connect();
-    } catch (e) {
-      error = "failed to connect";
+    var j = 4;
+    while (j == 0) {
+      try {
+        await device.connect();
+        error == null;
+      } catch (e) {
+        j--;
+        error = "failed to connect";
+      }
+    }
+    if (error != null) {
       return {"error": error};
     }
-
     try {
       //get service
       List<BluetoothService> services = await device.discoverServices();
