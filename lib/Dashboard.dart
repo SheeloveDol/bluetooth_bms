@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bluetooth_bms/BState.dart';
 import 'package:bluetooth_bms/CState.dart';
 import 'package:bluetooth_bms/Control.dart';
@@ -27,12 +29,14 @@ class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
   double height = 0;
   late Map<String, dynamic> configMap;
+  Timer? _timer;
   onDisconnect() {
     Navigator.pop(context);
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     try {
       Data.setAvailableData(false);
       Be.disconnect(widget.device, configMap["sub"]).then((value) {
@@ -72,6 +76,9 @@ class _DashBoardState extends State<DashBoard> {
       }
     });
     super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
   }
 
   @override
