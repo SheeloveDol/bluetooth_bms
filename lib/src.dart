@@ -273,7 +273,7 @@ class Be {
   static void turnOnDischarge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(1, 0, _boolArrayToInt(Data.fet_status))
+      _changeBit(0, 0, _boolArrayToInt(Data.fet_status))
     ]);
     await getBasicInfo();
   }
@@ -281,7 +281,7 @@ class Be {
   static void turnOffDischarge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(1, 1, _boolArrayToInt(Data.fet_status))
+      _changeBit(0, 1, _boolArrayToInt(Data.fet_status))
     ]);
     await getBasicInfo();
   }
@@ -289,7 +289,7 @@ class Be {
   static void turnOnCharge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(0, 0, _boolArrayToInt(Data.fet_status))
+      _changeBit(1, 0, _boolArrayToInt(Data.fet_status))
     ]);
     await getBasicInfo();
   }
@@ -297,7 +297,7 @@ class Be {
   static void turnOffCharge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(0, 1, _boolArrayToInt(Data.fet_status))
+      _changeBit(1, 1, _boolArrayToInt(Data.fet_status))
     ]);
     await getBasicInfo();
   }
