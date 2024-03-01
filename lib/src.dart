@@ -192,7 +192,7 @@ class Be {
         }
         _setWake(false);
       }
-      await Future.delayed(Duration(seconds: 1 + j));
+      await Future.delayed(Duration(milliseconds: 300 + j * 300));
       j++;
       if (j > 5) {
         break;
@@ -229,7 +229,7 @@ class Be {
         }
         _setWake(false);
       }
-      await Future.delayed(Duration(seconds: 1 + j));
+      await Future.delayed(Duration(milliseconds: 300 + j * 300));
       j++;
       if (j > 5) {
         break;
@@ -413,7 +413,7 @@ class Data {
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
-  static const COMAND_PAYLOAD = [0xe1, 0x00, 0x02];
+  static const COMAND_PAYLOAD = [0xe1, 0x02, 0x00];
 
   static bool availableData = false;
   static bool get isBLEConnected => availableData;
