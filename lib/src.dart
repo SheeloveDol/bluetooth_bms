@@ -280,7 +280,7 @@ class Be {
       ...Data.COMAND_PAYLOAD,
       _changeBit(1, 0, _boolArrayToInt(Data.fet_status))
     ]);
-    getBasicInfo();
+    await getBasicInfo();
   }
 
   static void turnOffDischarge() async {
@@ -288,7 +288,7 @@ class Be {
       ...Data.COMAND_PAYLOAD,
       _changeBit(1, 1, _boolArrayToInt(Data.fet_status))
     ]);
-    getBasicInfo();
+    await getBasicInfo();
   }
 
   static void turnOnCharge() async {
@@ -296,7 +296,7 @@ class Be {
       ...Data.COMAND_PAYLOAD,
       _changeBit(0, 0, _boolArrayToInt(Data.fet_status))
     ]);
-    getBasicInfo();
+    await getBasicInfo();
   }
 
   static void turnOffCharge() async {
@@ -304,7 +304,7 @@ class Be {
       ...Data.COMAND_PAYLOAD,
       _changeBit(0, 1, _boolArrayToInt(Data.fet_status))
     ]);
-    getBasicInfo();
+    await getBasicInfo();
   }
 
   static void _setWake(bool wakeValue) {
