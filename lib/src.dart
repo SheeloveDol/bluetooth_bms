@@ -192,7 +192,7 @@ class Be {
         }
         _setWake(false);
       }
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1 + j));
       j++;
     } while (_verifyReadings(answer) || j > 5);
 
