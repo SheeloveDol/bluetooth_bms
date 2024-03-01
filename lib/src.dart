@@ -194,7 +194,7 @@ class Be {
       }
       await Future.delayed(Duration(seconds: 1 + j));
       j++;
-    } while (_verifyReadings(answer) || j > 5);
+    } while (!_verifyReadings(answer) || j > 5);
 
     print(answer);
     notifySub.cancel();
