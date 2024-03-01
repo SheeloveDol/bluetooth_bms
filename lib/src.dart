@@ -182,21 +182,26 @@ class Be {
     });
 
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-    print("sending command : $cmd");
-    for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      await writeCharacteristics!.write(cmd, withoutResponse: true);
-      if (wake) {
-        await Future.delayed(const Duration(milliseconds: 300));
+    var j = 0;
+    do {
+      print("sending command : $cmd");
+      for (var i = (wake) ? 0 : 1; i < 2; i++) {
+        await writeCharacteristics!.write(cmd, withoutResponse: true);
+        if (wake) {
+          await Future.delayed(const Duration(milliseconds: 300));
+        }
+        _setWake(false);
       }
-    }
-    _setWake(false);
-    await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
+      j++;
+    } while (_verifyReadings(answer) || j > 5);
+
     print(answer);
     notifySub.cancel();
-    var good = _verifyReadings(answer);
+
     var data = answer.sublist(4, answer.length - 3);
     print(answer);
-    return good && Data.setBatchData(data, answer[1]);
+    return Data.setBatchData(data, answer[1]);
   }
 
   static write(List<int> payload) async {
@@ -214,16 +219,19 @@ class Be {
   static bool _verifyReadings(List<int> rawData) {
     if (rawData[0] != 0xDD) {
       print(rawData);
+      rawData.clear();
       print("Wrong starting byte");
       return false;
     }
     if (rawData[2] != 0x00) {
       print(rawData);
+      rawData.clear();
       print("Error code ${rawData[2]}");
       return false;
     }
     if (rawData[rawData.length - 1] != 0x77) {
       print(rawData);
+      rawData.clear();
       print("wrong ending byte");
       return false;
     }
@@ -235,6 +243,7 @@ class Be {
         ...checksumtoRead(payload),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
+      rawData.clear();
       return false;
     }
     return true;
