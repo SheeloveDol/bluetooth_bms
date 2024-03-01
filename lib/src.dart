@@ -219,9 +219,8 @@ class Be {
       answer.addAll(event);
     });
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
-
+    int j = 0;
     do {
-      int j = 0;
       print("sending command : $cmd");
       for (var i = (wake) ? 0 : 1; i < 2; i++) {
         writeCharacteristics!.write(cmd, withoutResponse: true);
