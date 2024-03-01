@@ -93,7 +93,10 @@ class _DashBoardState extends State<DashBoard> {
                     gradient: LinearGradient(
                         colors: [Color(0xFF002A4D), Colors.black])),
                 child: Stack(children: [
-                  Text("$data"),
+                  Text(
+                    "$data",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   ListView(
                       padding: EdgeInsets.only(top: 230 - height),
                       physics: const BouncingScrollPhysics(),
