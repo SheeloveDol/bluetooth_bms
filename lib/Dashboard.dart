@@ -70,15 +70,15 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          setState(() {});
-        });
       } else {
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }
     });
     super.initState();
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {});
+    });
   }
 
   @override
