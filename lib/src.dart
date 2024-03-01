@@ -334,6 +334,7 @@ class Be {
 
     // Set the bit to the desired value
     result |= (bitValue << bitIndex);
+    print(result);
 
     return result;
   }

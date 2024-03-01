@@ -179,11 +179,11 @@ class _LeftState extends State<Left> {
                 Text("Disconnect",
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
-          Text((Data.fet_status[0]) ? "ON" : "OFF",
+          Text((Data.fet_status[0]) ? "OFF" : "ON",
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: (Data.fet_status[0]) ? Colors.green : Colors.red)),
+                  color: (Data.fet_status[0]) ? Colors.red : Colors.green)),
           CupertinoButton(
               color: (Data.fet_status[0]) ? Colors.green : Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 15),
