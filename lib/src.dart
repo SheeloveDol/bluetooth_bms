@@ -147,6 +147,10 @@ class Be {
     return readSuccesFully;
   }
 
+  static void turnDischargeOn() {}
+  static void turnDischargeOff() {}
+  static void turnChargeOn() {}
+  static void turnChargeOff() {}
   static Future<void> disconnect(BluetoothDevice device,
       StreamSubscription<BluetoothConnectionState> sub) async {
     // Disconnect from device
@@ -202,20 +206,41 @@ class Be {
     notifySub.cancel();
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
+    var good2 = Data.setBatchData(data, answer[1]);
+    if (good && good2 && updater != null) {
+      updater!();
+    }
     print(answer);
-    return good && Data.setBatchData(data, answer[1]);
+    return good && good2;
   }
 
   static write(List<int> payload) async {
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
+    List<int> answer = [];
+    //subscribe to read charac
+    await readCharacteristics!.setNotifyValue(true);
+    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
+      answer.addAll(event);
+    });
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
-    print("sending command : $cmd");
-    for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      writeCharacteristics!.write(cmd, withoutResponse: true);
-      await Future.delayed(const Duration(milliseconds: 300));
-    }
-    await Future.delayed(const Duration(milliseconds: 700));
-    _setWake(false);
+
+    do {
+      int j = 0;
+      print("sending command : $cmd");
+      for (var i = (wake) ? 0 : 1; i < 2; i++) {
+        writeCharacteristics!.write(cmd, withoutResponse: true);
+        if (wake) {
+          await Future.delayed(const Duration(milliseconds: 300));
+        }
+        _setWake(false);
+      }
+      await Future.delayed(Duration(seconds: 1 + j));
+      j++;
+      if (j > 5) {
+        break;
+      }
+    } while (answer.isEmpty);
+    notifySub.cancel();
   }
 
   static bool _verifyReadings(List<int> rawData) {
@@ -255,16 +280,45 @@ class Be {
     updater = setstate;
   }
 
+  static void turnOnDischarge() async {
+    await write([
+      ...Data.COMAND_PAYLOAD,
+      _changeBit(1, 0, _boolArrayToInt(Data.fet_status))
+    ]);
+    getBasicInfo();
+  }
+
+  static void turnOffDischarge() async {
+    await write([
+      ...Data.COMAND_PAYLOAD,
+      _changeBit(1, 1, _boolArrayToInt(Data.fet_status))
+    ]);
+    getBasicInfo();
+  }
+
+  static void turnOnCharge() async {
+    await write([
+      ...Data.COMAND_PAYLOAD,
+      _changeBit(0, 0, _boolArrayToInt(Data.fet_status))
+    ]);
+    getBasicInfo();
+  }
+
+  static void turnOffCharge() async {
+    await write([
+      ...Data.COMAND_PAYLOAD,
+      _changeBit(0, 1, _boolArrayToInt(Data.fet_status))
+    ]);
+    getBasicInfo();
+  }
+
   static void _setWake(bool wakeValue) {
     wake = wakeValue;
   }
 
-  static int changeBit(
-      {required int bitIndex,
-      required int bitValue,
-      required int byteToChange}) {
+  static int _changeBit(int bitIndex, int bitValue, int byteToChange) {
     // Check if the bitIndex is within the valid range (0 to 7 for a byte)
-    if (bitIndex < 0 || bitIndex > 7) {
+    if (bitIndex < 0 || bitIndex > 1) {
       throw ArgumentError(
           'Invalid bit index. Bit index must be between 0 and 7.');
     }
@@ -281,6 +335,19 @@ class Be {
     // Set the bit to the desired value
     result |= (bitValue << bitIndex);
 
+    return result;
+  }
+
+  static int _boolArrayToInt(List<bool> bits) {
+    if (bits.length != 2) {
+      throw ArgumentError('Input list must contain exactly 2 bools');
+    }
+    int result = 0;
+    for (int i = 0; i < bits.length; i++) {
+      if (bits[i]) {
+        result |= (1 << i);
+      }
+    }
     return result;
   }
 }
@@ -350,6 +417,7 @@ class Data {
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
+  static const COMAND_PAYLOAD = [0xe1, 0x00, 0x02];
 
   static bool availableData = false;
   static bool get isBLEConnected => availableData;

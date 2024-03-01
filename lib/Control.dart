@@ -85,9 +85,9 @@ class _RightState extends State<Right> {
             ])),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
-          color: Colors.green,
+          color: (Data.fet_status[1]) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
-          onPressed: () {},
+          onPressed: dischargePressed,
           child: const Text(
             "Discharge",
             style: TextStyle(fontSize: 11),
@@ -185,9 +185,9 @@ class _LeftState extends State<Left> {
                   fontWeight: FontWeight.w900,
                   color: (Data.fet_status[0]) ? Colors.green : Colors.red)),
           CupertinoButton(
-              color: Colors.red,
+              color: (Data.fet_status[0]) ? Colors.green : Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              onPressed: () {},
+              onPressed: chargePressed,
               child: const Text("Charge", style: TextStyle(fontSize: 11)))
         ]));
   }
@@ -205,9 +205,9 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       CupertinoButton(
-          color: Colors.red,
+          color: (Data.fet_status[0]) ? Colors.green : Colors.red,
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          onPressed: () {},
+          onPressed: chargePressed,
           child: const Text("Charge", style: TextStyle(fontSize: 11))),
       const Padding(padding: EdgeInsets.only(right: 12)),
       Stack(alignment: Alignment.centerLeft, children: [
@@ -225,14 +225,30 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
       CupertinoButton(
-          color: Colors.green,
+          color: (Data.fet_status[1]) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
-          onPressed: () {},
+          onPressed: dischargePressed,
           child: const Text(
             "Discharge",
             style: TextStyle(fontSize: 11),
           ))
     ]);
+  }
+}
+
+void dischargePressed() {
+  if (Data.fet_status[1]) {
+    Be.turnDischargeOn();
+  } else {
+    Be.turnDischargeOff();
+  }
+}
+
+void chargePressed() {
+  if (Data.fet_status[0]) {
+    Be.turnChargeOn();
+  } else {
+    Be.turnChargeOff();
   }
 }
 
@@ -279,13 +295,13 @@ class _boltsState extends State<bolts> {
   Widget build(BuildContext context) {
     return Row(children: [
       Icon(Icons.bolt,
-          size: 20, color: (!Data.fet_status[0]) ? colors[0] : colors[3]),
+          size: 20, color: (!Data.fet_status[1]) ? colors[0] : colors[3]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.fet_status[0]) ? colors[1] : colors[2]),
+          size: 20, color: (!Data.fet_status[1]) ? colors[1] : colors[2]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.fet_status[0]) ? colors[2] : colors[1]),
+          size: 20, color: (!Data.fet_status[1]) ? colors[2] : colors[1]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.fet_status[0]) ? colors[3] : colors[0])
+          size: 20, color: (!Data.fet_status[1]) ? colors[3] : colors[0])
     ]);
   }
 }
