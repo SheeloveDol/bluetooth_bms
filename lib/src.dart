@@ -212,6 +212,11 @@ class Be {
 
   static write(List<int> payload) async {
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
+    var confirmation = [];
+    await readCharacteristics!.setNotifyValue(true);
+    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
+      confirmation.addAll(event);
+    });
     //subscribe to read charac
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -220,6 +225,10 @@ class Be {
         await Future.delayed(const Duration(milliseconds: 300));
       }
       _setWake(false);
+    }
+    await Future.delayed(const Duration(milliseconds: 200));
+    while (confirmation.isEmpty) {
+      await Future.delayed(const Duration(milliseconds: 300));
     }
   }
 
