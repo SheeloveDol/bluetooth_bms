@@ -85,7 +85,7 @@ class _RightState extends State<Right> {
             ])),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
-          color: (Data.fet_status[1]) ? Colors.green : Colors.red,
+          color: (Data.fet_status[1] == false) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
           child: const Text(
@@ -179,13 +179,15 @@ class _LeftState extends State<Left> {
                 Text("Disconnect",
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
-          Text((Data.fet_status[0]) ? "OFF" : "ON",
+          Text((Data.fet_status[0] == false) ? "ON" : "OFF",
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: (Data.fet_status[0]) ? Colors.red : Colors.green)),
+                  color: (Data.fet_status[0] == false)
+                      ? Colors.green
+                      : Colors.red)),
           CupertinoButton(
-              color: (Data.fet_status[0]) ? Colors.green : Colors.red,
+              color: (Data.fet_status[0] == false) ? Colors.green : Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 15),
               onPressed: chargePressed,
               child: const Text("Charge", style: TextStyle(fontSize: 11)))
@@ -238,17 +240,17 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
 
 void dischargePressed() {
   if (Data.fet_status[1]) {
-    Be.turnDischargeOn();
+    Be.turnOnDischarge();
   } else {
-    Be.turnDischargeOff();
+    Be.turnOffDischarge();
   }
 }
 
 void chargePressed() {
   if (Data.fet_status[0]) {
-    Be.turnChargeOn();
+    Be.turnOnCharge();
   } else {
-    Be.turnChargeOff();
+    Be.turnOffCharge();
   }
 }
 

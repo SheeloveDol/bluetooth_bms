@@ -147,10 +147,6 @@ class Be {
     return readSuccesFully;
   }
 
-  static void turnDischargeOn() {}
-  static void turnDischargeOff() {}
-  static void turnChargeOn() {}
-  static void turnChargeOff() {}
   static Future<void> disconnect(BluetoothDevice device,
       StreamSubscription<BluetoothConnectionState> sub) async {
     // Disconnect from device
