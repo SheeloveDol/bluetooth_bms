@@ -69,19 +69,17 @@ class _DashBoardState extends State<DashBoard> {
       configMap = map;
       if (map["error"] == null) {
         Data.setAvailableData(true);
+        _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+          setState(() {});
+        });
       } else {
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }
-      _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
-        data++;
-        setState(() {});
-      });
     });
     super.initState();
   }
 
-  var data = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,15 +91,11 @@ class _DashBoardState extends State<DashBoard> {
                     gradient: LinearGradient(
                         colors: [Color(0xFF002A4D), Colors.black])),
                 child: Stack(children: [
-                  Text(
-                    "$data",
-                    style: TextStyle(color: Colors.white),
-                  ),
                   ListView(
                       padding: EdgeInsets.only(top: 230 - height),
                       physics: const BouncingScrollPhysics(),
                       controller: controller,
-                      children: const <Widget>[
+                      children: <Widget>[
                         BatteryState(),
                         CellsState(),
                         Temperatures(),
