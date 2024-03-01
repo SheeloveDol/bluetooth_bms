@@ -194,13 +194,16 @@ class Be {
       }
       await Future.delayed(Duration(seconds: 1 + j));
       j++;
-    } while (answer.isEmpty || j < 5);
+      if (j > 5) {
+        break;
+      }
+    } while (answer.isEmpty);
 
     notifySub.cancel();
-
+    var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
     print(answer);
-    return Data.setBatchData(data, answer[1]);
+    return good && Data.setBatchData(data, answer[1]);
   }
 
   static write(List<int> payload) async {
