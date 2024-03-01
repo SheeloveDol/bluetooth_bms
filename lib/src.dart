@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
@@ -20,16 +19,10 @@ class Be {
 
   static Future<bool> init() async {
     bool status = false;
-    // first, check if bluetooth is supported by your hardware
-    // Note: The platform is initialized on the first call to any FlutterBluePlus method.
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
       return false;
     }
-
-// handle bluetooth on & off
-// note: for iOS the initial state is typically BluetoothAdapterState.unknown
-// note: if you have permissions issues you will get stuck at BluetoothAdapterState.unauthorized
     var subscription =
         FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
       if (state == BluetoothAdapterState.on) {
@@ -38,14 +31,9 @@ class Be {
         status = false;
       }
     });
-
-// turn on bluetooth ourself if we can
-// for iOS, the user controls bluetooth enable/disable
     if (Platform.isAndroid) {
       await FlutterBluePlus.turnOn();
     }
-
-// cancel to prevent duplicate listeners
     subscription.cancel();
     return status;
   }
@@ -202,7 +190,8 @@ class Be {
       }
     }
     _setWake(false);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
+    print(answer);
     notifySub.cancel();
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);

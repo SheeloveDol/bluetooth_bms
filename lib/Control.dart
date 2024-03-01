@@ -271,7 +271,6 @@ class _boltsState extends State<bolts> {
 
   @override
   void dispose() {
-    // Cancel the timer to avoid memory leaks
     _timer?.cancel();
     super.dispose();
   }
