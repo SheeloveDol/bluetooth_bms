@@ -194,7 +194,7 @@ class Be {
       }
       await Future.delayed(Duration(seconds: 1 + j));
       j++;
-    } while (answer.isEmpty || j > 5);
+    } while (answer.isEmpty || j < 5);
 
     notifySub.cancel();
 
