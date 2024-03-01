@@ -250,6 +250,7 @@ class Be {
         ...checksumtoRead(payload),
         0x77
       ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
+      print(rawData);
       rawData.clear();
       return false;
     }
