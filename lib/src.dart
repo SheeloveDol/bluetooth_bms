@@ -212,30 +212,15 @@ class Be {
 
   static write(List<int> payload) async {
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
-    List<int> answer = [];
     //subscribe to read charac
-    await readCharacteristics!.setNotifyValue(true);
-    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
-      answer.addAll(event);
-    });
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
-    int j = 0;
-    do {
-      print("sending command : $cmd");
-      for (var i = (wake) ? 0 : 1; i < 2; i++) {
-        writeCharacteristics!.write(cmd, withoutResponse: true);
-        if (wake) {
-          await Future.delayed(const Duration(milliseconds: 300));
-        }
-        _setWake(false);
+    for (var i = (wake) ? 0 : 1; i < 2; i++) {
+      writeCharacteristics!.write(cmd, withoutResponse: true);
+      if (wake) {
+        await Future.delayed(const Duration(milliseconds: 300));
       }
-      await Future.delayed(Duration(milliseconds: 300 + j * 300));
-      j++;
-      if (j > 5) {
-        break;
-      }
-    } while (answer.isEmpty);
-    notifySub.cancel();
+      _setWake(false);
+    }
   }
 
   static bool _verifyReadings(List<int> rawData) {
