@@ -140,7 +140,7 @@ class Be {
       if (updater != null) {
         updater!();
         Future.delayed(Durations.extralong4, () {
-          print(Data.pack_ma[0]);
+          print(Data.pack_ma);
         });
       }
     }
