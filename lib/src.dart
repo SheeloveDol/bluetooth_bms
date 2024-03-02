@@ -138,6 +138,7 @@ class Be {
       Data.setAvailableData(true);
       if (updater != null) {
         updater!();
+        print(Data.pack_ma[0]);
       }
     }
 
