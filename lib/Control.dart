@@ -238,17 +238,17 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
 
 void dischargePressed() {
   if (Data.dischargeStatus) {
-    Be.turnOnDischarge();
-  } else {
     Be.turnOffDischarge();
+  } else {
+    Be.turnOnDischarge();
   }
 }
 
 void chargePressed() {
   if (Data.dischargeStatus) {
-    Be.turnOnCharge();
-  } else {
     Be.turnOffCharge();
+  } else {
+    Be.turnOnCharge();
   }
 }
 
