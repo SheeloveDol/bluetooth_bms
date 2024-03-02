@@ -456,7 +456,7 @@ class Data {
     if (!availableData) {
       return false;
     }
-    return (_data["fet_status"]![0] & 0x0) != 0;
+    return (_data["fet_status"]![0] & 0x2) != 0;
   }
 
   static List<String> get curr_err {
