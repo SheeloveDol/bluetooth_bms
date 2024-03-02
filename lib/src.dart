@@ -274,7 +274,7 @@ class Be {
     await write([
       ...Data.COMAND_PAYLOAD,
       _changeBit(
-          0, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
+          0, 0, _boolArrayToInt([Data.chargeStatus(), Data.dischargeStatus()]))
     ]);
     await getBasicInfo();
   }
@@ -283,7 +283,7 @@ class Be {
     await write([
       ...Data.COMAND_PAYLOAD,
       _changeBit(
-          0, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
+          0, 1, _boolArrayToInt([Data.chargeStatus(), Data.dischargeStatus()]))
     ]);
     await getBasicInfo();
   }
@@ -292,7 +292,7 @@ class Be {
     await write([
       ...Data.COMAND_PAYLOAD,
       _changeBit(
-          1, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
+          1, 0, _boolArrayToInt([Data.chargeStatus(), Data.dischargeStatus()]))
     ]);
     await getBasicInfo();
   }
@@ -301,7 +301,7 @@ class Be {
     await write([
       ...Data.COMAND_PAYLOAD,
       _changeBit(
-          1, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
+          1, 1, _boolArrayToInt([Data.chargeStatus(), Data.dischargeStatus()]))
     ]);
     await getBasicInfo();
   }
@@ -445,7 +445,7 @@ class Data {
       ? "0"
       : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
 
-  static bool get chargeStatus {
+  static bool chargeStatus() {
     if (!availableData) {
       return false;
     }
@@ -454,7 +454,7 @@ class Data {
     return (_data["fet_status"]![0] & 0x0) != 0;
   }
 
-  static bool get dischargeStatus {
+  static bool dischargeStatus() {
     if (!availableData) {
       return false;
     }

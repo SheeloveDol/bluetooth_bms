@@ -85,7 +85,7 @@ class _RightState extends State<Right> {
             ])),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
-          color: (Data.dischargeStatus) ? Colors.green : Colors.red,
+          color: (Data.dischargeStatus()) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
           child: const Text(
@@ -179,13 +179,13 @@ class _LeftState extends State<Left> {
                 Text("Disconnect",
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
-          Text((Data.chargeStatus) ? "ON" : "OFF",
+          Text((Data.chargeStatus()) ? "ON" : "OFF",
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: (Data.chargeStatus) ? Colors.green : Colors.red)),
+                  color: (Data.chargeStatus()) ? Colors.green : Colors.red)),
           CupertinoButton(
-              color: (Data.chargeStatus) ? Colors.green : Colors.red,
+              color: (Data.chargeStatus()) ? Colors.green : Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 15),
               onPressed: chargePressed,
               child: const Text("Charge", style: TextStyle(fontSize: 11)))
@@ -205,7 +205,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       CupertinoButton(
-          color: (Data.chargeStatus) ? Colors.green : Colors.red,
+          color: (Data.chargeStatus()) ? Colors.green : Colors.red,
           padding: const EdgeInsets.symmetric(horizontal: 15),
           onPressed: chargePressed,
           child: const Text("Charge", style: TextStyle(fontSize: 11))),
@@ -225,7 +225,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
       CupertinoButton(
-          color: (Data.chargeStatus) ? Colors.green : Colors.red,
+          color: (Data.chargeStatus()) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
           child: const Text(
@@ -237,7 +237,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
 }
 
 void dischargePressed() {
-  if (Data.dischargeStatus) {
+  if (Data.dischargeStatus()) {
     Be.turnOnDischarge();
   } else {
     Be.turnOffDischarge();
@@ -245,7 +245,7 @@ void dischargePressed() {
 }
 
 void chargePressed() {
-  if (Data.dischargeStatus) {
+  if (Data.dischargeStatus()) {
     Be.turnOnCharge();
   } else {
     Be.turnOffCharge();
@@ -270,7 +270,7 @@ class _boltsState extends State<bolts> {
   @override
   void initState() {
     super.initState();
-    if (Data.dischargeStatus) {
+    if (Data.dischargeStatus()) {
       _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
         c++;
         if (c > 3) {
@@ -295,13 +295,13 @@ class _boltsState extends State<bolts> {
   Widget build(BuildContext context) {
     return Row(children: [
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[0] : colors[3]),
+          size: 20, color: (!Data.dischargeStatus()) ? colors[0] : colors[3]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[1] : colors[2]),
+          size: 20, color: (!Data.dischargeStatus()) ? colors[1] : colors[2]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[2] : colors[1]),
+          size: 20, color: (!Data.dischargeStatus()) ? colors[2] : colors[1]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[3] : colors[0])
+          size: 20, color: (!Data.dischargeStatus()) ? colors[3] : colors[0])
     ]);
   }
 }
