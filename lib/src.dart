@@ -273,7 +273,8 @@ class Be {
   static void turnOnDischarge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(0, 0, _boolArrayToInt(Data.fet_status))
+      _changeBit(
+          0, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
     ]);
     await getBasicInfo();
   }
@@ -281,7 +282,8 @@ class Be {
   static void turnOffDischarge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(0, 1, _boolArrayToInt(Data.fet_status))
+      _changeBit(
+          0, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
     ]);
     await getBasicInfo();
   }
@@ -289,7 +291,8 @@ class Be {
   static void turnOnCharge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(1, 0, _boolArrayToInt(Data.fet_status))
+      _changeBit(
+          1, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
     ]);
     await getBasicInfo();
   }
@@ -297,7 +300,8 @@ class Be {
   static void turnOffCharge() async {
     await write([
       ...Data.COMAND_PAYLOAD,
-      _changeBit(1, 1, _boolArrayToInt(Data.fet_status))
+      _changeBit(
+          1, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
     ]);
     await getBasicInfo();
   }
@@ -440,12 +444,25 @@ class Data {
   static String get cycle_cnt => (!availableData)
       ? "0"
       : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
-  static List<bool> get fet_status => (!availableData)
-      ? [false, false]
-      : [
-          (_data["fet_status"]![0] & 0x0) != 0,
-          (_data["fet_status"]![0] & 0x1) != 0
-        ];
+
+  static bool get chargeStatus {
+    if (!availableData) {
+      return false;
+    }
+    print("charge status : ${(_data["fet_status"]![0] & 0x0) != 0}");
+    print("discharge status : ${(_data["fet_status"]![0] & 0x1) != 0}");
+    return (_data["fet_status"]![0] & 0x0) != 0;
+  }
+
+  static bool get dischargeStatus {
+    if (!availableData) {
+      return false;
+    }
+    print("charge status : ${(_data["fet_status"]![0] & 0x0) != 0}");
+    print("discharge status : ${(_data["fet_status"]![0] & 0x1) != 0}");
+    return (_data["fet_status"]![0] & 0x1) != 0;
+  }
+
   static List<String> get curr_err {
     List<String> err = [];
     if (!availableData) {
