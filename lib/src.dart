@@ -134,6 +134,13 @@ class Be {
 
   static Future<bool> getBasicInfo() async {
     var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
+    if (readSuccessFully) {
+      Data.setAvailableData(true);
+      if (updater != null) {
+        updater!();
+      }
+    }
+
     return readSuccessFully;
   }
 
@@ -203,9 +210,6 @@ class Be {
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
-    if (good && good2 && updater != null) {
-      updater!();
-    }
     print(answer);
     return good && good2;
   }
