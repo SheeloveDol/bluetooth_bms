@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
@@ -138,7 +139,9 @@ class Be {
       Data.setAvailableData(true);
       if (updater != null) {
         updater!();
-        print(Data.pack_ma[0]);
+        Future.delayed(Durations.extralong4, () {
+          print(Data.pack_ma[0]);
+        });
       }
     }
 
