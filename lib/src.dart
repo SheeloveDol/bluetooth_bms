@@ -225,9 +225,9 @@ class Be {
         _setWake(false);
       }
       //maybe this will fail on a 100 cells battery
-      if (!(answer[answer.length - 1] == 0x77)) {
-        await Future.delayed(Duration(milliseconds: 200 + j * 300));
-      }
+
+      await Future.delayed(Duration(milliseconds: 200 + j * 300));
+
       j++;
       if (j > 5) {
         break;
@@ -237,13 +237,7 @@ class Be {
     notifySub.cancel();
 
     var good = _verifyReadings(answer);
-    if (!good) {
-      good = await resetConnection();
-      if (good) {
-        _communicatingNow = false;
-      }
-      return good;
-    }
+
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
