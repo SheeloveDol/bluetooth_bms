@@ -70,8 +70,10 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(milliseconds: 350), (timer) {
+        _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) async {
           Be.getBasicInfo();
+          await Future.delayed(const Duration(milliseconds: 350));
+          Be.getCellInfo();
         });
       } else {
         quicktell(

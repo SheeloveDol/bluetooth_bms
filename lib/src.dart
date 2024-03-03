@@ -139,9 +139,6 @@ class Be {
       Data.setAvailableData(true);
       if (updater != null) {
         updater!();
-        Future.delayed(Durations.extralong4, () {
-          print(Data.pack_ma);
-        });
       }
     }
 
@@ -150,6 +147,13 @@ class Be {
 
   static Future<bool> getCellInfo() async {
     var readSuccessFully = await read(Data.CELL_INFO_PAYLOAD);
+    if (readSuccessFully) {
+      Data.setAvailableData(true);
+      if (updater != null) {
+        updater!();
+      }
+    }
+
     return readSuccessFully;
   }
 
