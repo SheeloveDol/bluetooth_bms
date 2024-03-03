@@ -240,6 +240,8 @@ class Be {
     var good = _verifyReadings(answer);
     if (!good) {
       good = await resetConnection();
+      print("RECONNECTED: $good");
+      await Future.delayed(const Duration(seconds: 3));
       if (good) {
         _communicatingNow = false;
       }
