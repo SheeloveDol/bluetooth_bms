@@ -71,7 +71,8 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(seconds: 700), (timer) async {
+        _timer =
+            Timer.periodic(const Duration(milliseconds: 700), (timer) async {
           if (!Be.communicatingNow) {
             var good =
                 (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
