@@ -122,7 +122,8 @@ class Be {
       readSuccessFully = await read(Data.STATS_PAYLOAD);
 
       if (readSuccessFully) {
-        return {"error": null, "sub": subscription};
+        savedSubscription = subscription;
+        return {"error": null};
       }
       return {"error": "could not read device"};
     } catch (e) {
@@ -163,11 +164,25 @@ class Be {
     return readSuccesFully;
   }
 
-  static Future<void> disconnect(BluetoothDevice device,
-      StreamSubscription<BluetoothConnectionState> sub) async {
+  static Future<void> disconnect({bool totaly = false}) async {
     // Disconnect from device
-    await device.disconnect();
-    await sub.cancel();
+    await savedDevice?.disconnect();
+    await savedSubscription?.cancel();
+    savedSubscription = null;
+    if (totaly) {
+      savedDevice = null;
+    }
+  }
+
+  static Future<bool> resetConnection() async {
+    await disconnect(totaly: false);
+    try {
+      await savedDevice!.connect();
+    } catch (e) {
+      return false;
+    }
+    await savedDevice!.discoverServices();
+    return true;
   }
 
   static List<int> checksumtoRead(List<int> payload) {
@@ -210,7 +225,9 @@ class Be {
         _setWake(false);
       }
       //maybe this will fail on a 100 cells battery
-      await Future.delayed(Duration(milliseconds: 300 + j * 300));
+      if (!(answer[answer.length - 1] == 0x77)) {
+        await Future.delayed(Duration(milliseconds: 200 + j * 300));
+      }
       j++;
       if (j > 5) {
         break;
@@ -221,6 +238,10 @@ class Be {
 
     var good = _verifyReadings(answer);
     if (!good) {
+      good = await resetConnection();
+      if (good) {
+        _communicatingNow = false;
+      }
       return good;
     }
     var data = answer.sublist(4, answer.length - 3);

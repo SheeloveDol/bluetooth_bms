@@ -40,7 +40,7 @@ class _DashBoardState extends State<DashBoard> {
     _timer?.cancel();
     try {
       Data.setAvailableData(false);
-      Be.disconnect(widget.device, configMap["sub"]).then((value) {
+      Be.disconnect(totaly: true).then((value) {
         quicktell(context, "Disconnected from ${widget.title}");
       });
     } catch (e) {
@@ -76,15 +76,8 @@ class _DashBoardState extends State<DashBoard> {
             var good =
                 (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
             if (!good) {
-              Data.setAvailableData(false);
-              await Be.disconnect(widget.device, configMap["sub"]);
-              var err = await Be.connect(widget.device);
-              if (err["error"] != null) {
-                quicktell(context, "Disconnected from ${widget.title}");
-              } else {
-                configMap = err;
-              }
-              Data.setAvailableData(true);
+              quicktell(context, "Lost connection to the Device");
+              _timer?.cancel();
             }
             alternate = !alternate;
           }
