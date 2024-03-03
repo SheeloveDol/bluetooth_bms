@@ -265,7 +265,7 @@ class Be {
     //subscribe to read charac
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
-      writeCharacteristics!.write(cmd, withoutResponse: true);
+      await writeCharacteristics!.write(cmd, withoutResponse: true);
       if (wake) {
         await Future.delayed(const Duration(milliseconds: 300));
       }
@@ -276,6 +276,7 @@ class Be {
       await Future.delayed(const Duration(milliseconds: 300));
     }
     _communicatingNow = false;
+    notifySub.cancel();
   }
 
   static bool _verifyReadings(List<int> rawData) {
