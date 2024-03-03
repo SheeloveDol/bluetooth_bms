@@ -122,6 +122,7 @@ class Be {
       readSuccessFully = await read(Data.STATS_PAYLOAD);
 
       if (readSuccessFully) {
+        savedDevice = device;
         savedSubscription = subscription;
         return {"error": null};
       }
