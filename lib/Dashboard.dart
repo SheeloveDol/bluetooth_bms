@@ -71,8 +71,8 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
-          (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
+        _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+          (alternate) ? Be.getBasicInfo() : Be.getCellInfo();
           alternate = !alternate;
         });
       } else {
