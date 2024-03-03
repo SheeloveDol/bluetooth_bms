@@ -71,16 +71,18 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+        _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           if (!Be.communicatingNow) {
             var good =
                 (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
             if (!good) {
               Data.setAvailableData(false);
               await Be.disconnect(widget.device, configMap["sub"]);
-              await Be.connect(widget.device);
-              Data.setAvailableData(false);
-              ;
+              var err = await Be.connect(widget.device);
+              if (err["error"] != null) {
+                quicktell(context, "Disconnected from ${widget.title}");
+              }
+              Data.setAvailableData(true);
             }
             alternate = !alternate;
           }

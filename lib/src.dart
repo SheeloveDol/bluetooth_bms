@@ -218,18 +218,16 @@ class Be {
     } while (answer.isEmpty);
 
     notifySub.cancel();
-    try {
-      var good = _verifyReadings(answer);
-      var data = answer.sublist(4, answer.length - 3);
-      var good2 = Data.setBatchData(data, answer[1]);
-      _communicatingNow = false;
-      print(answer);
-      return good && good2;
-    } catch (e) {
-      _communicatingNow = false;
-      print("Reading failed ${e.toString()}");
-      return false;
+
+    var good = _verifyReadings(answer);
+    if (!good) {
+      return good;
     }
+    var data = answer.sublist(4, answer.length - 3);
+    var good2 = Data.setBatchData(data, answer[1]);
+    _communicatingNow = false;
+    print(answer);
+    return good2;
   }
 
   static write(List<int> payload) async {
