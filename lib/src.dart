@@ -15,6 +15,7 @@ class Be {
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
+  static bool _communicatingNow = false;
 
   Be() {}
 
@@ -188,6 +189,7 @@ class Be {
   }
 
   static Future<bool> read(List<int> payload) async {
+    _communicatingNow = true;
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> answer = [];
     //subscribe to read charac
@@ -207,6 +209,7 @@ class Be {
         }
         _setWake(false);
       }
+      //maybe this will fail on a 100 cells battery
       await Future.delayed(Duration(milliseconds: 300 + j * 300));
       j++;
       if (j > 5) {
@@ -218,11 +221,16 @@ class Be {
     var good = _verifyReadings(answer);
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
+    _communicatingNow = false;
     print(answer);
     return good && good2;
   }
 
   static write(List<int> payload) async {
+    while (_communicatingNow) {
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
+    _communicatingNow = true;
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     var confirmation = [];
     await readCharacteristics!.setNotifyValue(true);
@@ -242,6 +250,7 @@ class Be {
     while (confirmation.isEmpty) {
       await Future.delayed(const Duration(milliseconds: 300));
     }
+    _communicatingNow = false;
   }
 
   static bool _verifyReadings(List<int> rawData) {
@@ -357,6 +366,8 @@ class Be {
     }
     return result;
   }
+
+  static bool get comunivatingNow => _communicatingNow;
 }
 
 class Data {
