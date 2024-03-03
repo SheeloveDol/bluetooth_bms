@@ -206,7 +206,7 @@ class Be {
 
   static Future<bool> read(List<int> payload) async {
     _communicatingNow = true;
-    Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
+    // Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> answer = [];
     //subscribe to read charac
     await readCharacteristics!.setNotifyValue(true);
