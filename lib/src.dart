@@ -117,8 +117,8 @@ class Be {
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
-      await getCellInfo();
-      await getStatsReport();
+      readSuccessFully = await read(Data.CELL_INFO_PAYLOAD);
+      readSuccessFully = await read(Data.STATS_PAYLOAD);
 
       if (readSuccessFully) {
         return {"error": null, "sub": subscription};
