@@ -30,6 +30,7 @@ class _DashBoardState extends State<DashBoard> {
   double height = 0;
   late Map<String, dynamic> configMap;
   Timer? _timer;
+  bool alternate = true;
   onDisconnect() {
     Navigator.pop(context);
   }
@@ -70,10 +71,11 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
-        _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) async {
-          Be.getBasicInfo();
-          await Future.delayed(const Duration(milliseconds: 350));
-          Be.getCellInfo();
+        _timer =
+            Timer.periodic(const Duration(milliseconds: 350), (timer) async {
+          (alternate) ? Be.getBasicInfo() : Be.getCellInfo();
+          alternate = !alternate;
+          setState(() {});
         });
       } else {
         quicktell(
