@@ -225,9 +225,9 @@ class Be {
         _setWake(false);
       }
       //maybe this will fail on a 100 cells battery
-      if (answer[answer.length - 1] != 0x77) {
-        await Future.delayed(Duration(milliseconds: 200 + j * 300));
-      }
+
+      await Future.delayed(Duration(milliseconds: 200 + j * 300));
+
       j++;
       if (j > 5) {
         break;
