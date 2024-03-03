@@ -72,9 +72,12 @@ class _DashBoardState extends State<DashBoard> {
         Data.setAvailableData(true);
         setState(() {});
         _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-          (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
+          var good =
+              (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
           alternate = !alternate;
-          setState(() {});
+          if (good) {
+            setState(() {});
+          }
         });
       } else {
         quicktell(
