@@ -81,6 +81,8 @@ class _DashBoardState extends State<DashBoard> {
               var err = await Be.connect(widget.device);
               if (err["error"] != null) {
                 quicktell(context, "Disconnected from ${widget.title}");
+              } else {
+                configMap = err;
               }
               Data.setAvailableData(true);
             }
