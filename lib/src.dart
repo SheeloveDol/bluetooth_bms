@@ -373,7 +373,7 @@ class Be {
     return result;
   }
 
-  static bool get comunivatingNow => _communicatingNow;
+  static bool get communicatingNow => _communicatingNow;
 }
 
 class Data {
