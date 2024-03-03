@@ -77,11 +77,10 @@ class _DashBoardState extends State<DashBoard> {
                 (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
             if (!good) {
               Data.setAvailableData(false);
-              await Be.disconnect(widget.device, configMap["sub"])
-                  .then((value) {
-                quicktell(context, "Disconnected from ${widget.title}");
-                Be.connect(widget.device);
-              });
+              await Be.disconnect(widget.device, configMap["sub"]);
+              await Be.connect(widget.device);
+              Data.setAvailableData(false);
+              ;
             }
             alternate = !alternate;
           }
