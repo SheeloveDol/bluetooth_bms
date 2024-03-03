@@ -29,12 +29,14 @@ class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
   double height = 0;
   late Map<String, dynamic> configMap;
+  Timer? _timer;
   onDisconnect() {
     Navigator.pop(context);
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     try {
       Data.setAvailableData(false);
       Be.disconnect(widget.device, configMap["sub"]).then((value) {
@@ -68,6 +70,9 @@ class _DashBoardState extends State<DashBoard> {
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
+        _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+          Be.getBasicInfo();
+        });
       } else {
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
