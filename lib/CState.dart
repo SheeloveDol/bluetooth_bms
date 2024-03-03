@@ -47,7 +47,7 @@ class _CellsStateState extends State<CellsState> {
               style: TextStyle(
                   fontSize: 12, color: titleColor, fontWeight: titleWeight),
             ),
-            Text("${Data.cell_mv[index].toStringAsFixed(2)}V",
+            Text("${Data.cell_mv[index].toStringAsFixed(3)}V",
                 style: TextStyle(
                     fontSize: 12, height: 0, color: color, fontWeight: weight))
           ])
@@ -73,7 +73,7 @@ class _CellsStateState extends State<CellsState> {
               ]),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                 Column(children: [
-                  Text("Cell Difference:${celldiff.toStringAsFixed(1)}",
+                  Text("Cell Difference:${celldiff.toStringAsFixed(3)}",
                       style: const TextStyle(
                           color: Colors.green, fontWeight: FontWeight.bold)),
                   const Text("Ballance inactive",
