@@ -65,7 +65,7 @@ class _RightState extends State<Right> {
   @override
   Widget build(BuildContext context) {
     var ma =
-        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}mA ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -147,7 +147,8 @@ class _MiddleState extends State<Middle> {
                       "${Data.pack_mv}V",
                       style: const TextStyle(height: 0, fontSize: 10),
                     ),
-                    Text("${Data.cycle_cap}mAh/${Data.design_cap}mAh",
+                    Text(
+                        "${Data.cycle_cap}Ah/${Data.design_cap}Ah", // remove milliamps from the string, supposed to be "Ah" not "mAh"
                         style: const TextStyle(height: 0, fontSize: 10)),
                   ]))
         ])

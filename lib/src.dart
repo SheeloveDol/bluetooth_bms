@@ -259,6 +259,9 @@ class Be {
       await Future.delayed(const Duration(milliseconds: 300));
     }
     _communicatingNow = true;
+
+    //TODO: Do we still need this _setWake function?
+
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     var confirmation = [];
     await readCharacteristics!.setNotifyValue(true);
@@ -676,11 +679,30 @@ class Data {
     if (!availableData) {
       return "0 Minutes left";
     }
-    var timeHours =
-        ((_data["pack_ma"]![1] & 0xFF) | (_data["pack_ma"]![0] << 8) & 0xFF00) /
-            ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
-    double timeMinutes = timeHours * 60.0;
-    return "$timeMinutes minutes left";
+
+    int AmperageInputAndOutput =
+        (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
+    // Check the sign bit (MSB)
+    if (AmperageInputAndOutput & 0x8000 != 0) {
+      AmperageInputAndOutput = -(0x10000 - AmperageInputAndOutput);
+    }
+    if (AmperageInputAndOutput == 0) {
+      return "999 hours left";
+    }
+
+    var decimalHours = ((_data["cycle_cap"]![0] << 8) +
+            _data["cycle_cap"]![1]) /
+        // ((_data["pack_ma"]![1] & 0xFF) | (_data["pack_ma"]![0] << 8) & 0xFF00);
+        AmperageInputAndOutput;
+
+    int hours = decimalHours.truncate();
+    int minutes = ((decimalHours - hours) * 60).round();
+
+    // Returns hours and minutes left, but if minutes is less than 10, it adds a 0 before the minutes
+    return "${hours}H ${(minutes.abs() < 10) ? "0$minutes" : "$minutes"}M left"
+        .replaceAll("-", "");
+
+    // TODO: Possibly add pulsatting red When hours is less than 2
   }
 
   static double get celldif {
