@@ -186,6 +186,7 @@ class _LeftState extends State<Left> {
                   fontWeight: FontWeight.w900,
                   color: (Data.chargeStatus) ? Colors.green : Colors.red)),
           CupertinoButton(
+              pressedOpacity: 0.1,
               color: (Data.chargeStatus) ? Colors.green : Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 15),
               onPressed: chargePressed,
