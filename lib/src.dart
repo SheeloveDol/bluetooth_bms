@@ -248,6 +248,7 @@ class Be {
       
     }*/
     if (!good) {
+      _communicatingNow = false;
       return false;
     }
     var data = answer.sublist(4, answer.length - 3);
