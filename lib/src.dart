@@ -247,8 +247,8 @@ class Be {
       }
       
     }*/
-    if (good) {
-      return good;
+    if (!good) {
+      return false;
     }
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
