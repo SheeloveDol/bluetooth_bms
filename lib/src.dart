@@ -270,6 +270,7 @@ class Be {
     });
     //subscribe to read charac
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+    print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
       if (wake) {
