@@ -245,13 +245,16 @@ class Be {
       if (good) {
         _communicatingNow = false;
       }
-      return good;
+      
     }*/
+    if (good) {
+      return good;
+    }
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
     print(answer);
-    return good && good2;
+    return good2;
   }
 
   static write(List<int> payload) async {
