@@ -420,10 +420,10 @@ class Data {
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
 
-  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
-  static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x01];
-  static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x02];
-  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x03];
+  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x00];
+  static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x01];
+  static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x02];
+  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x03];
 
   static bool availableData = false;
   static bool get isBLEConnected => availableData;
