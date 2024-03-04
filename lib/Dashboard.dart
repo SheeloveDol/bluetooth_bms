@@ -13,7 +13,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'src.dart';
 
 class DashBoard extends StatefulWidget {
-  const DashBoard({
+  DashBoard({
     super.key,
     required this.title,
     required this.device,
@@ -97,7 +97,7 @@ class _DashBoardState extends State<DashBoard> {
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         colors: [Color(0xFF002A4D), Colors.black])),
-                child: Stack(children: [
+                child: Stack(children: <Widget>[
                   ListView(
                       padding: EdgeInsets.only(top: 230 - height),
                       physics: const BouncingScrollPhysics(),

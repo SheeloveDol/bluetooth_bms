@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ScanPage());
 }
 
 class DeviceElement {
@@ -18,24 +18,8 @@ class DeviceElement {
   const DeviceElement(this.title, this.device, this.contextkey, this.setState);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Bluetooth BMS',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1645BC)),
-          useMaterial3: true,
-        ),
-        home: const ScanPage(title: 'Home Page'));
-  }
-}
-
 class ScanPage extends StatefulWidget {
-  const ScanPage({super.key, required this.title});
-  final String title;
+  const ScanPage({super.key});
   @override
   State<ScanPage> createState() => _ScanPageState();
 }
