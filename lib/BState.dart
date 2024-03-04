@@ -80,11 +80,7 @@ class _ActiveStatesState extends State<ActiveStates> {
   Widget build(BuildContext context) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: Data.curr_err
-            .map((e) => generateStateElement(e))
-            .toList()
-            .reversed
-            .toList());
+        children: [for (var err in Data.curr_err) generateStateElement(err)]);
   }
 }
 
