@@ -66,6 +66,7 @@ class _DashBoardState extends State<DashBoard> {
       }
     });
     Be.setUpdater(() => setState(() {}));
+    Be.setCurrentContext(context);
     Be.connect(widget.device).then((map) async {
       configMap = map;
       if (map["error"] == null) {
@@ -75,7 +76,6 @@ class _DashBoardState extends State<DashBoard> {
             Timer.periodic(const Duration(milliseconds: 700), (timer) async {
           if (!Be.communicatingNow) {
             (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
-
             alternate = !alternate;
           }
         });

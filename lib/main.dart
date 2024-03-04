@@ -49,6 +49,7 @@ class _ScanPageState extends State<ScanPage> {
   List<DeviceElement> namelessDevices = [];
 
   onScan() async {
+    Be.setCurrentContext(context);
     setState(() => disabled = true);
     setState(() => devices.clear());
     if (!await Be.init()) {

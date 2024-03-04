@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -11,6 +12,7 @@ class Be {
   static BluetoothCharacteristic? readCharacteristics;
   static BluetoothCharacteristic? writeCharacteristics;
   static StreamSubscription<BluetoothConnectionState>? savedSubscription;
+  static BuildContext? context;
   static bool wake = true;
   static int times = 0;
   static int readTimes = 0;
@@ -180,6 +182,7 @@ class Be {
     try {
       await savedDevice!.connect();
     } catch (e) {
+      quicktell(context!, "Lost connection with device");
       return false;
     }
     await savedDevice!.discoverServices();
@@ -237,19 +240,15 @@ class Be {
     notifySub.cancel();
 
     var good = _verifyReadings(answer);
-    /*if (!good) {
+    if (!good) {
       good = await resetConnection();
       print("RECONNECTED: $good");
-      await Future.delayed(const Duration(seconds: 3));
       if (good) {
         _communicatingNow = false;
       }
-      
-    }*/
-    if (!good) {
-      _communicatingNow = false;
-      return false;
+      return good;
     }
+
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
@@ -317,6 +316,7 @@ class Be {
       ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
       print(rawData);
       rawData.clear();
+      print(rawData);
       return false;
     }
     return true;
@@ -350,6 +350,7 @@ class Be {
     wake = wakeValue;
   }
 
+  static void setCurrentContext(BuildContext context) {}
   static bool get communicatingNow => _communicatingNow;
 }
 
