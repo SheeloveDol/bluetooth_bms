@@ -217,7 +217,6 @@ class Be {
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
     int j = 0;
     do {
-      print("sending command : $cmd");
       for (var i = (wake) ? 0 : 1; i < 2; i++) {
         await writeCharacteristics!.write(cmd, withoutResponse: true);
         if (wake) {
@@ -254,7 +253,6 @@ class Be {
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
-    print(answer);
     return good2;
   }
 
@@ -275,7 +273,6 @@ class Be {
       confirmation.addAll(event);
     });
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
-    print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
       if (wake) {
@@ -351,42 +348,6 @@ class Be {
 
   static void _setWake(bool wakeValue) {
     wake = wakeValue;
-  }
-
-  static int _changeBit(int bitIndex, int bitValue, int byteToChange) {
-    // Check if the bitIndex is within the valid range (0 to 7 for a byte)
-    if (bitIndex < 0 || bitIndex > 1) {
-      throw ArgumentError(
-          'Invalid bit index. Bit index must be between 0 and 7.');
-    }
-
-    // Check if the bitValue is valid (0 or 1)
-    if (bitValue != 0 && bitValue != 1) {
-      throw ArgumentError('Invalid bit value. Bit value must be 0 or 1.');
-    }
-
-    // Clear the bit at the specified index
-    int mask = ~(1 << bitIndex);
-    int result = byteToChange & mask;
-
-    // Set the bit to the desired value
-    result |= (bitValue << bitIndex);
-    print(result);
-
-    return result;
-  }
-
-  static int _boolArrayToInt(List<bool> bits) {
-    if (bits.length != 2) {
-      throw ArgumentError('Input list must contain exactly 2 bools');
-    }
-    int result = 0;
-    for (int i = 0; i < bits.length; i++) {
-      if (bits[i]) {
-        result |= (1 << i);
-      }
-    }
-    return result;
   }
 
   static bool get communicatingNow => _communicatingNow;
@@ -715,7 +676,6 @@ class Data {
     }
 
     var smallest = current;
-    print(smallest);
     current = cell_mv[0];
     for (var i = 0; i < cell_cnt; i++) {
       if (current < cell_mv[i]) {
@@ -723,7 +683,6 @@ class Data {
       }
     }
     var biggest = current;
-    print(biggest);
     return biggest - smallest;
   }
 
@@ -756,7 +715,6 @@ class Data {
         _data["remaining_capacity"] = batch.sublist(afterNtc + 3, afterNtc + 5);
         _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
       } catch (e) {
-        print(e.toString());
         print(
             "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
       }

@@ -74,12 +74,8 @@ class _DashBoardState extends State<DashBoard> {
         _timer =
             Timer.periodic(const Duration(milliseconds: 700), (timer) async {
           if (!Be.communicatingNow) {
-            var good =
-                (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
-            if (!good) {
-              quicktell(context, "Lost connection to the Device");
-              _timer?.cancel();
-            }
+            (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
+
             alternate = !alternate;
           }
         });
