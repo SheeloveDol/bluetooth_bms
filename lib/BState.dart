@@ -114,8 +114,12 @@ String getDescription(String s) {
       return ": Short circuit protection";
     case "FICE":
       return ": Frontend IC error (afe_err)";
+    case "SL":
+      return ": Software Lock";
     case "COBU":
       return ": Charge turned off by user (Button)";
+    case "DOBU":
+      return ": Discharge turned off by user (Button)";
     default:
       return ": Unknown Error";
   }
