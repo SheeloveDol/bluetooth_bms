@@ -238,18 +238,34 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
 }
 
 void dischargePressed() {
-  if (Data.dischargeStatus) {
-    Be.turnOffDischarge();
-  } else {
-    Be.turnOnDischarge();
+  if (Data.dischargeStatus && Data.chargeStatus) {
+    //send payload that turns off dischacharge and turns on charge
+    Be.off_discharge_on_charge();
+  } else if (!Data.dischargeStatus && Data.chargeStatus) {
+    //send payload that turns on dischacharge and turns on charge
+    Be.on_discharge_on_charge();
+  } else if (!Data.dischargeStatus && !Data.chargeStatus) {
+    //send payload that turns on dischacharge and turns off charge
+    Be.on_discharge_off_charge();
+  } else if (Data.dischargeStatus && !Data.chargeStatus) {
+    //send payload that turns off dischacharge and turns off charge
+    Be.off_discharge_off_charge();
   }
 }
 
 void chargePressed() {
-  if (Data.dischargeStatus) {
-    Be.turnOffCharge();
-  } else {
-    Be.turnOnCharge();
+  if (Data.dischargeStatus && Data.chargeStatus) {
+    //send payload that turns on dischacharge and turns off charge
+    Be.on_discharge_off_charge();
+  } else if (!Data.dischargeStatus && Data.chargeStatus) {
+    //send payload that turns off dischacharge and turns off charge
+    Be.off_discharge_off_charge();
+  } else if (!Data.dischargeStatus && !Data.chargeStatus) {
+    //send payload that turns off dischacharge and turns on charge
+    Be.off_discharge_on_charge();
+  } else if (Data.dischargeStatus && !Data.chargeStatus) {
+    //send payload that turns on dischacharge and turns on charge
+    Be.on_discharge_on_charge();
   }
 }
 

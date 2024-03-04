@@ -264,11 +264,12 @@ class Be {
 
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     var confirmation = [];
+
+    //subscribe to read charac
     await readCharacteristics!.setNotifyValue(true);
     var notifySub = readCharacteristics!.onValueReceived.listen((event) {
       confirmation.addAll(event);
     });
-    //subscribe to read charac
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
     print("sending command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -324,39 +325,23 @@ class Be {
     updater = setstate;
   }
 
-  static void turnOnDischarge() async {
-    await write([
-      ...Data.COMAND_PAYLOAD,
-      _changeBit(
-          0, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
-    ]);
+  static void on_discharge_on_charge() async {
+    await write(Data.ON_DSICHARGE_ON_CHARGE_PAYLOAD);
     await getBasicInfo();
   }
 
-  static void turnOffDischarge() async {
-    await write([
-      ...Data.COMAND_PAYLOAD,
-      _changeBit(
-          0, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
-    ]);
+  static void on_discharge_off_charge() async {
+    await write(Data.ON_DSICHARGE_OFF_CHARGE_PAYLOAD);
     await getBasicInfo();
   }
 
-  static void turnOnCharge() async {
-    await write([
-      ...Data.COMAND_PAYLOAD,
-      _changeBit(
-          1, 0, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
-    ]);
+  static void off_discharge_on_charge() async {
+    await write(Data.OFF_DSICHARGE_ON_CHARGE_PAYLOAD);
     await getBasicInfo();
   }
 
-  static void turnOffCharge() async {
-    await write([
-      ...Data.COMAND_PAYLOAD,
-      _changeBit(
-          1, 1, _boolArrayToInt([Data.chargeStatus, Data.dischargeStatus]))
-    ]);
+  static void off_discharge_off_charge() async {
+    await write(Data.OFF_DSICHARGE_OFF_CHARGE_PAYLOAD);
     await getBasicInfo();
   }
 
@@ -468,7 +453,10 @@ class Data {
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
-  static const COMAND_PAYLOAD = [0xe1, 0x02, 0x00];
+  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x03];
+  static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x02];
+  static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x01];
+  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
 
   static bool availableData = false;
   static bool get isBLEConnected => availableData;
