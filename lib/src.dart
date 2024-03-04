@@ -238,7 +238,7 @@ class Be {
     notifySub.cancel();
 
     var good = _verifyReadings(answer);
-    if (!good) {
+    /*if (!good) {
       good = await resetConnection();
       print("RECONNECTED: $good");
       await Future.delayed(const Duration(seconds: 3));
@@ -246,12 +246,12 @@ class Be {
         _communicatingNow = false;
       }
       return good;
-    }
+    }*/
     var data = answer.sublist(4, answer.length - 3);
     var good2 = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
     print(answer);
-    return good2;
+    return good && good2;
   }
 
   static write(List<int> payload) async {
@@ -453,10 +453,11 @@ class Data {
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
-  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x03];
+
+  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
   static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x01];
   static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x02];
-  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
+  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x03];
 
   static bool availableData = false;
   static bool get isBLEConnected => availableData;
