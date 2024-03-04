@@ -492,6 +492,8 @@ class Data {
       ? "0.0"
       : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
+
+  //BAttery capacity
   static String get design_cap => (!availableData)
       ? "0.0"
       : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
@@ -679,7 +681,9 @@ class Data {
     if (!availableData) {
       return "0 Minutes left";
     }
-
+    int capacityLeft = ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
+    int totalCapacity =
+        ((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]);
     int AmperageInputAndOutput =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
     // Check the sign bit (MSB)
@@ -690,16 +694,16 @@ class Data {
       return "999 hours left";
     }
 
-    var decimalHours = ((_data["cycle_cap"]![0] << 8) +
-            _data["cycle_cap"]![1]) /
-        // ((_data["pack_ma"]![1] & 0xFF) | (_data["pack_ma"]![0] << 8) & 0xFF00);
-        AmperageInputAndOutput;
+    var decimalHours = capacityLeft / AmperageInputAndOutput;
+    if (!decimalHours.isNegative) {
+      decimalHours = (totalCapacity - capacityLeft) / AmperageInputAndOutput;
+    }
 
     int hours = decimalHours.truncate();
     int minutes = ((decimalHours - hours) * 60).round();
 
     // Returns hours and minutes left, but if minutes is less than 10, it adds a 0 before the minutes
-    return "${hours}H ${(minutes.abs() < 10) ? "0$minutes" : "$minutes"}M left"
+    return "${hours}H ${(minutes.abs() < 10) ? "0$minutes" : "$minutes"}M ${!decimalHours.isNegative ? "Time to full" : "left"}"
         .replaceAll("-", "");
 
     // TODO: Possibly add pulsatting red When hours is less than 2
