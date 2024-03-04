@@ -85,13 +85,11 @@ class _RightState extends State<Right> {
             ])),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
+          pressedOpacity: 0.1,
           color: (Data.dischargeStatus) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
-          child: const Text(
-            "Discharge",
-            style: TextStyle(fontSize: 11),
-          ),
+          child: const Text("Discharge", style: TextStyle(fontSize: 11)),
         )
       ],
     );
@@ -207,6 +205,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       CupertinoButton(
+          pressedOpacity: 0.1,
           color: (Data.chargeStatus) ? Colors.green : Colors.red,
           padding: const EdgeInsets.symmetric(horizontal: 15),
           onPressed: chargePressed,
