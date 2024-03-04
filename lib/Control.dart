@@ -228,13 +228,10 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
       const Padding(padding: EdgeInsets.only(right: 12)),
       CupertinoButton(
           pressedOpacity: 0.1,
-          color: (Data.chargeStatus) ? Colors.green : Colors.red,
+          color: (Data.dischargeStatus) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
-          child: const Text(
-            "Discharge",
-            style: TextStyle(fontSize: 11),
-          ))
+          child: const Text("Discharge", style: TextStyle(fontSize: 11)))
     ]);
   }
 }

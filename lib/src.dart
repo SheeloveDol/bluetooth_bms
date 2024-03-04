@@ -520,13 +520,13 @@ class Data {
             err.add("FICE"); //Frontend IC err (afe_err)
             break;
           case 12:
-            err.add("SL"); //Chage turned off by user
+            err.add("SL"); //Software Lock
             break;
           case 13:
             err.add("COBU"); //Chage turned off by user
             break;
           case 14:
-            err.add("DOBU"); //Chage turned off by user
+            err.add("DOBU"); //Dischage turned off by user
             break;
           default:
             err.add("UNKOWN"); //Unknown error
