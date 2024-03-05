@@ -82,7 +82,6 @@ class _DashBoardState extends State<DashBoard> {
           }
         });
       } else {
-        setState(() {});
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }
