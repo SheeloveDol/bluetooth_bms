@@ -73,7 +73,7 @@ class _RightState extends State<Right> {
       children: [
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          bolts(),
+          Bolts(),
           Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
           Text(
               "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
@@ -262,12 +262,13 @@ void chargePressed() {
   }
 }
 
-class bolts extends StatefulWidget {
+class Bolts extends StatefulWidget {
+  Bolts({super.key});
   @override
-  _boltsState createState() => _boltsState();
+  _BoltsState createState() => _BoltsState();
 }
 
-class _boltsState extends State<bolts> {
+class _BoltsState extends State<Bolts> {
   List<Color> colors = [
     Colors.yellow,
     Colors.yellow,
@@ -280,8 +281,9 @@ class _boltsState extends State<bolts> {
   @override
   void initState() {
     super.initState();
-    if (Data.availableData) {
-      _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+
+    _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+      if (Data.pack_ma != "0.00") {
         c++;
         if (c > 3) {
           c = 0;
@@ -291,8 +293,8 @@ class _boltsState extends State<bolts> {
               0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
           colors[c] = Colors.green;
         });
-      });
-    }
+      }
+    });
   }
 
   @override
