@@ -72,7 +72,8 @@ class _ActiveStatesState extends State<ActiveStates> {
       const Padding(padding: EdgeInsets.only(left: 5)),
       Text(
         description,
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(
+            fontSize: 12, color: (title == "SL") ? Colors.red : Colors.white),
         overflow: TextOverflow.visible,
         softWrap: true,
       )
