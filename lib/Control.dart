@@ -72,17 +72,13 @@ class _RightState extends State<Right> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Padding(padding: EdgeInsets.only(top: 35)),
-        Container(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-              bolts(),
-              Text(ma,
-                  style: const TextStyle(fontSize: 11, color: Colors.white)),
-              Text(
-                  "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
-                  style: const TextStyle(fontSize: 11, color: Colors.white))
-            ])),
+        Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          bolts(),
+          Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
+          Text(
+              "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
+              style: const TextStyle(fontSize: 11, color: Colors.white))
+        ]),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
           pressedOpacity: 0.1,
@@ -307,6 +303,7 @@ class _boltsState extends State<bolts> {
 
   @override
   Widget build(BuildContext context) {
+    print(Data.pack_ma);
     return Row(children: [
       Icon(Icons.bolt,
           size: 20, color: (Data.pack_ma[0] == "-") ? colors[0] : colors[3]),
