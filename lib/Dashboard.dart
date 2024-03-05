@@ -31,6 +31,7 @@ class _DashBoardState extends State<DashBoard> {
   late Map<String, dynamic> configMap;
   Timer? _timer;
   bool alternate = true;
+  bool done = false;
   onDisconnect() {
     Navigator.pop(context);
   }
@@ -41,7 +42,7 @@ class _DashBoardState extends State<DashBoard> {
     try {
       Data.setAvailableData(false);
       Be.disconnect(totaly: true).then((value) {
-        quicktell(context, "Disconnected from ${widget.title}");
+        quicktell(Be.context!, "Disconnected from ${widget.title}");
       });
     } catch (e) {
       print("Disconnected but with error");
@@ -69,6 +70,7 @@ class _DashBoardState extends State<DashBoard> {
     Be.setCurrentContext(context);
     Be.connect(widget.device).then((map) async {
       configMap = map;
+      done = true;
       if (map["error"] == null) {
         Data.setAvailableData(true);
         setState(() {});
@@ -80,6 +82,7 @@ class _DashBoardState extends State<DashBoard> {
           }
         });
       } else {
+        setState(() {});
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }
@@ -111,7 +114,14 @@ class _DashBoardState extends State<DashBoard> {
                   BatteryControl(
                       title: widget.title,
                       height: height,
-                      back: () => onDisconnect())
+                      back: () => onDisconnect()),
+                  Visibility(
+                      visible: !done,
+                      child: Container(
+                          color: Colors.white10,
+                          child: const Center(
+                              child: const CircularProgressIndicator(
+                                  color: Colors.black))))
                 ]))));
   }
 }

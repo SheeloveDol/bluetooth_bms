@@ -28,7 +28,7 @@ class _BatteryControlState extends State<BatteryControl> {
             gradient: const LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [Colors.transparent, Color(0x63002A4D)]),
+                colors: [Colors.transparent, Color(0xFF002A4D)]),
             borderRadius: BorderRadius.circular(30)),
         alignment: Alignment.center,
         child: (widget.height == 105)
@@ -118,12 +118,11 @@ class _MiddleState extends State<Middle> {
                 color: Colors.white)),
         const Padding(padding: EdgeInsets.only(bottom: 10)),
         Stack(alignment: Alignment.centerLeft, children: [
-          Container(
-              decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 0, 193, 6),
-                  borderRadius:
-                      BorderRadius.horizontal(left: Radius.circular(30))),
-              width: (level * 1.7 - 10 < 0) ? 0 : level * 1.7 - 10,
+          AnimatedContainer(
+              duration: Durations.extralong3,
+              margin: EdgeInsets.only(left: 7),
+              color: const Color(0xFF00C106),
+              width: (level * 1.7 - 20 < 0) ? 0 : level * 1.7 - 20,
               height: 79),
           Image.asset(
             "assets/bat.png",
@@ -285,7 +284,7 @@ class _boltsState extends State<bolts> {
   @override
   void initState() {
     super.initState();
-    if (Data.dischargeStatus) {
+    if (Data.availableData) {
       _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
         c++;
         if (c > 3) {
@@ -310,13 +309,13 @@ class _boltsState extends State<bolts> {
   Widget build(BuildContext context) {
     return Row(children: [
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[0] : colors[3]),
+          size: 20, color: (Data.pack_ma[0] == "-") ? colors[0] : colors[3]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[1] : colors[2]),
+          size: 20, color: (Data.pack_ma[0] == "-") ? colors[1] : colors[2]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[2] : colors[1]),
+          size: 20, color: (Data.pack_ma[0] == "-") ? colors[2] : colors[1]),
       Icon(Icons.bolt,
-          size: 20, color: (!Data.dischargeStatus) ? colors[3] : colors[0])
+          size: 20, color: (Data.pack_ma[0] == "-") ? colors[3] : colors[0])
     ]);
   }
 }

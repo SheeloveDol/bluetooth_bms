@@ -6,16 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
-  runApp(ScanPage());
+  runApp(MaterialApp(home: ScanPage()));
 }
 
 class DeviceElement {
   final String title;
   final BluetoothDevice device;
-  final GlobalKey<State<StatefulWidget>> contextkey;
   final Function setState;
 
-  const DeviceElement(this.title, this.device, this.contextkey, this.setState);
+  const DeviceElement(this.title, this.device, this.setState);
 }
 
 class ScanPage extends StatefulWidget {
@@ -51,10 +50,10 @@ class _ScanPageState extends State<ScanPage> {
 
   void onFound(String name, BluetoothDevice device) {
     if (device.advName.length > 1) {
-      devices.insert(0, DeviceElement(name, device, _scaffoldKey, setState));
+      devices.insert(0, DeviceElement(name, device, setState));
       setState(() {});
     } else {
-      namelessDevices.add(DeviceElement(name, device, _scaffoldKey, setState));
+      namelessDevices.add(DeviceElement(name, device, setState));
     }
   }
 
@@ -69,7 +68,7 @@ class _ScanPageState extends State<ScanPage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: [SystemUiOverlay.bottom]);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xFF002A4D),
+      statusBarColor: Colors.black,
       systemNavigationBarColor: Colors.transparent, // Navigation bar color
     ));
     return Scaffold(
@@ -131,11 +130,13 @@ class _ScanPageState extends State<ScanPage> {
                                     Device(
                                         title: d.title,
                                         device: d.device,
-                                        scafoldContextKey: d.contextkey,
                                         rescan: onScan),
                                   if (visible)
                                     CupertinoButton(
-                                        child: const Text("Show more"),
+                                        child: const Text(
+                                          "Show All",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                         onPressed: () {
                                           devices = [
                                             ...devices,

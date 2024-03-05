@@ -15,8 +15,11 @@ class _BatteryStateState extends State<BatteryState> {
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 5),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-            color: const Color(0x565B5B5B),
-            borderRadius: BorderRadius.circular(30)),
+            borderRadius: BorderRadius.circular(30),
+            gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.transparent, Color(0xFF002A4D)])),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,

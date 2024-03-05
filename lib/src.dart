@@ -114,7 +114,7 @@ class Be {
         }
       }
     } catch (e) {
-      return {"error": "imcompatible device"};
+      return {"error": "device not compatible"};
     }
 
     try {
@@ -350,7 +350,10 @@ class Be {
     wake = wakeValue;
   }
 
-  static void setCurrentContext(BuildContext context) {}
+  static void setCurrentContext(BuildContext con) {
+    context = con;
+  }
+
   static bool get communicatingNow => _communicatingNow;
 }
 

@@ -11,13 +11,11 @@ class Device extends StatefulWidget {
     super.key,
     required this.title,
     required this.device,
-    required this.scafoldContextKey,
     required this.rescan,
   });
   final Function rescan;
   final BluetoothDevice device;
   final String title;
-  final GlobalKey scafoldContextKey;
   @override
   State<StatefulWidget> createState() => _DeviceState();
 }

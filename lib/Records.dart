@@ -139,7 +139,12 @@ class _ReportsState extends State<Reports> {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.transparent, Color(0xFF002A4D)])),
         child: Stack(children: [
           Align(
               alignment: Alignment.topLeft,
@@ -148,7 +153,7 @@ class _ReportsState extends State<Reports> {
                   height: 200,
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                      color: (bg) ? Colors.black : const Color(0x565B5B5B),
+                      color: (bg) ? Colors.black : Colors.transparent,
                       borderRadius: BorderRadius.circular(30)),
                   child: PageView(
                       controller: controller,
