@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'src.dart';
@@ -70,13 +71,15 @@ class _ActiveStatesState extends State<ActiveStates> {
       Text("$title",
           style: TextStyle(color: color, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(left: 5)),
-      Text(
-        description,
-        style: TextStyle(
-            fontSize: 12, color: (title == "SL") ? Colors.red : Colors.white),
-        overflow: TextOverflow.visible,
-        softWrap: true,
-      )
+      (title == "SL")
+          ? AnimatedTextKit(animatedTexts: [
+              FlickerAnimatedText(description,
+                  textStyle: TextStyle(fontSize: 12, color: Colors.red))
+            ])
+          : Text(
+              description,
+              style: TextStyle(fontSize: 12, color: Colors.white),
+            )
     ]);
   }
 
