@@ -294,10 +294,8 @@ class _BoltsState extends State<Bolts> {
           colors[c] = Colors.green;
         });
       } else {
-        setState(()=>
-          colors.setAll(
-              0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
-        );
+        setState(() => colors.setAll(
+            0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
       }
     });
   }
