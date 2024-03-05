@@ -360,7 +360,7 @@ class Be {
 class Data {
   static const BASIC_INFO = 0x03;
   static const CELL_VOLTAGE = 0x04;
-  static const DEVICE_NAME = 0x05;
+  static const DEVICE_VERSION = 0x05;
   static const STAT_INFO = 0xAA;
 
   static const int DESIGN_CAP = 0x10;
@@ -412,7 +412,7 @@ class Data {
   static const int SC_DSGOC2 = 0x38;
   static const int CXVP_HIGH_DELAY_SC_REL = 0x39;
   static const int MFG_NAME = 0xA0;
-  static const int DEVICE_NAME_FULL = 0xA1;
+  static const int DEVICE_NAME = 0xA1;
   static const int BARCODE = 0xA2;
   static const CLEAR_PASSWORD = 0x09;
   static const ENTER_FACTORY_MODE = 0x00;
