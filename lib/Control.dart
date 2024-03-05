@@ -293,6 +293,11 @@ class _BoltsState extends State<Bolts> {
               0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
           colors[c] = Colors.green;
         });
+      } else {
+        setState(()=>
+          colors.setAll(
+              0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
+        );
       }
     });
   }
@@ -305,7 +310,6 @@ class _BoltsState extends State<Bolts> {
 
   @override
   Widget build(BuildContext context) {
-    print(Data.pack_ma);
     return Row(children: [
       Icon(Icons.bolt,
           size: 20, color: (Data.pack_ma[0] == "-") ? colors[0] : colors[3]),
