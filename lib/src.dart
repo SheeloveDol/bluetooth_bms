@@ -366,9 +366,9 @@ class Be {
   static bool get communicatingNow => _communicatingNow;
 
   static readWhatsLeft() async {
-    await read(Data.DEVICE_NAME_PAYLOAD);
-    await read(Data.BAL_PAYLOAD);
-    await read(Data.MANUF_PAYLOAD);
+    read(Data.DEVICE_NAME_PAYLOAD).then((value) {
+      read(Data.BAL_PAYLOAD).then((value) => read(Data.MANUF_PAYLOAD));
+    });
   }
 }
 
