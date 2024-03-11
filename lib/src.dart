@@ -222,6 +222,7 @@ class Be {
     });
 
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+    print("sending command : $cmd");
     int j = 0;
     do {
       for (var i = (wake) ? 0 : 1; i < 2; i++) {
