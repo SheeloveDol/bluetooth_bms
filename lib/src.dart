@@ -644,8 +644,9 @@ class Data {
       ? 0
       : _data["device_name_lenght"]![0];
 
-  static String get device_name =>
-      (!availableData) ? "" : String.fromCharCodes(_data["device_name"]!);
+  static String get device_name => (_data["device_name"] == null)
+      ? ""
+      : String.fromCharCodes(_data["device_name"]!);
 
   static int get mfg_name_lenght =>
       (!availableData) ? 0 : _data["mfg_name_lenght"]![0];
