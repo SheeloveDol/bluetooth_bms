@@ -640,8 +640,9 @@ class Data {
     return value;
   }
 
-  static int get device_name_lenght =>
-      (!availableData) ? 0 : _data["device_name_lenght"]![0];
+  static int get device_name_lenght => (_data["device_name_lenght"] == null)
+      ? 0
+      : _data["device_name_lenght"]![0];
 
   static String get device_name =>
       (!availableData) ? "" : String.fromCharCodes(_data["device_name"]!);
@@ -649,12 +650,12 @@ class Data {
   static int get mfg_name_lenght =>
       (!availableData) ? 0 : _data["mfg_name_lenght"]![0];
 
-  static String get mfg_name => (!availableData)
+  static String get mfg_name => (_data["mfg_name"] == null)
       ? "Royer Batteries"
       : String.fromCharCodes(_data["mfg_name"]!);
 
   static double get bal_start {
-    if (!availableData) {
+    if (_data["bal_start"] == null) {
       return 0.0;
     }
     int result = (_data["bal_start"]![1] & 0xFF) |
