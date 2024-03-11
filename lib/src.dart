@@ -213,7 +213,6 @@ class Be {
 
   static Future<bool> read(List<int> payload) async {
     _communicatingNow = true;
-    // Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> answer = [];
     //subscribe to read charac
     await readCharacteristics!.setNotifyValue(true);
@@ -351,6 +350,11 @@ class Be {
     await getBasicInfo();
   }
 
+  static void reset() async {
+    await write(Data.RESET_PAYLOAD);
+    await getBasicInfo();
+  }
+
   static void _setWake(bool wakeValue) {
     wake = wakeValue;
   }
@@ -362,96 +366,55 @@ class Be {
   static bool get communicatingNow => _communicatingNow;
 
   static readWhatsLeft() async {
+    //await read(Data.DEVICE_NAME_PAYLOAD);
     //await read(Data.BAL_PAYLOAD);
     //await read(Data.MANUF_PAYLOAD);
-    //await read(Data.DEVICE_NAME_PAYLOAD);
   }
 }
 
 class Data {
+  //basic regiesteries
   static const BASIC_INFO = 0x03;
   static const CELL_VOLTAGE = 0x04;
-  static const DEVICE_VERSION = 0x05;
+  static const DEVICE_NAME = 0x05;
   static const STAT_INFO = 0xAA;
+  static const PARAMETERS = 0xFA;
+  static const FET_CTRL = 0xE1;
+  static const CMD_CTRL = 0x0A;
 
-  static const int DESIGN_CAP = 0x10;
-  static const int CYCLE_CAP = 0x11;
-  static const int CAP_100 = 0x12;
-  static const int CAP_80 = 0x32;
-  static const int CAP_60 = 0x33;
-  static const int CAP_40 = 0x34;
-  static const int CAP_20 = 0x35;
-  static const int CAP_0 = 0x13;
-  static const int DSG_RATE = 0x14;
-  static const int MFG_DATE = 0x15;
-  static const int SERIAL_NUM = 0x16;
-  static const int CYCLE_CNT = 0x17;
-  static const int CHGOT = 0x18;
-  static const int CHGOT_REL = 0x19;
-  static const int CHGUT = 0x1A;
-  static const int CHGUT_REL = 0x1B;
-  static const int CHG_T_DELAYS = 0x3A;
-  static const int DSG_T_DELAYS = 0x3B;
-  static const int DSGOT = 0x1C;
-  static const int DSGOT_REL = 0x1D;
-  static const int DSGUT = 0x1E;
-  static const int DSGUT_REL = 0x1F;
-  static const int POVP = 0x20;
-  static const int POVP_REL = 0x21;
-  static const int PUVP = 0x22;
-  static const int PUVP_REL = 0x23;
-  static const int PACK_V_DELAYS = 0x3C;
-  static const int COVP = 0x24;
-  static const int COVP_REL = 0x25;
-  static const int CUVP = 0x26;
-  static const int CUVP_REL = 0x27;
-  static const int CELL_V_DELAYS = 0x3D;
-  static const int CHGOC = 0x28;
-  static const int CHGOC_DELAYS = 0x3E;
-  static const int DSGOC = 0x29;
-  static const int DSGOC_DELAYS = 0x3F;
-  static const int BAL_START = 0x2A;
-  static const int BAL_WINDOW = 0x2B;
-  static const int SHUNT_RES = 0x2C;
-  static const int FUNC_CONFIG = 0x2D;
-  static const int NTC_CONFIG = 0x2E;
-  static const int CELL_CNT = 0x2F;
-  static const int FET_CTRL = 0x30;
-  static const int LED_TIMER = 0x31;
-  static const int COVP_HIGH = 0x36;
-  static const int CUVP_HIGH = 0x37;
-  static const int SC_DSGOC2 = 0x38;
-  static const int CXVP_HIGH_DELAY_SC_REL = 0x39;
-  static const int MFG_NAME = 0xA0;
-  static const int DEVICE_NAME = 0xA1;
-  static const int BARCODE = 0xA2;
-  static const CLEAR_PASSWORD = 0x09;
+  //Parameters
+  static const BAL_START = 0x1A;
+  static const MFG_NAME = 0x38;
+
+  //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
   static const EXIT_FACTORY_MODE = 0x01;
 
-  static final Map<String, List<int>> _data = {};
+  //Read Payloads
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
-  static const MANUF_PAYLOAD = [MFG_NAME, 0x00];
   static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
-  static const BAL_PAYLOAD = [BAL_START, 0x00];
-  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
-  static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x01];
-  static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x02];
-  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x03];
+  static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
+  static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
 
+  //write payloads
+  static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
+  static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x01];
+  static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x02];
+  static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x03];
+  static const RESET_PAYLOAD = [CMD_CTRL, 0x02, 0x04, 0x00];
+
+  static final Map<String, List<int>> _data = {};
   static bool availableData = false;
 
-  static bool get isBLEConnected => availableData;
-
-  static String get pack_mv => (!availableData)
+  static String get pack_mv => (_data["pack_mv"] == null)
       ? "0.0"
       : (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
           .toStringAsFixed(2);
 
   static String get pack_ma {
-    if (!availableData) {
+    if (_data["pack_ma"] == null) {
       return "0.0";
     }
     int result =
@@ -463,29 +426,29 @@ class Data {
     return (result * 0.01).toStringAsFixed(2);
   }
 
-  static String get cycle_cap => (!availableData)
+  static String get cycle_cap => (_data["cycle_cap"] == null)
       ? "0.0"
       : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
   //BAttery capacity
-  static String get design_cap => (!availableData)
+  static String get design_cap => (_data["design_cap"] == null)
       ? "0.0"
       : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
 
-  static String get cycle_cnt => (!availableData)
+  static String get cycle_cnt => (_data["cycle_cnt"] == null)
       ? "0"
       : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
 
   static bool get chargeStatus {
-    if (!availableData) {
+    if (_data["fet_status"] == null) {
       return false;
     }
     return (_data["fet_status"]![0] & 0x1) != 0;
   }
 
   static bool get dischargeStatus {
-    if (!availableData) {
+    if (_data["fet_status"] == null) {
       return false;
     }
     return (_data["fet_status"]![0] & 0x2) != 0;
@@ -493,7 +456,7 @@ class Data {
 
   static List<String> get curr_err {
     List<String> err = [];
-    if (!availableData) {
+    if (_data["curr_err"] == null) {
       return [];
     }
     for (int i = 15; i >= 0; i--) {
@@ -557,7 +520,7 @@ class Data {
   }
 
   static String get date {
-    if (!availableData) {
+    if (_data["date"] == null) {
       return "";
     }
     var dateData = ((_data["date"]![0] << 8) + _data["date"]![1]);
@@ -572,7 +535,7 @@ class Data {
   }
 
   static List<bool> get bal {
-    if (!availableData) {
+    if (_data["bal"] == null) {
       return [];
     }
     List<bool> bal = [];
@@ -584,14 +547,17 @@ class Data {
     return bal;
   }
 
-  static int get cap_pct => (!availableData) ? 0 : _data["cap_pct"]![0];
+  static int get cap_pct =>
+      (_data["cap_pct"] == null) ? 0 : _data["cap_pct"]![0];
 
-  static int get cell_cnt => (!availableData) ? 0 : _data["cell_cnt"]![0];
+  static int get cell_cnt =>
+      (_data["cell_cnt"] == null) ? 0 : _data["cell_cnt"]![0];
 
-  static int get ntc_cnt => (!availableData) ? 0 : _data["ntc_cnt"]![0];
+  static int get ntc_cnt =>
+      (_data["ntc_cnt"] == null) ? 0 : _data["ntc_cnt"]![0];
 
   static List<String> get ntc_temp {
-    if (!availableData) {
+    if (_data["ntc_temp"] == null) {
       return [];
     }
     List<String> temps = [];
@@ -607,11 +573,11 @@ class Data {
   }
 
   static List<double> get cell_mv {
-    if (!availableData) {
-      return [];
-    }
     List<double> cells = [];
     for (int i = 0; i < cell_cnt; i++) {
+      if (_data["cell${i}_mv"] == null) {
+        continue;
+      }
       cells.add(
           ((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001);
     }
@@ -633,10 +599,10 @@ class Data {
   static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
 
   static int _getIntValue(List<int>? bytes) {
-    if (!availableData) {
+    if (bytes == null) {
       return 0;
     }
-    int value = (bytes![0] << 8) + bytes![1];
+    int value = (bytes[0] << 8) + bytes[1];
     return value;
   }
 
@@ -649,7 +615,7 @@ class Data {
       : String.fromCharCodes(_data["device_name"]!);
 
   static int get mfg_name_lenght =>
-      (!availableData) ? 0 : _data["mfg_name_lenght"]![0];
+      (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
 
   static String get mfg_name => (_data["mfg_name"] == null)
       ? "Royer Batteries"
@@ -659,17 +625,11 @@ class Data {
     if (_data["bal_start"] == null) {
       return 0.0;
     }
-    int result = (_data["bal_start"]![1] & 0xFF) |
-        ((_data["bal_start"]![0] << 8) & 0xFF00);
-    // Check the sign bit (MSB)
-    if (result & 0x8000 != 0) {
-      result = -(0x10000 - result);
-    }
-    return (result * 0.001);
+    return (((_data["bal_start"]![0] << 8) + _data["bal_start"]![1]) * 0.01);
   }
 
   static String get watts {
-    if (!availableData) {
+    if (_data["pack_ma"] == null || _data["pack_mv"] == null) {
       return "0.0";
     }
     int result =
@@ -687,7 +647,9 @@ class Data {
   }
 
   static String get timeLeft {
-    if (!availableData) {
+    if (_data["cycle_cap"] == null ||
+        _data["design_cap"] == null ||
+        _data["pack_ma"] == null) {
       return "0 Minutes left";
     }
     int capacityLeft = ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
@@ -821,20 +783,24 @@ class Data {
       return true;
     }
 
-    if (register == MFG_NAME) {
-      _data["mfg_name_lenght"] = [batch[0]];
-      _data["mfg_name"] = batch.sublist(0x1, device_name_lenght);
+    if (register == PARAMETERS) {
+      switch (batch[1]) {
+        case BAL_START:
+          _data["bal_start"] = batch.sublist(3, 5);
+          setAvailableData(false);
+          return true;
+        case MFG_NAME:
+          _data["mfg_name_lenght"] = [batch[3]];
+          _data["mfg_name"] = batch.sublist(4, device_name_lenght);
+          setAvailableData(false);
+          return true;
+      }
+
       setAvailableData(false);
       return true;
     }
 
-    if (register == BAL_START) {
-      _data["bal_start"] = batch.sublist(0x0, 0x2);
-      setAvailableData(false);
-      return true;
-    }
-
-    print("unknown registery");
+    print("uncaught registery");
     setAvailableData(false);
     return false;
   }

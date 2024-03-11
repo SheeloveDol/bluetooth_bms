@@ -38,7 +38,7 @@ class _BatteryStateState extends State<BatteryState> {
               CupertinoButton(
                   color: Colors.white,
                   padding: const EdgeInsets.all(3),
-                  onPressed: () {},
+                  onPressed: Be.reset,
                   child: const Text("Reset",
                       style: TextStyle(fontSize: 11, color: Colors.black)))
             ]));
