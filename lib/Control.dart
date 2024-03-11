@@ -116,7 +116,7 @@ class _MiddleState extends State<Middle> {
         Stack(alignment: Alignment.centerLeft, children: [
           AnimatedContainer(
               duration: Durations.extralong3,
-              margin: EdgeInsets.only(left: 7),
+              margin: const EdgeInsets.only(left: 7),
               color: const Color(0xFF00C106),
               width: (level * 1.7 - 20 < 0) ? 0 : level * 1.7 - 20,
               height: 79),
@@ -283,7 +283,7 @@ class _BoltsState extends State<Bolts> {
     super.initState();
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      if (Data.pack_ma != "0.0") {
+      if (Data.pack_ma != "0.0" || Data.pack_ma != "0.00") {
         c++;
         if (c > 3) {
           c = 0;

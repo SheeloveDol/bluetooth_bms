@@ -122,17 +122,6 @@ class _ReportsState extends State<Reports> {
 
   @override
   void initState() {
-    controller.addListener(() {
-      if (controller.page == 2) {
-        setState(() {
-          bg = true;
-        });
-      } else {
-        setState(() {
-          bg = false;
-        });
-      }
-    });
     super.initState();
   }
 
@@ -146,12 +135,11 @@ class _ReportsState extends State<Reports> {
         child: Stack(children: [
           Align(
               alignment: Alignment.topLeft,
-              child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
+              child: Container(
                   height: 200,
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                      color: (bg) ? Colors.black : Colors.transparent,
+                      color: Colors.black,
                       borderRadius: BorderRadius.circular(30)),
                   child: PageView(
                       controller: controller,
