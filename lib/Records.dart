@@ -14,8 +14,9 @@ class _ReportsState extends State<Reports> {
   Column first() {
     List<Widget> data = [];
     data.addAll([
-      const Text("Manufacturer: Royer Batteries",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      Text("Manufacturer: ${Data.mfg_name}",
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(bottom: 10)),
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         const Text("Battery Overvoltage Times :",
@@ -61,7 +62,7 @@ class _ReportsState extends State<Reports> {
   Column second() {
     List<Widget> data = [];
     data.addAll([
-      Text("Device Name: {Data.device_name}",
+      Text("Device Name: ${Data.device_name}",
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(bottom: 10)),
@@ -141,10 +142,7 @@ class _ReportsState extends State<Reports> {
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.transparent, Color(0xFF002A4D)])),
+            color: const Color(0x2EFFFFFF)),
         child: Stack(children: [
           Align(
               alignment: Alignment.topLeft,

@@ -35,10 +35,7 @@ class _TemperaturesState extends State<Temperatures> {
       width: 80,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Colors.transparent, Color(0xFF002A4D)])),
+          color: const Color(0x2EFFFFFF)),
       child: ListView.builder(
           itemCount: Data.ntc_cnt,
           scrollDirection: Axis.horizontal,

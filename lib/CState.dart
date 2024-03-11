@@ -12,7 +12,6 @@ class _CellsStateState extends State<CellsState> {
   @override
   void initState() {
     super.initState();
-    //celldiff = Data.celldif;
   }
 
   Widget cell(String title, int index) {
@@ -24,11 +23,11 @@ class _CellsStateState extends State<CellsState> {
       titleColor = Colors.blue;
       titleWeight = FontWeight.bold;
     }
-    if (Data.cell_mv[index] > 3.45) {
+    if (Data.cell_mv[index] > Data.bal_start) {
       color = Color(0xFFCA5100);
       weight = FontWeight.bold;
     }
-    if (Data.cell_mv[index] < 3.45) {
+    if (Data.cell_mv[index] < Data.bal_start) {
       color = Colors.yellow;
       weight = FontWeight.bold;
     }
@@ -63,10 +62,7 @@ class _CellsStateState extends State<CellsState> {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.transparent, Color(0xFF002A4D)])),
+            color: const Color(0x2EFFFFFF)),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -76,10 +72,10 @@ class _CellsStateState extends State<CellsState> {
               ]),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                 Column(children: [
-                  Text("Cell Difference:${celldiff.toStringAsFixed(3)}",
+                  Text("Cell Difference:${Data.celldif.toStringAsFixed(3)}",
                       style: const TextStyle(
                           color: Colors.green, fontWeight: FontWeight.bold)),
-                  const Text("Ballance inactive",
+                  const Text("Balance inactive",
                       style: TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold))
                 ]),

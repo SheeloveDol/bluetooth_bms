@@ -17,10 +17,7 @@ class _BatteryStateState extends State<BatteryState> {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.transparent, Color(0xFF002A4D)])),
+            color: const Color(0x2EFFFFFF)),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +69,7 @@ class _ActiveStatesState extends State<ActiveStates> {
           style: TextStyle(color: color, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(left: 5)),
       (title == "SL")
-          ? AnimatedTextKit(animatedTexts: [
+          ? AnimatedTextKit(repeatForever: true, animatedTexts: [
               FlickerAnimatedText(description,
                   textStyle: TextStyle(fontSize: 12, color: Colors.red))
             ])

@@ -72,8 +72,10 @@ class _DashBoardState extends State<DashBoard> {
       configMap = map;
       done = true;
       if (map["error"] == null) {
+        await Be.readWhatsLeft();
         Data.setAvailableData(true);
         setState(() {});
+
         _timer =
             Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
           if (!Be.communicatingNow) {
@@ -82,6 +84,7 @@ class _DashBoardState extends State<DashBoard> {
           }
         });
       } else {
+        setState(() {});
         quicktell(
             context, "Could not connect to ${widget.title} ${map["error"]}");
       }

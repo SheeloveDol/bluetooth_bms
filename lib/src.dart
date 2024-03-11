@@ -120,8 +120,12 @@ class Be {
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
-      readSuccessFully = await read(Data.CELL_INFO_PAYLOAD);
-      readSuccessFully = await read(Data.STATS_PAYLOAD);
+      readSuccessFully = (readSuccessFully)
+          ? await read(Data.CELL_INFO_PAYLOAD)
+          : readSuccessFully;
+      readSuccessFully = (readSuccessFully)
+          ? await read(Data.STATS_PAYLOAD)
+          : readSuccessFully;
 
       if (readSuccessFully) {
         savedDevice = device;
@@ -355,6 +359,12 @@ class Be {
   }
 
   static bool get communicatingNow => _communicatingNow;
+
+  static readWhatsLeft() async {
+    await read(Data.BAL_PAYLOAD);
+    await read(Data.MANUF_PAYLOAD);
+    await read(Data.DEVICE_NAME_PAYLOAD);
+  }
 }
 
 class Data {
@@ -422,18 +432,23 @@ class Data {
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
-
+  static const MANUF_PAYLOAD = [MFG_NAME, 0x00];
+  static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
+  static const BAL_PAYLOAD = [BAL_START, 0x00];
   static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x00];
   static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x01];
   static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [0xe1, 0x02, 0x00, 0x02];
   static const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [0xe1, 0x02, 0x01, 0x03];
 
   static bool availableData = false;
+
   static bool get isBLEConnected => availableData;
+
   static String get pack_mv => (!availableData)
       ? "0.0"
       : (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
           .toStringAsFixed(2);
+
   static String get pack_ma {
     if (!availableData) {
       return "0.0";
@@ -451,12 +466,12 @@ class Data {
       ? "0.0"
       : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
-
   //BAttery capacity
   static String get design_cap => (!availableData)
       ? "0.0"
       : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
           .toStringAsFixed(2);
+
   static String get cycle_cnt => (!availableData)
       ? "0"
       : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
@@ -569,8 +584,11 @@ class Data {
   }
 
   static int get cap_pct => (!availableData) ? 0 : _data["cap_pct"]![0];
+
   static int get cell_cnt => (!availableData) ? 0 : _data["cell_cnt"]![0];
+
   static int get ntc_cnt => (!availableData) ? 0 : _data["ntc_cnt"]![0];
+
   static List<String> get ntc_temp {
     if (!availableData) {
       return [];
@@ -600,6 +618,7 @@ class Data {
     return cells;
   }
 
+  static int get unknown => 0;
   static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]);
   static int get chgoc_err_cnt => _getIntValue(_data["chgoc_err_cnt"]);
   static int get dsgoc_err_cnt => _getIntValue(_data["dsgoc_err_cnt"]);
@@ -611,7 +630,7 @@ class Data {
   static int get dsgut_err_cnt => _getIntValue(_data["dsgut_err_cnt"]);
   static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]);
   static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
-  static int get unknown => 0;
+
   static int _getIntValue(List<int>? bytes) {
     if (!availableData) {
       return 0;
@@ -622,8 +641,30 @@ class Data {
 
   static int get device_name_lenght =>
       (!availableData) ? 0 : _data["device_name_lenght"]![0];
+
   static String get device_name =>
       (!availableData) ? "" : String.fromCharCodes(_data["device_name"]!);
+
+  static int get mfg_name_lenght =>
+      (!availableData) ? 0 : _data["mfg_name_lenght"]![0];
+
+  static String get mfg_name => (!availableData)
+      ? "Royer Batteries"
+      : String.fromCharCodes(_data["mfg_name"]!);
+
+  static double get bal_start {
+    if (!availableData) {
+      return 0.0;
+    }
+    int result = (_data["bal_start"]![1] & 0xFF) |
+        ((_data["bal_start"]![0] << 8) & 0xFF00);
+    // Check the sign bit (MSB)
+    if (result & 0x8000 != 0) {
+      result = -(0x10000 - result);
+    }
+    return (result * 0.001);
+  }
+
   static String get watts {
     if (!availableData) {
       return "0.0";
@@ -773,6 +814,19 @@ class Data {
     if (register == DEVICE_NAME) {
       _data["device_name_lenght"] = [batch[0]];
       _data["device_name"] = batch.sublist(0x1, device_name_lenght);
+      setAvailableData(false);
+      return true;
+    }
+
+    if (register == MFG_NAME) {
+      _data["mfg_name_lenght"] = [batch[0]];
+      _data["mfg_name"] = batch.sublist(0x1, device_name_lenght);
+      setAvailableData(false);
+      return true;
+    }
+
+    if (register == BAL_START) {
+      _data["bal_start"] = batch.sublist(0x0, 0x2);
       setAvailableData(false);
       return true;
     }
