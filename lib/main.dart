@@ -124,7 +124,7 @@ class _ScanPageState extends State<ScanPage> {
                           Container(
                               padding: const EdgeInsets.all(10),
                               margin: const EdgeInsets.all(10),
-                              height: 560,
+                              height: MediaQuery.sizeOf(context).height - 270,
                               child: Stack(children: [
                                 ListView(
                                     key: UniqueKey(),
