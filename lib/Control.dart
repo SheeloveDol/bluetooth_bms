@@ -292,6 +292,7 @@ class _BoltsState extends State<Bolts> {
     super.initState();
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      print("Data.pack_ma    :      ${Data.pack_ma}");
       if (Data.pack_ma != "0.0" || Data.pack_ma != "0.00") {
         c++;
         if (c > 3) {
