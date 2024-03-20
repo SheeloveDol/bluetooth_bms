@@ -66,6 +66,8 @@ class _RightState extends State<Right> {
   Widget build(BuildContext context) {
     var ma =
         "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+    var watts =
+        "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -74,10 +76,14 @@ class _RightState extends State<Right> {
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
-          Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-          Text(
-              "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
-              style: const TextStyle(fontSize: 11, color: Colors.white))
+          (Data.pack_ma[0] == "-")
+              ? Spacer()
+              : Text(ma,
+                  style: const TextStyle(fontSize: 11, color: Colors.white)),
+          (Data.pack_ma[0] == "-")
+              ? Spacer()
+              : Text(watts,
+                  style: const TextStyle(fontSize: 11, color: Colors.white))
         ]),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
@@ -160,6 +166,10 @@ class Left extends StatefulWidget {
 class _LeftState extends State<Left> {
   @override
   Widget build(BuildContext context) {
+    var ma =
+        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+    var watts =
+        "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
     return Container(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,6 +184,14 @@ class _LeftState extends State<Left> {
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
           Bolts(position: BoltPosition.left),
+          (Data.pack_ma[0] != "-")
+              ? Spacer()
+              : Text(ma,
+                  style: const TextStyle(fontSize: 11, color: Colors.white)),
+          (Data.pack_ma[0] != "-")
+              ? Spacer()
+              : Text(watts,
+                  style: const TextStyle(fontSize: 11, color: Colors.white)),
           CupertinoButton(
               pressedOpacity: 0.1,
               color: (Data.chargeStatus) ? Colors.green : Colors.red,
