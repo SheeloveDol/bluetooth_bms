@@ -31,7 +31,7 @@ class _BatteryControlState extends State<BatteryControl> {
                 colors: [Colors.transparent, Color(0xFF002A4D)]),
             borderRadius: BorderRadius.circular(30)),
         alignment: Alignment.center,
-        child: (widget.height == 100)
+        child: (widget.height > 0)
             ? BatteryControlSmall()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
