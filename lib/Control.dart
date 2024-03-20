@@ -76,11 +76,11 @@ class _RightState extends State<Right> {
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
-          (Data.pack_ma[0] == "-")
+          (Data.pack_ma[0] != "-")
               ? const SizedBox(height: 15)
               : Text(ma,
                   style: const TextStyle(fontSize: 11, color: Colors.white)),
-          (Data.pack_ma[0] == "-")
+          (Data.pack_ma[0] != "-")
               ? const SizedBox(height: 15)
               : Text(watts,
                   style: const TextStyle(fontSize: 11, color: Colors.white))
@@ -184,11 +184,11 @@ class _LeftState extends State<Left> {
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
           Bolts(position: BoltPosition.left),
-          (Data.pack_ma[0] != "-")
+          (Data.pack_ma[0] == "-")
               ? const SizedBox(height: 15)
               : Text(ma,
                   style: const TextStyle(fontSize: 11, color: Colors.white)),
-          (Data.pack_ma[0] != "-")
+          (Data.pack_ma[0] == "-")
               ? const SizedBox(height: 15)
               : Text(watts,
                   style: const TextStyle(fontSize: 11, color: Colors.white)),
