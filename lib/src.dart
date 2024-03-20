@@ -365,7 +365,7 @@ class Be {
 
   static readWhatsLeft() async {
     read(Data.DEVICE_NAME_PAYLOAD).then((value) {
-      read(Data.BAL_PAYLOAD).then((value) => read(Data.MANUF_PAYLOAD));
+      // read(Data.BAL_PAYLOAD).then((value) => read(Data.MANUF_PAYLOAD));
     });
   }
 }
@@ -750,8 +750,8 @@ class Data {
     }
 
     if (register == DEVICE_NAME) {
-      _data["device_name_lenght"] = [batch[0]];
-      _data["device_name"] = batch.sublist(0x1, device_name_lenght);
+      // _data["device_name_lenght"] = [batch[0]];
+      _data["device_name"] = batch;
       setAvailableData(false);
       return true;
     }
