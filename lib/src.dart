@@ -243,6 +243,7 @@ class Be {
     notifySub.cancel();
 
     var good = _verifyReadings(answer);
+    print(answer);
     if (!good) {
       good = await resetConnection();
       print("RECONNECTED: $good");
@@ -749,7 +750,6 @@ class Data {
     }
 
     if (register == DEVICE_NAME) {
-      print(batch);
       _data["device_name_lenght"] = [batch[0]];
       _data["device_name"] = batch.sublist(0x1, device_name_lenght);
       setAvailableData(false);
