@@ -226,17 +226,24 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
                     BorderRadius.horizontal(left: Radius.circular(30))),
             width: (level - 15 < 0) ? 0 : level - 15,
             height: 49),
-        Image.asset(
-          "assets/bat.png",
-          height: 50,
-        ),
-        Center(
-          child: Text(
-            "${Data.cap_pct}%",
-            style: const TextStyle(
-                fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 15),
+        Container(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Image.asset(
+                "assets/bat.png",
+                height: 50,
+              ),
+              Text(
+                "${Data.cap_pct}%",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                    fontSize: 15),
+              )
+            ],
           ),
-        )
+        ),
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
       (Data.dischargeStatus)
