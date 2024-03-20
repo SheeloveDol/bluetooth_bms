@@ -14,7 +14,7 @@ class _BatteryStateState extends State<BatteryState> {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 5),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             color: const Color(0x2EFFFFFF)),

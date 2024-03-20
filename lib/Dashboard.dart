@@ -57,7 +57,7 @@ class _DashBoardState extends State<DashBoard> {
     controller.addListener(() {
       if (controller.offset > 2) {
         setState(() {
-          height = 105;
+          height = 100;
         });
         return;
       }
@@ -106,7 +106,7 @@ class _DashBoardState extends State<DashBoard> {
                         colors: [Color(0xFF002A4D), Colors.black])),
                 child: Stack(children: <Widget>[
                   ListView(
-                      padding: EdgeInsets.only(top: 230 - height),
+                      padding: EdgeInsets.only(top: 235 - height),
                       physics: const BouncingScrollPhysics(),
                       controller: controller,
                       children: <Widget>[

@@ -23,7 +23,7 @@ class _BatteryControlState extends State<BatteryControl> {
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 40),
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.only(left: 10, right: 15, bottom: 15),
-        height: 185 - widget.height,
+        height: 190 - widget.height,
         decoration: BoxDecoration(
             gradient: const LinearGradient(
                 begin: Alignment.centerLeft,
