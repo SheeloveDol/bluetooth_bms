@@ -288,11 +288,6 @@ class _BoltsState extends State<Bolts> {
   Timer? _timer;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -310,6 +305,7 @@ class _BoltsState extends State<Bolts> {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
         if (Data.pack_ma == "0.00") {
           stop();
+          return;
         }
         c++;
         if (c > 3) {
