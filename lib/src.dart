@@ -19,8 +19,6 @@ class Be {
   static Function? updater;
   static bool _communicatingNow = false;
 
-  Be() {}
-
   static Future<bool> init() async {
     bool status = false;
     if (await FlutterBluePlus.isSupported == false) {
@@ -73,7 +71,7 @@ class Be {
     }
   }
 
-  static Future<Map<String, dynamic>> connect(BluetoothDevice device) async {
+  static Future<Map<String, String?>> connect(BluetoothDevice device) async {
     var subscription =
         device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
@@ -84,12 +82,17 @@ class Be {
 
     // Connect to the device
     String? error;
-    try {
-      await device.connect();
-    } catch (e) {
-      error = "failed to connect";
-      return {"error": error};
+
+    for (int j = 0; j < 3; j++) {
+      try {
+        await device.connect();
+        error = null;
+        break;
+      } catch (e) {
+        error = "failed to connect";
+      }
     }
+    if (error != null) return {"error": error};
 
     try {
       //get service
@@ -136,10 +139,6 @@ class Be {
     } catch (e) {
       return {"error": "failed to read device"};
     }
-  }
-
-  static void setCharge(bool charge) {
-    //changeBit(bitIndex: bitIndex, bitValue: bitValue, byteToChange: byteToChange)
   }
 
   static Future<bool> getBasicInfo() async {
@@ -247,9 +246,7 @@ class Be {
     if (!good) {
       good = await resetConnection();
       print("RECONNECTED: $good");
-      if (good) {
-        _communicatingNow = false;
-      }
+      if (good) _communicatingNow = false;
       return good;
     }
 
@@ -414,9 +411,7 @@ class Data {
           .toStringAsFixed(2);
 
   static String get pack_ma {
-    if (_data["pack_ma"] == null) {
-      return "0.0";
-    }
+    if (_data["pack_ma"] == null) return "0.0";
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
     // Check the sign bit (MSB)
@@ -441,24 +436,18 @@ class Data {
       : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
 
   static bool get chargeStatus {
-    if (_data["fet_status"] == null) {
-      return false;
-    }
+    if (_data["fet_status"] == null) return false;
     return (_data["fet_status"]![0] & 0x1) != 0;
   }
 
   static bool get dischargeStatus {
-    if (_data["fet_status"] == null) {
-      return false;
-    }
+    if (_data["fet_status"] == null) return false;
     return (_data["fet_status"]![0] & 0x2) != 0;
   }
 
   static List<String> get curr_err {
+    if (_data["curr_err"] == null) return [];
     List<String> err = [];
-    if (_data["curr_err"] == null) {
-      return [];
-    }
     for (int i = 15; i >= 0; i--) {
       bool bit =
           (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) !=
@@ -520,9 +509,7 @@ class Data {
   }
 
   static String get date {
-    if (_data["date"] == null) {
-      return "";
-    }
+    if (_data["date"] == null) return "";
     var dateData = ((_data["date"]![0] << 8) + _data["date"]![1]);
     // Extract year, month, and day components using bitwise operations and bit masking
     int year = (dateData >> 9) & 0x7F;
@@ -535,9 +522,7 @@ class Data {
   }
 
   static List<bool> get bal {
-    if (_data["bal"] == null) {
-      return [];
-    }
+    if (_data["bal"] == null) return [];
     List<bool> bal = [];
     int combined = ((_data["bal"]![0] << 8) + _data["bal"]![1]);
     for (int i = 0; i < 16; i++) {
@@ -557,9 +542,7 @@ class Data {
       (_data["ntc_cnt"] == null) ? 0 : _data["ntc_cnt"]![0];
 
   static List<String> get ntc_temp {
-    if (_data["ntc_temp"] == null) {
-      return [];
-    }
+    if (_data["ntc_temp"] == null) return [];
     List<String> temps = [];
     int j = 0;
     for (var i = 0; i < ntc_cnt; i++) {
@@ -575,9 +558,7 @@ class Data {
   static List<double> get cell_mv {
     List<double> cells = [];
     for (int i = 0; i < cell_cnt; i++) {
-      if (_data["cell${i}_mv"] == null) {
-        continue;
-      }
+      if (_data["cell${i}_mv"] == null) continue;
       cells.add(
           ((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001);
     }
@@ -599,9 +580,7 @@ class Data {
   static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
 
   static int _getIntValue(List<int>? bytes) {
-    if (bytes == null) {
-      return 0;
-    }
+    if (bytes == null) return 0;
     int value = (bytes[0] << 8) + bytes[1];
     return value;
   }
@@ -622,16 +601,12 @@ class Data {
       : String.fromCharCodes(_data["mfg_name"]!);
 
   static double get bal_start {
-    if (_data["bal_start"] == null) {
-      return 0.0;
-    }
+    if (_data["bal_start"] == null) return 0.0;
     return (((_data["bal_start"]![0] << 8) + _data["bal_start"]![1]) * 0.01);
   }
 
   static String get watts {
-    if (_data["pack_ma"] == null || _data["pack_mv"] == null) {
-      return "0.0";
-    }
+    if (_data["pack_ma"] == null || _data["pack_mv"] == null) return "0.0";
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
 
@@ -649,9 +624,8 @@ class Data {
   static String get timeLeft {
     if (_data["cycle_cap"] == null ||
         _data["design_cap"] == null ||
-        _data["pack_ma"] == null) {
-      return "0 Minutes left";
-    }
+        _data["pack_ma"] == null) return "0 Minutes left";
+
     int capacityLeft = ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
     int totalCapacity =
         ((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]);
@@ -681,9 +655,7 @@ class Data {
   }
 
   static double get celldif {
-    if (!availableData) {
-      return 0;
-    }
+    if (!availableData) return 0;
     var current = cell_mv[0];
     for (var i = 0; i < cell_cnt; i++) {
       if (current > cell_mv[i]) {
@@ -777,6 +749,7 @@ class Data {
     }
 
     if (register == DEVICE_NAME) {
+      print(batch);
       _data["device_name_lenght"] = [batch[0]];
       _data["device_name"] = batch.sublist(0x1, device_name_lenght);
       setAvailableData(false);
