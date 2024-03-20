@@ -275,7 +275,7 @@ enum BoltPosition {
 }
 
 class Bolts extends StatefulWidget {
-  BoltPosition position;
+  final BoltPosition position;
 
   Bolts({super.key, required this.position});
 
@@ -309,8 +309,8 @@ class _BoltsState extends State<Bolts> {
   void start() {
     if (Data.pack_ma != "0.00" &&
         _timer == null &&
-        (widget.position == BoltPosition.right && Data.pack_ma[0] == "-") &&
-        (widget.position == BoltPosition.left && Data.pack_ma[0] != "-")) {
+        ((widget.position == BoltPosition.right && Data.pack_ma[0] == "-") ||
+            (widget.position == BoltPosition.left && Data.pack_ma[0] != "-"))) {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
         if (Data.pack_ma == "0.00") {
           stop();
