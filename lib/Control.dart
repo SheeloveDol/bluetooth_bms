@@ -217,15 +217,24 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
         Image.asset(
           "assets/bat.png",
           height: 50,
+        ),
+        Center(
+          child: Text(
+            "${Data.cap_pct}%",
+            style: const TextStyle(
+                fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 15),
+          ),
         )
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
-      CupertinoButton(
-          pressedOpacity: 0.1,
-          color: (Data.dischargeStatus) ? Colors.green : Colors.red,
-          padding: const EdgeInsets.all(3),
-          onPressed: dischargePressed,
-          child: const Text("Discharge", style: TextStyle(fontSize: 11)))
+      (Data.dischargeStatus)
+          ? Bolts()
+          : const CupertinoButton(
+              pressedOpacity: 0.1,
+              color: Colors.red,
+              padding: EdgeInsets.all(3),
+              onPressed: dischargePressed,
+              child: Text("Discharge", style: TextStyle(fontSize: 11)))
     ]);
   }
 }

@@ -41,9 +41,11 @@ class _DashBoardState extends State<DashBoard> {
     _timer?.cancel();
     try {
       Data.setAvailableData(false);
+
       Be.disconnect(totaly: true).then((value) {
         quicktell(Be.context!, "Disconnected from ${widget.title}");
       });
+      Data.clear();
     } catch (e) {
       print("Disconnected but with error");
     }

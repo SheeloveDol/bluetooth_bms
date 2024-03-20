@@ -781,4 +781,8 @@ class Data {
   static setAvailableData(bool isBLEConnected) {
     availableData = isBLEConnected;
   }
+
+  static clear() {
+    _data.clear();
+  }
 }
