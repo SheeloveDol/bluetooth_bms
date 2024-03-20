@@ -290,10 +290,27 @@ class _BoltsState extends State<Bolts> {
   @override
   void initState() {
     super.initState();
+  }
 
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      print("Data.pack_ma    :      ${Data.pack_ma}");
-      if (Data.pack_ma != "0.0" || Data.pack_ma != "0.00") {
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void stop() {
+    _timer?.cancel();
+    _timer == null;
+    setState(() => colors.setAll(
+        0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
+  }
+
+  void start() {
+    if (Data.pack_ma != "0.00" && _timer == null) {
+      _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+        if (Data.pack_ma == "0.00") {
+          stop();
+        }
         c++;
         if (c > 3) {
           c = 0;
@@ -303,21 +320,13 @@ class _BoltsState extends State<Bolts> {
               0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
           colors[c] = Colors.green;
         });
-      } else {
-        setState(() => colors.setAll(
-            0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    start();
     return Row(children: [
       Icon(Icons.bolt,
           size: 20, color: (Data.pack_ma[0] == "-") ? colors[0] : colors[3]),
