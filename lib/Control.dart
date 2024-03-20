@@ -73,7 +73,7 @@ class _RightState extends State<Right> {
       children: [
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Bolts(),
+          Bolts(position: BoltPosition.right),
           Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
           Text(
               "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}",
@@ -173,11 +173,7 @@ class _LeftState extends State<Left> {
                 Text("Disconnect",
                     style: TextStyle(color: Colors.white, fontSize: 11))
               ])),
-          Text((Data.chargeStatus) ? "ON" : "OFF",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: (Data.chargeStatus) ? Colors.green : Colors.red)),
+          Bolts(position: BoltPosition.left),
           CupertinoButton(
               pressedOpacity: 0.1,
               color: (Data.chargeStatus) ? Colors.green : Colors.red,
@@ -199,12 +195,14 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      CupertinoButton(
-          pressedOpacity: 0.1,
-          color: (Data.chargeStatus) ? Colors.green : Colors.red,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          onPressed: chargePressed,
-          child: const Text("Charge", style: TextStyle(fontSize: 11))),
+      (Data.chargeStatus)
+          ? Bolts(position: BoltPosition.left)
+          : const CupertinoButton(
+              pressedOpacity: 0.1,
+              color: Colors.red,
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              onPressed: chargePressed,
+              child: Text("Charge", style: TextStyle(fontSize: 11))),
       const Padding(padding: EdgeInsets.only(right: 12)),
       Stack(alignment: Alignment.centerLeft, children: [
         Container(
@@ -228,7 +226,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
       (Data.dischargeStatus)
-          ? Bolts()
+          ? Bolts(position: BoltPosition.right)
           : const CupertinoButton(
               pressedOpacity: 0.1,
               color: Colors.red,
@@ -271,8 +269,16 @@ void chargePressed() {
   }
 }
 
+enum BoltPosition {
+  left,
+  right;
+}
+
 class Bolts extends StatefulWidget {
-  Bolts({super.key});
+  BoltPosition position;
+
+  Bolts({super.key, required this.position});
+
   @override
   _BoltsState createState() => _BoltsState();
 }
@@ -301,7 +307,10 @@ class _BoltsState extends State<Bolts> {
   }
 
   void start() {
-    if (Data.pack_ma != "0.00" && _timer == null) {
+    if (Data.pack_ma != "0.00" &&
+        _timer == null &&
+        (widget.position == BoltPosition.right && Data.pack_ma[0] == "-") &&
+        (widget.position == BoltPosition.left && Data.pack_ma[0] != "-")) {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
         if (Data.pack_ma == "0.00") {
           stop();
@@ -324,14 +333,10 @@ class _BoltsState extends State<Bolts> {
   Widget build(BuildContext context) {
     start();
     return Row(children: [
-      Icon(Icons.bolt,
-          size: 20, color: (Data.pack_ma[0] == "-") ? colors[0] : colors[3]),
-      Icon(Icons.bolt,
-          size: 20, color: (Data.pack_ma[0] == "-") ? colors[1] : colors[2]),
-      Icon(Icons.bolt,
-          size: 20, color: (Data.pack_ma[0] == "-") ? colors[2] : colors[1]),
-      Icon(Icons.bolt,
-          size: 20, color: (Data.pack_ma[0] == "-") ? colors[3] : colors[0])
+      Icon(Icons.bolt, size: 20, color: colors[0]),
+      Icon(Icons.bolt, size: 20, color: colors[1]),
+      Icon(Icons.bolt, size: 20, color: colors[2]),
+      Icon(Icons.bolt, size: 20, color: colors[3])
     ]);
   }
 }
