@@ -111,48 +111,45 @@ class _MiddleState extends State<Middle> {
     int level = Data.cap_pct;
 
     return Container(
-      padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
-      child: Column(children: [
-        Text(widget.title,
-            style: TextStyle(
-                fontSize: (widget.title.length > 20) ? 10 : 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        const Padding(padding: EdgeInsets.only(bottom: 10)),
-        Stack(alignment: Alignment.centerLeft, children: [
-          AnimatedContainer(
-              duration: Durations.extralong3,
-              margin: const EdgeInsets.only(left: 7),
-              color: const Color(0xFF00C106),
-              width: (level * 1.7 - 20 < 0) ? 0 : level * 1.7 - 20,
-              height: 79),
-          Image.asset(
-            "assets/bat.png",
-            height: 90,
-          ),
-          Positioned.fill(
-              right: 15,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${Data.cap_pct}%",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
-                          fontSize: 20),
-                    ),
-                    Text(
-                      "${Data.pack_mv}V",
-                      style: const TextStyle(height: 0, fontSize: 10),
-                    ),
-                    Text(
-                        "${Data.cycle_cap}Ah/${Data.design_cap}Ah", // remove milliamps from the string, supposed to be "Ah" not "mAh"
-                        style: const TextStyle(height: 0, fontSize: 10)),
-                  ]))
-        ])
-      ]),
-    );
+        padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+        child: Column(children: [
+          Text(widget.title,
+              style: TextStyle(
+                  fontSize: (widget.title.length > 20) ? 10 : 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          const Padding(padding: EdgeInsets.only(bottom: 10)),
+          Stack(alignment: Alignment.centerLeft, children: [
+            AnimatedContainer(
+                duration: Durations.extralong3,
+                margin: const EdgeInsets.only(left: 7),
+                color: const Color(0xFF00C106),
+                width: (level * 1.7 - 20 < 0) ? 0 : level * 1.7 - 20,
+                height: 79),
+            Container(
+                child: Stack(alignment: Alignment.center, children: [
+              Image.asset(
+                "assets/bat.png",
+                height: 90,
+              ),
+              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(
+                  "${Data.cap_pct}%",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                      fontSize: 20),
+                ),
+                Text(
+                  "${Data.pack_mv}V",
+                  style: const TextStyle(height: 0, fontSize: 10),
+                ),
+                Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah",
+                    style: const TextStyle(height: 0, fontSize: 10))
+              ])
+            ]))
+          ])
+        ]));
   }
 }
 
