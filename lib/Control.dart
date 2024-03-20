@@ -31,7 +31,7 @@ class _BatteryControlState extends State<BatteryControl> {
                 colors: [Colors.transparent, Color(0xFF002A4D)]),
             borderRadius: BorderRadius.circular(30)),
         alignment: Alignment.center,
-        child: (widget.height == 105)
+        child: (widget.height == 100)
             ? BatteryControlSmall()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -171,34 +171,30 @@ class _LeftState extends State<Left> {
     var watts =
         "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
     return Container(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-          CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => widget.back(),
-              child: const Row(children: [
-                Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
-                Text("Disconnect",
-                    style: TextStyle(color: Colors.white, fontSize: 11))
-              ])),
-          Bolts(position: BoltPosition.left),
-          (Data.pack_ma[0] == "-")
-              ? const SizedBox(height: 15)
-              : Text(ma,
-                  style: const TextStyle(fontSize: 11, color: Colors.white)),
-          (Data.pack_ma[0] == "-")
-              ? const SizedBox(height: 15)
-              : Text(watts,
-                  style: const TextStyle(fontSize: 11, color: Colors.white)),
-          CupertinoButton(
-              pressedOpacity: 0.1,
-              color: (Data.chargeStatus) ? Colors.green : Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              onPressed: chargePressed,
-              child: const Text("Charge", style: TextStyle(fontSize: 11)))
-        ]));
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () => widget.back(),
+          child: const Row(children: [
+            Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
+            Text("Disconnect",
+                style: TextStyle(color: Colors.white, fontSize: 11))
+          ])),
+      Bolts(position: BoltPosition.left),
+      (Data.pack_ma[0] == "-")
+          ? const SizedBox(height: 15)
+          : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
+      (Data.pack_ma[0] == "-")
+          ? const SizedBox(height: 15)
+          : Text(watts,
+              style: const TextStyle(fontSize: 11, color: Colors.white)),
+      CupertinoButton(
+          pressedOpacity: 0.1,
+          color: (Data.chargeStatus) ? Colors.green : Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          onPressed: chargePressed,
+          child: const Text("Charge", style: TextStyle(fontSize: 11)))
+    ]));
   }
 }
 
