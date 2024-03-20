@@ -295,7 +295,7 @@ class _BoltsState extends State<Bolts> {
 
   void stop() {
     _timer?.cancel();
-    _timer == null;
+    _timer = null;
     setState(() => colors.setAll(
         0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
   }
