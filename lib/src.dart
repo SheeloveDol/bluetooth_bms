@@ -412,7 +412,7 @@ class Data {
           .toStringAsFixed(2);
 
   static String get pack_ma {
-    if (_data["pack_ma"] == null) return "0.0";
+    if (_data["pack_ma"] == null) return "0.00";
     int result =
         (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
     // Check the sign bit (MSB)
