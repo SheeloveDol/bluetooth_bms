@@ -105,16 +105,17 @@ class _DashBoardState extends State<DashBoard> {
                     gradient: LinearGradient(
                         colors: [Color(0xFF002A4D), Colors.black])),
                 child: Stack(children: <Widget>[
-                  ListView(
-                      padding: EdgeInsets.only(top: 235 - height),
-                      physics: const BouncingScrollPhysics(),
-                      controller: controller,
-                      children: <Widget>[
-                        BatteryState(),
-                        CellsState(),
-                        Temperatures(),
-                        Reports()
-                      ]),
+                  Container(
+                      margin: EdgeInsets.only(top: 235 - height),
+                      child: ListView(
+                          physics: const BouncingScrollPhysics(),
+                          controller: controller,
+                          children: <Widget>[
+                            BatteryState(),
+                            CellsState(),
+                            Temperatures(),
+                            Reports()
+                          ])),
                   BatteryControl(
                       title: widget.title,
                       height: height,
