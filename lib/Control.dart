@@ -109,8 +109,8 @@ class _MiddleState extends State<Middle> {
   double batterySize = 80;
   @override
   Widget build(BuildContext context) {
-    int level = Data.cap_pct;
-    batterySize = MediaQuery.sizeOf(context).width - 300;
+    int level = 100;
+    batterySize = MediaQuery.sizeOf(context).width * 0.21;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -126,8 +126,10 @@ class _MiddleState extends State<Middle> {
                 duration: Durations.extralong3,
                 margin: const EdgeInsets.only(left: 7),
                 color: const Color(0xFF00C106),
-                width: (level * 1.7 - 20 < 0) ? 0 : level * 1.7 - 20,
-                height: 79),
+                width: (level * batterySize * 0.0187 - 20 < 0)
+                    ? 0
+                    : level * batterySize * 0.0187 - 20,
+                height: batterySize - 2),
             Container(
                 child: Stack(alignment: Alignment.center, children: [
               Image.asset(

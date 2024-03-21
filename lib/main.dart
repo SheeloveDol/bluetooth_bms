@@ -35,6 +35,7 @@ class _ScanPageState extends State<ScanPage> {
   final ScrollController _controller = ScrollController();
 
   onScan() async {
+    shadingVisible = false;
     Be.setCurrentContext(context);
     setState(() => disabled = true);
     setState(() => devices.clear());
