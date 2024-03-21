@@ -25,10 +25,13 @@ class _BatteryControlState extends State<BatteryControl> {
         padding: const EdgeInsets.only(left: 10, right: 15, bottom: 15),
         height: 190 - widget.height,
         decoration: BoxDecoration(
-            gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.transparent, Color(0xFF002A4D)]),
+            color: (widget.height > 0) ? Color(0xD2002A4D) : null,
+            gradient: (widget.height > 0)
+                ? null
+                : const LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Colors.transparent, Color(0xFF002A4D)]),
             borderRadius: BorderRadius.circular(30)),
         alignment: Alignment.center,
         child: (widget.height > 0)
@@ -110,7 +113,7 @@ class _MiddleState extends State<Middle> {
   @override
   Widget build(BuildContext context) {
     int level = 100;
-    batterySize = MediaQuery.sizeOf(context).width * 0.21;
+    batterySize = MediaQuery.sizeOf(context).width * 0.17;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
