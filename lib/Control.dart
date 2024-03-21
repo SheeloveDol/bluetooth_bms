@@ -110,7 +110,7 @@ class _MiddleState extends State<Middle> {
   @override
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
-    batterySize = MediaQuery.sizeOf(context).width - 325;
+    batterySize = MediaQuery.sizeOf(context).width - 300;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
