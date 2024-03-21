@@ -425,12 +425,12 @@ class Data {
   static String get cycle_cap => (_data["cycle_cap"] == null)
       ? "0.0"
       : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
-          .toStringAsFixed(2);
+          .toStringAsFixed(1);
   //BAttery capacity
   static String get design_cap => (_data["design_cap"] == null)
       ? "0.0"
       : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
-          .toStringAsFixed(2);
+          .toStringAsFixed(1);
 
   static String get cycle_cnt => (_data["cycle_cnt"] == null)
       ? "0"
