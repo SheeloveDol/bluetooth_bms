@@ -112,7 +112,7 @@ class _MiddleState extends State<Middle> {
   double batterySize = 80;
   @override
   Widget build(BuildContext context) {
-    int level = 100;
+    int level = Data.cap_pct;
     batterySize = MediaQuery.sizeOf(context).width * 0.17;
 
     return Container(
