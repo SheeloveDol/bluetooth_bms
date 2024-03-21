@@ -106,9 +106,11 @@ class Middle extends StatefulWidget {
 }
 
 class _MiddleState extends State<Middle> {
+  double batterySize = 80;
   @override
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
+    batterySize = MediaQuery.sizeOf(context).width - 325;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -130,7 +132,7 @@ class _MiddleState extends State<Middle> {
                 child: Stack(alignment: Alignment.center, children: [
               Image.asset(
                 "assets/bat.png",
-                height: 90,
+                height: batterySize,
               ),
               Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text(

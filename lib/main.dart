@@ -28,8 +28,11 @@ class _ScanPageState extends State<ScanPage> {
 
   bool disabled = false;
   bool visible = false;
+  bool shadingVisible = false;
   List<DeviceElement> devices = [];
   List<DeviceElement> namelessDevices = [];
+  Function? setSpecificState;
+  final ScrollController _controller = ScrollController();
 
   onScan() async {
     Be.setCurrentContext(context);
@@ -59,7 +62,20 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   void initState() {
+    _controller.addListener(() {
+      if (_controller.offset > 2) {
+        shadingVisible = true;
+        setSpecificState!();
+        return;
+      }
+      if (_controller.offset <= 0) {
+        shadingVisible = false;
+        setSpecificState!();
+        return;
+      }
+    });
     super.initState();
+
     Be.init().then((value) => onScan());
   }
 
@@ -104,77 +120,100 @@ class _ScanPageState extends State<ScanPage> {
               Positioned.fill(
                   top: 60,
                   child: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Color(0xAE121315), Colors.black]),
-                        borderRadius:
-                            BorderRadius.only(topLeft: Radius.circular(45))),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(padding: EdgeInsets.only(bottom: 10)),
-                          const Text("Devices",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 20,
-                                  letterSpacing: 2)),
-                          Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.all(10),
-                              height: MediaQuery.sizeOf(context).height - 270,
-                              child: Stack(children: [
-                                ListView(
-                                    key: UniqueKey(),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
-                                    children: [
-                                      for (var d in devices)
-                                        Device(
-                                            title: d.title,
-                                            device: d.device,
-                                            rescan: onScan),
-                                      if (visible)
-                                        CupertinoButton(
-                                            child: const Text(
-                                              "Show All",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            onPressed: () {
-                                              devices = [
-                                                ...devices,
-                                                ...namelessDevices
-                                              ];
-                                              visible = false;
-                                              setState(() {});
-                                            })
-                                    ]),
-                                Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                      decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Color(0xAE121315), Colors.black]),
+                          borderRadius:
+                              BorderRadius.only(topLeft: Radius.circular(45))),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Padding(padding: EdgeInsets.only(bottom: 10)),
+                            const Text("Devices",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 20,
+                                    letterSpacing: 2)),
+                            Container(
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.all(10),
+                                height: MediaQuery.sizeOf(context).height - 270,
+                                child: Stack(
+                                    alignment: Alignment.topCenter,
                                     children: [
                                       Container(
-                                        decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                              Color(0xFF0D1A25),
-                                              Colors.transparent
-                                            ])),
-                                        height: 15,
-                                      ),
-                                      Container(
-                                        color: Colors.red,
-                                        height: 20,
-                                      )
-                                    ])
-                              ]))
-                        ]),
-                  )),
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 2),
+                                          child: ListView(
+                                              controller: _controller,
+                                              key: UniqueKey(),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 15),
+                                              children: [
+                                                for (var d in devices)
+                                                  Device(
+                                                      title: d.title,
+                                                      device: d.device,
+                                                      rescan: onScan),
+                                                if (visible)
+                                                  CupertinoButton(
+                                                      child: const Text(
+                                                        "Show All",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      onPressed: () {
+                                                        devices = [
+                                                          ...devices,
+                                                          ...namelessDevices
+                                                        ];
+                                                        visible = false;
+                                                        setState(() {});
+                                                      })
+                                              ])),
+                                      StatefulBuilder(
+                                          builder: (context, setThisState) {
+                                        setSpecificState =
+                                            () => setThisState(() {});
+                                        return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Visibility(
+                                                  visible: shadingVisible,
+                                                  child: Container(
+                                                      decoration: const BoxDecoration(
+                                                          gradient: LinearGradient(
+                                                              begin: Alignment
+                                                                  .topCenter,
+                                                              end: Alignment
+                                                                  .bottomCenter,
+                                                              colors: [
+                                                            Color(0xFF0D1A25),
+                                                            Colors.transparent
+                                                          ])),
+                                                      height: 15)),
+                                              Container(
+                                                  decoration: const BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                          begin: Alignment
+                                                              .bottomCenter,
+                                                          end: Alignment
+                                                              .topCenter,
+                                                          colors: [
+                                                        Color(0xFF04080B),
+                                                        Colors.transparent
+                                                      ])),
+                                                  height: 20)
+                                            ]);
+                                      })
+                                    ]))
+                          ]))),
               Positioned(
                   bottom: 40,
                   left: (MediaQuery.sizeOf(context).width / 2) - 50,
