@@ -365,7 +365,11 @@ class Be {
 
   static readWhatsLeft() async {
     read(Data.DEVICE_NAME_PAYLOAD).then((value) {
-      // read(Data.BAL_PAYLOAD).then((value) => read(Data.MANUF_PAYLOAD));
+      read(Data.MANUF_PAYLOAD).then(
+        (value) {
+          updater!();
+        },
+      ); //read(Data.BAL_PAYLOAD).then((value) =>
     });
   }
 }
@@ -393,7 +397,13 @@ class Data {
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
   static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
-  static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
+  static const MANUF_PAYLOAD = [
+    PARAMETERS,
+    0x03,
+    0x00,
+    MFG_NAME,
+    0x10
+  ]; // 0xfa, 0x03, 0x00, 0x38, 0x10
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
 
   //write payloads
@@ -598,7 +608,7 @@ class Data {
       (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
 
   static String get mfg_name => (_data["mfg_name"] == null)
-      ? "Royer Batteries"
+      ? "Royer"
       : String.fromCharCodes(_data["mfg_name"]!);
 
   static double get bal_start {
@@ -757,14 +767,14 @@ class Data {
     }
 
     if (register == PARAMETERS) {
-      switch (batch[1]) {
+      switch (batch[5]) {
         case BAL_START:
           _data["bal_start"] = batch.sublist(3, 5);
           setAvailableData(false);
           return true;
         case MFG_NAME:
-          _data["mfg_name_lenght"] = [batch[3]];
-          _data["mfg_name"] = batch.sublist(4, device_name_lenght);
+          _data["mfg_name_lenght"] = [batch[7]];
+          _data["mfg_name"] = batch.sublist(8, device_name_lenght);
           setAvailableData(false);
           return true;
       }

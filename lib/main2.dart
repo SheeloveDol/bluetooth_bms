@@ -228,7 +228,13 @@ List<int> checksumtoRead(List<int> payload) {
 read(writeCharacteristics, [wake = false]) async {
   //write something to write and wait for read
   // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-  List<int> payload = [0x03, 0x00];
+  List<int> payload = [
+    0xfa,
+    0x03,
+    0x00,
+    0x38,
+    0x10
+  ]; // manufacturer specific command 0xfa, 0x03, 0x00, 0x38, 0x10   factoryMode: 0x00, 0x02, 0x56, 0x78
   List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
   for (var i = (wake) ? 0 : 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
