@@ -374,11 +374,13 @@ class Be {
 
   static readWhatsLeft() async {
     read(Data.DEVICE_NAME_PAYLOAD).then((value) {
-      read(Data.MANUF_PAYLOAD).then(
-        (value) {
-          updater!();
-        },
-      ); //read(Data.BAL_PAYLOAD).then((value) =>
+      read(Data.MANUF_PAYLOAD).then((value) {
+        read(Data.BAL_PAYLOAD).then(
+          (value) {
+            updater!();
+          },
+        );
+      });
     });
   }
 }
@@ -394,7 +396,7 @@ class Data {
   static const CMD_CTRL = 0x0A;
 
   //Parameters
-  static const BAL_START = 0x1A;
+  static const BAL_START = 0x26;
   static const MFG_NAME = 0x38;
 
   //Factory mode
@@ -406,13 +408,8 @@ class Data {
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
   static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
-  static const MANUF_PAYLOAD = [
-    PARAMETERS,
-    0x03,
-    0x00,
-    MFG_NAME,
-    0x10
-  ]; // 0xfa, 0x03, 0x00, 0x38, 0x10
+  // 0xfa, 0x03, 0x00, 0x38, 0x10
+  static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
 
   //write payloads
@@ -617,7 +614,7 @@ class Data {
   //     (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
 
   static String get mfg_name => (_data["mfg_name"] == null)
-      ? "Royer"
+      ? "Royer Batteries"
       : String.fromCharCodes(_data["mfg_name"]!);
 
   static double get bal_start {
