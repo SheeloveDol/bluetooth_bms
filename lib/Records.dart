@@ -13,6 +13,7 @@ class _ReportsState extends State<Reports> {
   bool bg = false;
   Column first() {
     List<Widget> data = [];
+    print(" UPDATINGA THE MANUFACTURER NAME SHOULD BE RUN  TIMEs");
     data.addAll([
       Text("Manufacturer: ${Data.mfg_name}",
           style: const TextStyle(
