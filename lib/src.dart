@@ -619,7 +619,9 @@ class Data {
 
   static double get bal_start {
     if (_data["bal_start"] == null) return 0.0;
-    return (((_data["bal_start"]![0] << 8) + _data["bal_start"]![1]) * 0.01);
+    var bal = (((_data["bal_start"]![0] << 8) + _data["bal_start"]![1]) * 0.01);
+    print(bal);
+    return bal;
   }
 
   static String get watts {
