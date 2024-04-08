@@ -604,8 +604,8 @@ class Data {
       ? ""
       : String.fromCharCodes(_data["device_name"]!);
 
-  static int get mfg_name_lenght =>
-      (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
+  // static int get mfg_name_lenght =>
+  //     (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
 
   static String get mfg_name => (_data["mfg_name"] == null)
       ? "Royer"
@@ -767,14 +767,16 @@ class Data {
     }
 
     if (register == PARAMETERS) {
-      switch (batch[5]) {
+      switch (batch[1]) {
         case BAL_START:
           _data["bal_start"] = batch.sublist(3, 5);
           setAvailableData(false);
           return true;
         case MFG_NAME:
-          _data["mfg_name_lenght"] = [batch[7]];
-          _data["mfg_name"] = batch.sublist(8, device_name_lenght);
+          print(batch);
+          var mfg_name_lenght = batch[3];
+          _data["mfg_name"] = batch.sublist(4, 4 + mfg_name_lenght);
+          print(_data["mfg_name"]);
           setAvailableData(false);
           return true;
       }
