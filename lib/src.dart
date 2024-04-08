@@ -782,10 +782,8 @@ class Data {
           setAvailableData(false);
           return true;
         case MFG_NAME:
-          print(batch);
           var mfg_name_lenght = batch[3];
           _data["mfg_name"] = batch.sublist(4, 4 + mfg_name_lenght);
-          print(_data["mfg_name"]);
           setAvailableData(false);
           return true;
       }
