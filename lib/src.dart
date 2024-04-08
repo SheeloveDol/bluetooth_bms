@@ -133,8 +133,11 @@ class Be {
       if (readSuccessFully) {
         savedDevice = device;
         savedSubscription = subscription;
+        readWhatsLeft();
+        Data.setAvailableData(true);
         return {"error": null};
       }
+      Data.clear();
       return {"error": "could not read device"};
     } catch (e) {
       return {"error": "failed to read device"};
@@ -290,35 +293,41 @@ class Be {
   }
 
   static bool _verifyReadings(List<int> rawData) {
-    if (rawData[0] != 0xDD) {
-      print(rawData);
-      rawData.clear();
-      print("Wrong starting byte");
-      return false;
-    }
-    if (rawData[2] != 0x00) {
-      print(rawData);
-      rawData.clear();
-      print("Error code ${rawData[2]}");
-      return false;
-    }
-    if (rawData[rawData.length - 1] != 0x77) {
-      print(rawData);
-      rawData.clear();
-      print("wrong ending byte");
-      return false;
-    }
+    try {
+      if (rawData[0] != 0xDD) {
+        print(rawData);
+        rawData.clear();
+        print("Wrong starting byte");
+        return false;
+      }
+      if (rawData[2] != 0x00) {
+        print(rawData);
+        rawData.clear();
+        print("Error code ${rawData[2]}");
+        return false;
+      }
+      if (rawData[rawData.length - 1] != 0x77) {
+        print(rawData);
+        rawData.clear();
+        print("wrong ending byte");
+        return false;
+      }
 
-    var payload = rawData.sublist(3, rawData.length - 3);
-    if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
-        rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
-      print("corupted data ${[
-        ...checksumtoRead(payload),
-        0x77
-      ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
-      print(rawData);
-      rawData.clear();
-      print(rawData);
+      var payload = rawData.sublist(3, rawData.length - 3);
+      if (rawData.sublist(rawData.length - 3)[0] !=
+              checksumtoRead(payload)[0] ||
+          rawData.sublist(rawData.length - 3)[1] !=
+              checksumtoRead(payload)[1]) {
+        print("corupted data ${[
+          ...checksumtoRead(payload),
+          0x77
+        ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
+        print(rawData);
+        rawData.clear();
+        print(rawData);
+      }
+    } catch (e) {
+      print("could not verufy the readings");
       return false;
     }
     return true;
@@ -795,6 +804,7 @@ class Data {
   }
 
   static clear() {
+    setAvailableData(false);
     _data.clear();
   }
 }

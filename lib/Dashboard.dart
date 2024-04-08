@@ -74,8 +74,6 @@ class _DashBoardState extends State<DashBoard> {
       configMap = map;
       done = true;
       if (map["error"] == null) {
-        Be.readWhatsLeft();
-        Data.setAvailableData(true);
         setState(() {});
 
         _timer =
