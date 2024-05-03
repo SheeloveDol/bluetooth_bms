@@ -4,12 +4,7 @@ import 'package:flutter/material.dart';
 import 'src.dart';
 
 class BatteryControl extends StatefulWidget {
-  BatteryControl(
-      {super.key,
-      required this.height,
-      required this.back,
-      required this.title});
-  final Function() back;
+  BatteryControl({super.key, required this.height, required this.title});
   final String title;
   double height;
   @override
@@ -44,7 +39,7 @@ class _BatteryControlState extends State<BatteryControl> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Left(back: widget.back),
+                          Left(),
                           Middle(title: widget.title),
                           Right()
                         ]),
@@ -161,8 +156,7 @@ class _MiddleState extends State<Middle> {
 }
 
 class Left extends StatefulWidget {
-  const Left({super.key, required this.back});
-  final Function() back;
+  const Left({super.key});
   @override
   State<StatefulWidget> createState() => _LeftState();
 }
@@ -176,14 +170,6 @@ class _LeftState extends State<Left> {
         "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
     return Container(
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => widget.back(),
-          child: const Row(children: [
-            Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
-            Text("Disconnect",
-                style: TextStyle(color: Colors.white, fontSize: 11))
-          ])),
       Bolts(position: BoltPosition.left),
       (Data.pack_ma[0] == "-")
           ? const SizedBox(height: 15)

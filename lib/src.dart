@@ -8,6 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class Be {
   static BluetoothDevice? savedDevice;
+  static String? title;
   static BluetoothService? service;
   static BluetoothCharacteristic? readCharacteristics;
   static BluetoothCharacteristic? writeCharacteristics;
@@ -69,6 +70,11 @@ class Be {
     if (FlutterBluePlus.isScanningNow) {
       await FlutterBluePlus.stopScan();
     }
+  }
+
+  static setDevice(String title, BluetoothDevice device) {
+    savedDevice = device;
+    title = title;
   }
 
   static Future<Map<String, String?>> connect(BluetoothDevice device) async {
@@ -180,6 +186,7 @@ class Be {
     savedSubscription = null;
     if (totaly) {
       savedDevice = null;
+      title = null;
     }
   }
 

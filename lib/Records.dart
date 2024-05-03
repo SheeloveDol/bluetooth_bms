@@ -50,7 +50,7 @@ class _ReportsState extends State<Reports> {
       ]),
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         const Text("Discharging Under-Temp Times :",
-            style: TextStyle(color: Colors.white)),
+            softWrap: true, style: TextStyle(color: Colors.white)),
         Text("${Data.dsgut_err_cnt}",
             style: const TextStyle(color: Colors.white))
       ])
@@ -126,6 +126,12 @@ class _ReportsState extends State<Reports> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -142,6 +148,7 @@ class _ReportsState extends State<Reports> {
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(30)),
                   child: PageView(
+                      key: UniqueKey(),
                       controller: controller,
                       children: [first(), second(), third()]))),
           Positioned(
