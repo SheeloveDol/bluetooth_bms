@@ -1,6 +1,6 @@
 ## planned
 - Add general section in the settings page ~1h 2024-06-12  
-  ad the general section which contains the number of cells
+  ### Add the general section which contains the number of cells
 
 ## in progress
 
