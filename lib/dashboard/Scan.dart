@@ -1,4 +1,4 @@
-import 'package:bluetooth_bms/Devices.dart';
+import 'package:bluetooth_bms/dashboard/Devices.dart';
 import 'package:bluetooth_bms/main.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,10 +40,12 @@ class _ScanPageState extends State<ScanPage> {
     setState(() => visible = false);
     Be.scan(onFound);
     await Future.delayed(const Duration(seconds: 5)).then((value) {
-      setState(() {
-        visible = true;
-        disabled = false;
-      });
+      if (this.mounted) {
+        setState(() {
+          visible = true;
+          disabled = false;
+        });
+      }
     });
   }
 
@@ -72,7 +74,7 @@ class _ScanPageState extends State<ScanPage> {
     });
     super.initState();
 
-    Be.init().then((value) => onScan());
+    Be.init().then((value) => {onScan()});
   }
 
   @override
