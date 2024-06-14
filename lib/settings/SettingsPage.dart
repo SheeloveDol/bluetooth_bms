@@ -52,6 +52,9 @@ class SettingsPage extends StatelessWidget {
           SettingsSection(title: "Advanced Protection", settingsElements: [
             //Check SettingsElement
           ]),
+          SettingsSection(title: "Temperature Sensor", settingsElements: [
+            //Check SettingsElement
+          ]),
         ]));
   }
 }
