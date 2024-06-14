@@ -95,7 +95,7 @@ class Be {
 
     for (int j = 0; j < 3; j++) {
       try {
-        await device.connect();
+        await device.connect(timeout: const Duration(seconds: 7));
         error = null;
         break;
       } catch (e) {

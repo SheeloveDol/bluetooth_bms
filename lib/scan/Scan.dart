@@ -1,9 +1,9 @@
-import 'package:bluetooth_bms/dashboard/Devices.dart';
-import 'package:bluetooth_bms/main.dart';
+import 'package:bluetooth_bms/scan/Devices.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class DeviceElement {
   final String title;
@@ -30,7 +30,7 @@ class _ScanPageState extends State<ScanPage> {
   Function? setSpecificState;
   final ScrollController _controller = ScrollController();
 
-  onScan() async {
+  Future<void> onScan() async {
     shadingVisible = false;
     setState(() => disabled = true);
     setState(() => devices.clear());
@@ -77,6 +77,24 @@ class _ScanPageState extends State<ScanPage> {
     Be.init().then((value) => {onScan()});
   }
 
+  showAbout() {
+    showAboutDialog(
+        context: context,
+        applicationName: "Bluetooth BMS",
+        applicationIcon: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset("assets/logo.png", height: 50)),
+        children: [
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                launchUrlString("https://www.royerbatteries.com/terms/");
+              },
+              child: Text("Agreement"))
+        ],
+        applicationLegalese: "\u{a9} Royer Batteries");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -84,36 +102,36 @@ class _ScanPageState extends State<ScanPage> {
       Container(color: const Color(0xFF002A4D)),
       //app title
       const Positioned(
-          top: 15,
+          top: 20,
           left: 10,
           child: Text("Bluetooth BMS",
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w300,
                   fontSize: 25))),
-      //Scan button
+      //Options button
       Positioned(
-          top: 10,
+          top: 15,
           right: 10,
-          child: ElevatedButton(
-              onPressed: (disabled) ? null : onScan,
-              child: const Text("SCAN",
-                  style: TextStyle(
-                      color: Color(0xEC121315),
-                      fontWeight: FontWeight.w300,
-                      fontSize: 20,
-                      letterSpacing: 2)))),
+          child: GestureDetector(
+              onTap: showAbout,
+              child: const Icon(
+                Icons.more_vert_outlined,
+                color: Color(0xFF04080B),
+                size: 45,
+              ))),
       //List of all devices
       Positioned.fill(
-          top: 60,
+          top: 80,
           child: Container(
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [Color(0xAE121315), Colors.black]),
-                  borderRadius:
-                      BorderRadius.only(topLeft: Radius.circular(45))),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(45),
+                      topRight: Radius.circular(45))),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -130,34 +148,40 @@ class _ScanPageState extends State<ScanPage> {
                         height: MediaQuery.sizeOf(context).height - 270,
                         child: Stack(alignment: Alignment.topCenter, children: [
                           Container(
-                              padding: EdgeInsets.symmetric(vertical: 2),
-                              child: ListView(
-                                  controller: _controller,
-                                  key: UniqueKey(),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  children: [
-                                    for (var d in devices)
-                                      Device(
-                                          title: d.title,
-                                          device: d.device,
-                                          goToDashboard: widget.gotoDashboard),
-                                    if (visible)
-                                      CupertinoButton(
-                                          child: const Text(
-                                            "Show All",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          onPressed: () {
-                                            devices = [
-                                              ...devices,
-                                              ...namelessDevices
-                                            ];
-                                            visible = false;
-                                            setState(() {});
-                                          })
-                                  ])),
+                            padding: EdgeInsets.symmetric(vertical: 2),
+                            child: RefreshIndicator(
+                                onRefresh: onScan,
+                                child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    controller: _controller,
+                                    key: UniqueKey(),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    children: [
+                                      for (var d in devices)
+                                        Device(
+                                            title: d.title,
+                                            device: d.device,
+                                            goToDashboard:
+                                                widget.gotoDashboard),
+                                      if (visible)
+                                        CupertinoButton(
+                                            child: const Text(
+                                              "Show All",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              devices = [
+                                                ...devices,
+                                                ...namelessDevices
+                                              ];
+                                              visible = false;
+                                              setState(() {});
+                                            })
+                                    ])),
+                          ),
                           StatefulBuilder(builder: (context, setThisState) {
                             setSpecificState = () => setThisState(() {});
                             return Column(

@@ -56,11 +56,9 @@ class _DeviceState extends State<Device> {
                   children: [
                     Row(children: [
                       Icon(Icons.bluetooth),
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                            fontSize: (widget.title.length < 20) ? 17 : 12),
-                      )
+                      Text(widget.title,
+                          style: TextStyle(
+                              fontSize: (widget.title.length < 20) ? 17 : 12))
                     ]),
                     CupertinoButton(
                         padding:

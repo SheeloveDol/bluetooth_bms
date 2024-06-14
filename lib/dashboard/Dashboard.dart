@@ -90,10 +90,10 @@ class _DashBoardState extends State<DashBoard> {
                   physics: const BouncingScrollPhysics(),
                   controller: controller,
                   children: <Widget>[
-                    BatteryState(),
-                    CellsState(),
-                    Temperatures(),
-                    Reports()
+                    DelayedBuilder(child: BatteryState()),
+                    DelayedBuilder(child: CellsState()),
+                    DelayedBuilder(child: Temperatures()),
+                    DelayedBuilder(child: Reports())
                   ])),
           BatteryControl(title: title, height: height),
           Visibility(

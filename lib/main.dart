@@ -1,6 +1,6 @@
 import 'package:bluetooth_bms/dashboard/Dashboard.dart';
-import 'package:bluetooth_bms/dashboard/Devices.dart';
-import 'package:bluetooth_bms/dashboard/Scan.dart';
+import 'package:bluetooth_bms/scan/Devices.dart';
+import 'package:bluetooth_bms/scan/Scan.dart';
 import 'package:bluetooth_bms/settings/settingsPage.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:bluetooth_bms/tuning/TuningPage.dart';
@@ -110,56 +110,61 @@ class _MainState extends State<Main> {
               ],
             )),
         extendBody: true,
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.only(bottom: 30),
-          child: DotNavigationBar(
-            marginR: const EdgeInsets.symmetric(horizontal: 10),
-            paddingR: EdgeInsets.zero,
-            itemPadding:
-                EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 7),
-            currentIndex: _SelectedTab.values.indexOf(_selectedTab),
-            unselectedItemColor: Colors.grey[300],
-            enablePaddingAnimation: false,
-            dotIndicatorColor: Colors.transparent,
-            onTap: _handleIndexChanged,
-            items: [
-              /// ScanPage
-              DotNavigationBarItem(
-                icon: Icon(
-                  Icons.bluetooth_rounded,
-                  size: sScreen / 10,
-                ),
-                selectedColor: const Color(0xFF002A4D),
-              ),
+        bottomNavigationBar: AnimatedContainer(
+          duration: Durations.long1,
+          padding: EdgeInsets.only(
+              bottom: (_selectedTab == _SelectedTab.scan) ? 0 : 30),
+          child: AnimatedOpacity(
+              opacity: (_selectedTab == _SelectedTab.scan) ? 0 : 1,
+              duration: Durations.long1,
+              child: DotNavigationBar(
+                marginR: const EdgeInsets.symmetric(horizontal: 10),
+                paddingR: EdgeInsets.zero,
+                itemPadding:
+                    EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 7),
+                currentIndex: _SelectedTab.values.indexOf(_selectedTab),
+                unselectedItemColor: Colors.grey[300],
+                enablePaddingAnimation: false,
+                dotIndicatorColor: Colors.transparent,
+                onTap: _handleIndexChanged,
+                items: [
+                  /// ScanPage
+                  DotNavigationBarItem(
+                    icon: Icon(
+                      Icons.bluetooth_rounded,
+                      size: sScreen / 10,
+                    ),
+                    selectedColor: const Color(0xFF002A4D),
+                  ),
 
-              /// Dashboard
-              DotNavigationBarItem(
-                icon: Icon(
-                  Icons.dashboard_rounded,
-                  size: sScreen / 10,
-                ),
-                selectedColor: const Color(0xFF002A4D),
-              ),
+                  /// Dashboard
+                  DotNavigationBarItem(
+                    icon: Icon(
+                      Icons.dashboard_rounded,
+                      size: sScreen / 10,
+                    ),
+                    selectedColor: const Color(0xFF002A4D),
+                  ),
 
-              /// Settings
-              DotNavigationBarItem(
-                icon: Icon(
-                  Icons.settings,
-                  size: sScreen / 10,
-                ),
-                selectedColor: const Color(0xFF002A4D),
-              ),
+                  /// Settings
+                  DotNavigationBarItem(
+                    icon: Icon(
+                      Icons.settings,
+                      size: sScreen / 10,
+                    ),
+                    selectedColor: const Color(0xFF002A4D),
+                  ),
 
-              /// Tune
-              DotNavigationBarItem(
-                icon: Icon(
-                  Icons.settings_input_composite_rounded,
-                  size: sScreen / 10,
-                ),
-                selectedColor: const Color(0xFF002A4D),
-              )
-            ],
-          ),
+                  /// Tune
+                  DotNavigationBarItem(
+                    icon: Icon(
+                      Icons.settings_input_composite_rounded,
+                      size: sScreen / 10,
+                    ),
+                    selectedColor: const Color(0xFF002A4D),
+                  )
+                ],
+              )),
         ));
   }
 }

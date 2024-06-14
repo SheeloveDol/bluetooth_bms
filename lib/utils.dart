@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class DelayedBuilder extends StatefulWidget {
   Duration? duration;
   Duration? opacityDuration;
+  int? index = 0;
   Widget child;
   Function()? onEnd;
 
@@ -10,6 +11,7 @@ class DelayedBuilder extends StatefulWidget {
       {super.key,
       this.duration,
       this.opacityDuration,
+      this.index,
       this.onEnd,
       required this.child});
   @override
@@ -17,14 +19,17 @@ class DelayedBuilder extends StatefulWidget {
 }
 
 class _DelayedBuilderState extends State<DelayedBuilder> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   double opacity = 0;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
         future: Future.delayed(
-            (widget.duration == null)
-                ? const Duration(seconds: 1)
-                : widget.duration!,
+            (widget.duration == null) ? Durations.short4 : widget.duration!,
             (() => true)),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -33,7 +38,7 @@ class _DelayedBuilderState extends State<DelayedBuilder> {
           }
           return AnimatedOpacity(
             duration: (widget.opacityDuration == null)
-                ? Duration.zero
+                ? Durations.long1
                 : widget.opacityDuration!,
             opacity: opacity,
             child: widget.child,
