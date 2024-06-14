@@ -1,17 +1,14 @@
 import 'dart:async';
 
-import 'package:bluetooth_bms/BState.dart';
-import 'package:bluetooth_bms/CState.dart';
-import 'package:bluetooth_bms/Control.dart';
-import 'package:bluetooth_bms/Records.dart';
-import 'package:bluetooth_bms/TempData.dart';
-import 'package:bluetooth_bms/main.dart';
+import 'package:bluetooth_bms/dashboard/BState.dart';
+import 'package:bluetooth_bms/dashboard/CState.dart';
+import 'package:bluetooth_bms/dashboard/Control.dart';
+import 'package:bluetooth_bms/dashboard/Records.dart';
+import 'package:bluetooth_bms/dashboard/TempData.dart';
 import 'package:flutter/material.dart';
 import 'package:bluetooth_bms/utils.dart';
-
+import '../src.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-
-import 'src.dart';
 
 class DashBoard extends StatefulWidget {
   DashBoard({super.key});
@@ -70,8 +67,10 @@ class _DashBoardState extends State<DashBoard> {
           //   }
           // });
         } else {
-          setState(() {});
-          quicktell(context, "Could not connect to $title ${map["error"]}");
+          if (this.mounted) {
+            setState(() {});
+            quicktell(context, "Could not connect to $title ${map["error"]}");
+          }
         }
       });
       super.initState();

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bluetooth_bms/Dashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bluetooth_bms/src.dart';
@@ -27,7 +26,9 @@ class _DeviceState extends State<Device> {
   onConnect() {
     connecting = true;
     textValue = "Connecting";
-    Be.stopScan().then((value) => setState(() {}));
+    Be.stopScan().then((v) {
+      if (this.mounted) setState(() {});
+    });
     Future.delayed(Durations.medium2, () {
       Be.title = widget.title;
       Be.setDevice(widget.title, widget.device);

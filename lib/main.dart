@@ -1,10 +1,11 @@
-import 'package:bluetooth_bms/Dashboard.dart';
-import 'package:bluetooth_bms/Devices.dart';
-import 'package:bluetooth_bms/Scan.dart';
+import 'package:bluetooth_bms/dashboard/Dashboard.dart';
+import 'package:bluetooth_bms/dashboard/Devices.dart';
+import 'package:bluetooth_bms/dashboard/Scan.dart';
+import 'package:bluetooth_bms/settings/settingsPage.dart';
 import 'package:bluetooth_bms/src.dart';
+import 'package:bluetooth_bms/tuning/TuningPage.dart';
 import 'package:bluetooth_bms/utils.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -104,8 +105,8 @@ class _MainState extends State<Main> {
               children: [
                 ScanPage(gotoDashboard: gotoDashboard),
                 DashBoard(),
-                Container(),
-                Container(),
+                SettingsPage(),
+                TuningPage(),
               ],
             )),
         extendBody: true,

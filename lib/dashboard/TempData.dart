@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src.dart';
+import '../src.dart';
 
 class Temperatures extends StatefulWidget {
   const Temperatures({super.key});

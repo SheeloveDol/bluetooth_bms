@@ -47,13 +47,17 @@ class Be {
     }
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
-        if (results.isNotEmpty) {
-          ScanResult r = results.last;
-          onFound(
-              (r.advertisementData.advName.length > 1)
-                  ? r.advertisementData.advName
-                  : "${r.device.remoteId}",
-              r.device);
+        try {
+          if (results.isNotEmpty) {
+            ScanResult r = results.last;
+            onFound(
+                (r.advertisementData.advName.length > 1)
+                    ? r.advertisementData.advName
+                    : "${r.device.remoteId}",
+                r.device);
+          }
+        } catch (e) {
+          print("switched window");
         }
       },
       onError: (e) => print(e),

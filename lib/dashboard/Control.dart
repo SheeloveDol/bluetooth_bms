@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'src.dart';
+import '../src.dart';
 
 class BatteryControl extends StatefulWidget {
   BatteryControl({super.key, required this.height, required this.title});

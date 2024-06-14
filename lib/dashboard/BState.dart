@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'src.dart';
+import '../src.dart';
 
 class BatteryState extends StatefulWidget {
   const BatteryState({super.key});
