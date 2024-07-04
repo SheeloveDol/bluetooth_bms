@@ -11,14 +11,14 @@ class SettingsSection extends StatefulWidget {
 
 class _MySettingsSection extends State<SettingsSection> {
   final Divider divider = const Divider();
-  final TextStyle titleStyle =
-      const TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
+  final TextStyle titleStyle = const TextStyle(
+      fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
     return Card(
-        color: const Color(0x2EFFFFFF),
+        color: const Color(0xBC002A4D),
         elevation: 3,
-        margin: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(10),
         child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(children: [

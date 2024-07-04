@@ -19,6 +19,8 @@ class Be {
   static int readTimes = 0;
   static Function? updater;
   static bool _communicatingNow = false;
+  static bool _warantyVoided = false;
+  static bool _dubioslock = false;
 
   static Future<bool> init() async {
     bool status = false;
@@ -383,6 +385,21 @@ class Be {
 
   static bool get communicatingNow => _communicatingNow;
 
+  static bool get locked => _dubioslock /*!Data.factoryModeState*/;
+
+  static lock() {
+    _dubioslock = true;
+  }
+
+  static unLock() {
+    _dubioslock = false;
+  }
+
+  static get warantyVoided => _warantyVoided;
+  static voidWaranty() {
+    _warantyVoided = true;
+  }
+
   static readWhatsLeft() async {
     read(Data.DEVICE_NAME_PAYLOAD).then((value) {
       read(Data.MANUF_PAYLOAD).then((value) {
@@ -432,6 +449,8 @@ class Data {
 
   static final Map<String, List<int>> _data = {};
   static bool availableData = false;
+
+  static bool get factoryModeState => false;
 
   static String get pack_mv => (_data["pack_mv"] == null)
       ? "0.0"

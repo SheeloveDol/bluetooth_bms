@@ -24,6 +24,7 @@ class _DashBoardState extends State<DashBoard> {
   Timer? _timer;
   bool alternate = true;
   bool done = false;
+  double size = 0;
 
   @override
   void dispose() {
@@ -37,7 +38,7 @@ class _DashBoardState extends State<DashBoard> {
     controller.addListener(() {
       if (controller.offset > 2) {
         setState(() {
-          height = 100;
+          height = (size > 360) ? 100 : 210;
         });
         return;
       }
@@ -79,29 +80,36 @@ class _DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
+    size = MediaQuery.sizeOf(context).width;
     return Container(
         decoration: const BoxDecoration(
             gradient:
                 LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
-        child: Stack(children: <Widget>[
-          Container(
-              margin: EdgeInsets.only(top: 235 - height),
-              child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  controller: controller,
-                  children: <Widget>[
-                    DelayedBuilder(child: BatteryState()),
-                    DelayedBuilder(child: CellsState()),
-                    DelayedBuilder(child: Temperatures()),
-                    DelayedBuilder(child: Reports())
-                  ])),
-          BatteryControl(title: title, height: height),
-          Visibility(
-              visible: !done && (Be.savedDevice != null),
-              child: Container(
-                  color: Colors.white10,
-                  child: const Center(
-                      child: CircularProgressIndicator(color: Colors.black))))
-        ]));
+        child: SafeArea(
+            bottom: false,
+            child: Stack(children: <Widget>[
+              Container(
+                  margin: EdgeInsets.only(
+                      top: (size > 360) ? 235 - height : 350 - height),
+                  child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      controller: controller,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            DelayedBuilder(child: BatteryState()),
+                            DelayedBuilder(child: CellsState()),
+                            DelayedBuilder(child: Temperatures()),
+                            DelayedBuilder(child: Reports())
+                          ]))),
+              BatteryControl(title: title, height: height),
+              Visibility(
+                  visible: !done && (Be.savedDevice != null),
+                  child: Container(
+                      color: Colors.white10,
+                      child: const Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.black))))
+            ])));
   }
 }

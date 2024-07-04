@@ -44,6 +44,7 @@ class _DeviceState extends State<Device> {
 
   @override
   Widget build(BuildContext context) {
+    double size = MediaQuery.sizeOf(context).width;
     return GestureDetector(
         onLongPress: () => onConnect(),
         child: Card(
@@ -56,9 +57,11 @@ class _DeviceState extends State<Device> {
                   children: [
                     Row(children: [
                       Icon(Icons.bluetooth),
-                      Text(widget.title,
-                          style: TextStyle(
-                              fontSize: (widget.title.length < 20) ? 17 : 12))
+                      Container(
+                          width: size - 210,
+                          child: Text(widget.title,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 15)))
                     ]),
                     CupertinoButton(
                         padding:

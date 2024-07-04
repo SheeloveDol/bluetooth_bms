@@ -1,39 +1,70 @@
 import 'package:bluetooth_bms/settings/SettingsSection.dart';
+import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class OneInputField extends SettingsElement {
-  const OneInputField({super.key, required this.text, required this.onChange});
+  OneInputField(
+      {super.key,
+      required this.text,
+      required this.onChange,
+      this.initialValue});
+  String? initialValue;
   final String text;
   final Function(String) onChange;
-
+  final TextStyle titleStyle = const TextStyle(
+      fontSize: 14,
+      color: Color.fromARGB(255, 183, 183, 183),
+      fontWeight: FontWeight.bold);
   @override
   Widget build(Object context) {
     return Container(
         alignment: Alignment.bottomLeft,
-        child: Wrap(
-            direction: Axis.horizontal,
-            verticalDirection: VerticalDirection.down,
-            children: [
-              Text(text),
-              const SizedBox(width: 60),
-              Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: const Color(0xFF373737)),
-                  width: 80,
-                  height: 20,
-                  padding: const EdgeInsets.only(
-                      left: 5, right: 5, top: 5, bottom: 5),
-                  child: TextField(
-                      onChanged: (value) => onChange(value),
-                      textDirection: TextDirection.rtl,
-                      style: const TextStyle(color: Colors.white, fontSize: 13),
-                      decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          fillColor: Colors.blue,
-                          errorBorder: InputBorder.none)))
-            ]));
+        margin: const EdgeInsets.all(3),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          SizedBox(width: 170, child: Text(text, style: titleStyle)),
+          ValueField(onChange: onChange, initialValue: initialValue)
+        ]));
+  }
+}
+
+class ValueField extends StatelessWidget {
+  String? initialValue;
+  final Function(String) onChange;
+
+  ValueField({super.key, required this.onChange, this.initialValue});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: (!Be.locked)
+                ? const Color(0xFF001424)
+                : const Color(0xFF00223D)),
+        width: 80,
+        height: 30,
+        padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
+        child: TextFormField(
+            initialValue: initialValue,
+            enabled: !Be.locked,
+            onChanged: (value) => onChange(value),
+            onTapOutside: (PointerDownEvent event) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            keyboardType: const TextInputType.numberWithOptions(
+                signed: true, decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"^-?[\d,.]*$")),
+            ],
+            //textDirection: TextDirection.rtl,
+            style: const TextStyle(color: Colors.white, fontSize: 13),
+            decoration: const InputDecoration(
+                border: InputBorder.none,
+                isCollapsed: true,
+                fillColor: Colors.blue,
+                errorBorder: InputBorder.none)));
   }
 }

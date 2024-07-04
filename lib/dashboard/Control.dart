@@ -14,11 +14,12 @@ class BatteryControl extends StatefulWidget {
 class _BatteryControlState extends State<BatteryControl> {
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.sizeOf(context).width;
     return AnimatedContainer(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 40),
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.only(left: 10, right: 15, bottom: 15),
-        height: 190 - widget.height,
+        padding: const EdgeInsets.only(left: 5, right: 5, bottom: 15),
+        height: (size > 360) ? 190 - widget.height : 300 - widget.height,
         decoration: BoxDecoration(
             color: (widget.height > 0) ? const Color(0xF2002A4D) : null,
             gradient: (widget.height > 0)
@@ -31,22 +32,21 @@ class _BatteryControlState extends State<BatteryControl> {
         alignment: Alignment.center,
         child: (widget.height > 0)
             ? BatteryControlSmall()
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            : Column(children: [
+                if (size > 360)
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Left(), Middle(title: widget.title), Right()]),
+                if (size < 360)
+                  Column(children: [
+                    Middle(title: widget.title),
                     Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Left(),
-                          Middle(title: widget.title),
-                          Right()
-                        ]),
-                    Text(Data.timeLeft,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 20))
-                  ]));
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [Left(), Right()])
+                  ]),
+                Text(Data.timeLeft,
+                    style: const TextStyle(color: Colors.white, fontSize: 20))
+              ]));
   }
 }
 
@@ -108,7 +108,9 @@ class _MiddleState extends State<Middle> {
   @override
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
-    batterySize = MediaQuery.sizeOf(context).width * 0.17;
+    var size = MediaQuery.sizeOf(context).width;
+    if (size > 360) batterySize = MediaQuery.sizeOf(context).width * 0.17;
+    if (size < 360) batterySize = MediaQuery.sizeOf(context).width * 0.24;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -118,7 +120,6 @@ class _MiddleState extends State<Middle> {
                   fontSize: (widget.title.length > 20) ? 10 : 15,
                   fontWeight: FontWeight.bold,
                   color: Colors.white)),
-          const Padding(padding: EdgeInsets.only(bottom: 10)),
           Stack(alignment: Alignment.centerLeft, children: [
             AnimatedContainer(
                 duration: Durations.extralong3,
@@ -128,8 +129,7 @@ class _MiddleState extends State<Middle> {
                     ? 0
                     : level * batterySize * 0.0187 - 20,
                 height: batterySize - 2),
-            Container(
-                child: Stack(alignment: Alignment.center, children: [
+            Stack(alignment: Alignment.center, children: [
               Image.asset(
                 "assets/bat.png",
                 height: batterySize,
@@ -149,7 +149,7 @@ class _MiddleState extends State<Middle> {
                 Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah",
                     style: const TextStyle(height: 0, fontSize: 10))
               ])
-            ]))
+            ])
           ])
         ]));
   }
@@ -168,23 +168,30 @@ class _LeftState extends State<Left> {
         "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
     var watts =
         "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
-    return Container(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Bolts(position: BoltPosition.left),
-      (Data.pack_ma[0] == "-")
-          ? const SizedBox(height: 15)
-          : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-      (Data.pack_ma[0] == "-")
-          ? const SizedBox(height: 15)
-          : Text(watts,
-              style: const TextStyle(fontSize: 11, color: Colors.white)),
-      CupertinoButton(
-          pressedOpacity: 0.1,
-          color: (Data.chargeStatus) ? Colors.green : Colors.red,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          onPressed: chargePressed,
-          child: const Text("Charge", style: TextStyle(fontSize: 11)))
-    ]));
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Padding(padding: EdgeInsets.only(top: 35)),
+          Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Bolts(position: BoltPosition.left),
+            (Data.pack_ma[0] == "-")
+                ? const SizedBox(height: 15)
+                : Text(ma,
+                    style: const TextStyle(fontSize: 11, color: Colors.white)),
+            (Data.pack_ma[0] == "-")
+                ? const SizedBox(height: 15)
+                : Text(watts,
+                    style: const TextStyle(fontSize: 11, color: Colors.white))
+          ]),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
+          CupertinoButton(
+              pressedOpacity: 0.1,
+              color: (Data.chargeStatus) ? Colors.green : Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              onPressed: chargePressed,
+              child: const Text("Charge", style: TextStyle(fontSize: 11)))
+        ]);
   }
 }
 

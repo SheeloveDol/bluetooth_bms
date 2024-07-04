@@ -97,127 +97,138 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      //black bg
-      Container(color: const Color(0xFF002A4D)),
-      //app title
-      const Positioned(
-          top: 20,
-          left: 10,
-          child: Text("Bluetooth BMS",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w300,
-                  fontSize: 25))),
-      //Options button
-      Positioned(
-          top: 15,
-          right: 10,
-          child: GestureDetector(
-              onTap: showAbout,
-              child: const Icon(
-                Icons.more_vert_outlined,
-                color: Color(0xFF04080B),
-                size: 45,
-              ))),
-      //List of all devices
-      Positioned.fill(
-          top: 80,
-          child: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xAE121315), Colors.black]),
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(45),
-                      topRight: Radius.circular(45))),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Padding(padding: EdgeInsets.only(bottom: 10)),
-                    const Text("Devices",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 20,
-                            letterSpacing: 2)),
-                    Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.all(10),
-                        height: MediaQuery.sizeOf(context).height - 270,
-                        child: Stack(alignment: Alignment.topCenter, children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 2),
-                            child: RefreshIndicator(
-                                onRefresh: onScan,
-                                child: ListView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    controller: _controller,
-                                    key: UniqueKey(),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
-                                    children: [
-                                      for (var d in devices)
-                                        Device(
-                                            title: d.title,
-                                            device: d.device,
-                                            goToDashboard:
-                                                widget.gotoDashboard),
-                                      if (visible)
-                                        CupertinoButton(
-                                            child: const Text(
-                                              "Show All",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            onPressed: () {
-                                              devices = [
-                                                ...devices,
-                                                ...namelessDevices
-                                              ];
-                                              visible = false;
-                                              setState(() {});
-                                            })
-                                    ])),
-                          ),
-                          StatefulBuilder(builder: (context, setThisState) {
-                            setSpecificState = () => setThisState(() {});
-                            return Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+    return SafeArea(
+        bottom: false,
+        child: Stack(children: [
+          //black bg
+          Container(color: const Color(0xFF002A4D)),
+          //app title
+          const Positioned(
+              top: 20,
+              left: 10,
+              child: Text("Bluetooth BMS",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300,
+                      fontSize: 25))),
+          //Options button
+          Positioned(
+              top: 15,
+              right: 10,
+              child: GestureDetector(
+                  onTap: showAbout,
+                  child: const Icon(
+                    Icons.more_vert_outlined,
+                    color: Color(0xFF04080B),
+                    size: 45,
+                  ))),
+          //List of all devices
+          Positioned.fill(
+              top: 80,
+              child: Container(
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xAE121315), Colors.black]),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(45),
+                          topRight: Radius.circular(45))),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(bottom: 10)),
+                        const Text("Devices",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 20,
+                                letterSpacing: 2)),
+                        Container(
+                            padding: const EdgeInsets.all(10),
+                            margin: const EdgeInsets.all(10),
+                            height: MediaQuery.sizeOf(context).height - 310,
+                            child: Stack(
+                                alignment: Alignment.topCenter,
                                 children: [
-                                  Visibility(
-                                      visible: shadingVisible,
-                                      child: Container(
-                                          decoration: const BoxDecoration(
-                                              gradient: LinearGradient(
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                  colors: [
-                                                Color(0xFF0D1A25),
-                                                Colors.transparent
-                                              ])),
-                                          height: 15)),
                                   Container(
-                                      decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomCenter,
-                                              end: Alignment.topCenter,
-                                              colors: [
-                                            Color(0xFF04080B),
-                                            Colors.transparent
-                                          ])),
-                                      height: 20)
-                                ]);
-                          })
-                        ]))
-                  ]))),
-      Positioned(
-          bottom: 40,
-          left: (MediaQuery.sizeOf(context).width / 2) - 50,
-          child: Image.asset("assets/logo.png", height: 100))
-    ]);
+                                    padding: EdgeInsets.symmetric(vertical: 2),
+                                    child: RefreshIndicator(
+                                        onRefresh: onScan,
+                                        child: ListView(
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            controller: _controller,
+                                            key: UniqueKey(),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15),
+                                            children: [
+                                              for (var d in devices)
+                                                Device(
+                                                    title: d.title,
+                                                    device: d.device,
+                                                    goToDashboard:
+                                                        widget.gotoDashboard),
+                                              if (visible)
+                                                CupertinoButton(
+                                                    child: const Text(
+                                                      "Show All",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    onPressed: () {
+                                                      devices = [
+                                                        ...devices,
+                                                        ...namelessDevices
+                                                      ];
+                                                      visible = false;
+                                                      setState(() {});
+                                                    })
+                                            ])),
+                                  ),
+                                  StatefulBuilder(
+                                      builder: (context, setThisState) {
+                                    setSpecificState =
+                                        () => setThisState(() {});
+                                    return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Visibility(
+                                              visible: shadingVisible,
+                                              child: Container(
+                                                  height: 15,
+                                                  decoration: const BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                          begin: Alignment
+                                                              .topCenter,
+                                                          end: Alignment
+                                                              .bottomCenter,
+                                                          colors: [
+                                                        Color(0xFF0D1A25),
+                                                        Colors.transparent
+                                                      ])))),
+                                          if (devices.length > 5)
+                                            Container(
+                                                height: 20,
+                                                decoration: const BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                        begin: Alignment
+                                                            .bottomCenter,
+                                                        end:
+                                                            Alignment.topCenter,
+                                                        colors: [
+                                                      Color(0xFF020405),
+                                                      Colors.transparent
+                                                    ])))
+                                        ]);
+                                  })
+                                ]))
+                      ]))),
+          Positioned(
+              bottom: 40,
+              left: (MediaQuery.sizeOf(context).width / 2) - 50,
+              child: Image.asset("assets/logo.png", height: 100))
+        ]));
   }
 }
