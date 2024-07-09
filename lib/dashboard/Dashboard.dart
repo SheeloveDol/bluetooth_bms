@@ -49,7 +49,6 @@ class _DashBoardState extends State<DashBoard> {
         return;
       }
     });
-    Be.setUpdater(() => setState(() {}));
     if (Be.savedDevice == null) {
       super.initState();
     } else {

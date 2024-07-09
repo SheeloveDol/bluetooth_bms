@@ -1,16 +1,14 @@
 import 'package:bluetooth_bms/settings/SettingsSection.dart';
 import 'package:flutter/material.dart';
 
-class TuningSection extends StatefulWidget {
-  const TuningSection(
-      {super.key, required this.title, required this.settingsElements});
+class TuningSection extends StatelessWidget {
+  const TuningSection({
+    super.key,
+    required this.title,
+    required this.settingsElements,
+  });
   final String title;
   final List<SettingsElement> settingsElements;
-  @override
-  State<TuningSection> createState() => _MyTuningSection();
-}
-
-class _MyTuningSection extends State<TuningSection> {
   final Divider divider = const Divider();
   final TextStyle titleStyle = const TextStyle(
       fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold);
@@ -26,10 +24,12 @@ class _MyTuningSection extends State<TuningSection> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.title,
-                      textAlign: TextAlign.left, style: titleStyle),
+                  Text(title, textAlign: TextAlign.left, style: titleStyle),
                   divider,
-                  ...widget.settingsElements,
+                  SizedBox(
+                      height: (4 * MediaQuery.sizeOf(context).height / 10) - 17,
+                      child: SingleChildScrollView(
+                          child: Column(children: settingsElements))),
                   const Padding(padding: EdgeInsets.only(top: 3))
                 ])));
   }

@@ -20,7 +20,7 @@ class Be {
   static Function? updater;
   static bool _communicatingNow = false;
   static bool _warantyVoided = false;
-  static bool _dubioslock = false;
+  static bool _dubioslock = true;
 
   static Future<bool> init() async {
     bool status = false;
@@ -389,10 +389,16 @@ class Be {
 
   static lock() {
     _dubioslock = true;
+    if (updater != null) {
+      updater!();
+    }
   }
 
   static unLock() {
     _dubioslock = false;
+    if (updater != null) {
+      updater!();
+    }
   }
 
   static get warantyVoided => _warantyVoided;

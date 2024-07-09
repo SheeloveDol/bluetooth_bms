@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class GroupButton extends StatefulWidget {
-  const GroupButton({super.key});
+  GroupButton({super.key, required this.index, required this.onChanged});
+  int index;
+  final Function(int) onChanged;
   @override
   State<GroupButton> createState() => _GroupButtonState();
 }
@@ -11,6 +13,8 @@ class _GroupButtonState extends State<GroupButton> {
 
   @override
   Widget build(BuildContext context) {
+    selected.setAll(0, [false, false, false]);
+    selected[widget.index] = true;
     return Padding(
         padding: EdgeInsets.all(20),
         child: ToggleButtons(
@@ -25,11 +29,7 @@ class _GroupButtonState extends State<GroupButton> {
               AmpsTuning(selected: selected[1]),
               TempTuning(selected: selected[2])
             ],
-            onPressed: (index) {
-              selected.setAll(0, [false, false, false]);
-              selected[index] = true;
-              setState(() {});
-            }));
+            onPressed: (index) => widget.onChanged(index)));
   }
 }
 

@@ -50,7 +50,7 @@ class _LockButtonState extends State<LockButton> {
                         backgroundColor: Colors.white,
                         onPressed: () {
                           if (!Be.warantyVoided) {
-                            showDialog(
+                            var result = showDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog.adaptive(
@@ -65,18 +65,20 @@ class _LockButtonState extends State<LockButton> {
                                       CupertinoButton(
                                           onPressed: () {
                                             Be.voidWaranty();
-                                            Navigator.pop(context);
+                                            Be.unLock();
+                                            Navigator.pop(context, true);
                                           },
                                           child: Text("I Agree")),
                                       CupertinoButton(
                                           onPressed: () =>
-                                              Navigator.pop(context),
+                                              Navigator.pop(context, false),
                                           child: Text("I Disagree"))
                                     ],
                                   );
                                 });
+                          } else {
+                            Be.unLock();
                           }
-                          if (Be.warantyVoided) Be.unLock();
                           setState(() {});
                         },
                         child: icon)

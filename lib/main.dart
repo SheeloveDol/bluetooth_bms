@@ -88,6 +88,7 @@ class _MainState extends State<Main> {
       systemNavigationBarColor: Colors.transparent, // Navigation bar color
     ));
     Be.setCurrentContext(context);
+    Be.setUpdater(() => setState(() {}));
     super.initState();
   }
 

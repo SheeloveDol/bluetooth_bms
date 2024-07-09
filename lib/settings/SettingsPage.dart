@@ -1,5 +1,8 @@
 import 'package:bluetooth_bms/settings/OneInputField.dart';
 import 'package:bluetooth_bms/settings/SettingsSection.dart';
+import 'package:bluetooth_bms/settings/SwitchField.dart';
+import 'package:bluetooth_bms/settings/ThreeInputField.dart';
+import 'package:bluetooth_bms/settings/TwoInputField.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
 
@@ -45,23 +48,55 @@ class SettingsPage extends StatelessWidget {
                   settingsElements: [
                     OneInputField(text: "Number of Cells", onChange: (v) {}),
                     OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    //switch SettingsElement
-                    //switch SettingsElement
+                    SwitchField(
+                        value: false,
+                        text: "Balancer Enabled",
+                        onChange: (v) {}),
+                    SwitchField(
+                        value: true,
+                        text: "Balance only while charging",
+                        onChange: (v) {})
                   ]),
               SettingsSection(
                   title: "Function Configuration",
                   settingsElements: [
-                    //switch SettingsElement
-                    //switch SettingsElement
+                    SwitchField(
+                        value: false,
+                        text: "SW switch circuit",
+                        onChange: (v) {}),
+                    SwitchField(
+                        value: true, text: "Show Celsius", onChange: (v) {})
                   ]),
               SettingsSection(title: "Protection", settingsElements: [
-                //twoInputField SettingsElement
+                ThreeInputField(
+                  text: "OverVoltage II",
+                  firstOnChange: (v) {},
+                  secondOnChange: (v) {},
+                  thirdOnChange: (v) {},
+                  firstHeader: "Trigger",
+                  secondHeader: "Release",
+                  thirdHeader: "Delay",
+                )
                 //twoInputField SettingsElement
                 //twoInputField SettingsElement
                 //ThreeInputField SettingsElement
               ]),
               SettingsSection(title: "Advanced Protection", settingsElements: [
-                //Check SettingsElement
+                TwoInputField(
+                  text: "OverVoltage II",
+                  firstOnChange: (v) {},
+                  secondOnChange: (v) {},
+                  firstHeader: "Trigger",
+                  secondHeader: "Delay",
+                ),
+                TwoInputField(
+                    text: "Undervoltage II",
+                    firstOnChange: (v) {},
+                    secondOnChange: (v) {}),
+                TwoInputField(
+                    text: "Overcurrent II",
+                    firstOnChange: (v) {},
+                    secondOnChange: (v) {})
               ]),
               SettingsSection(title: "Temperature Sensor", settingsElements: [
                 OneInputField(text: "Number of Cells", onChange: (v) {}),
