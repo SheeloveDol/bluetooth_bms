@@ -28,26 +28,39 @@ class SettingsPage extends StatelessWidget {
                   settingsElements: [
                     OneInputField(
                         text: "Total Battery Capacity", onChange: (v) {}),
-                    OneInputField(text: "...", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
+                    OneInputField(
+                        text: "Total Cycle Capacity", onChange: (v) {}),
+                    OneInputField(text: "Cell Full Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "Cell Minimal Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "Cell Self Discharge", onChange: (v) {}),
+                    OneInputField(
+                        text: "100% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "90% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "80% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "70% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "60% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "50% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "40% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "30% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "20% Capacity Voltage", onChange: (v) {}),
+                    OneInputField(
+                        text: "10% Capacity Voltage", onChange: (v) {}),
                   ]),
               SettingsSection(
                   title: "Ballancer Configuration",
                   settingsElements: [
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
-                    OneInputField(text: "Number of Cells", onChange: (v) {}),
+                    OneInputField(text: "Start Voltage", onChange: (v) {}),
+                    OneInputField(text: "Delta to Balance", onChange: (v) {}),
                     SwitchField(
                         value: false,
                         text: "Balancer Enabled",
