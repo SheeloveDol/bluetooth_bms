@@ -82,14 +82,13 @@ class SettingsPage extends StatelessWidget {
                   ]),
               SettingsSection(title: "Protection", settingsElements: [
                 ThreeInputField(
-                  text: "OverVoltage II",
-                  firstOnChange: (v) {},
-                  secondOnChange: (v) {},
-                  thirdOnChange: (v) {},
-                  firstHeader: "Trigger",
-                  secondHeader: "Release",
-                  thirdHeader: "Delay",
-                )
+                    text: "OverVoltage II",
+                    firstOnChange: (v) {},
+                    secondOnChange: (v) {},
+                    thirdOnChange: (v) {},
+                    firstHeader: "Trigger",
+                    secondHeader: "Release",
+                    thirdHeader: "Delay")
                 //twoInputField SettingsElement
                 //twoInputField SettingsElement
                 //ThreeInputField SettingsElement

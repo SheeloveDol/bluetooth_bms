@@ -385,20 +385,14 @@ class Be {
 
   static bool get communicatingNow => _communicatingNow;
 
-  static bool get locked => _dubioslock /*!Data.factoryModeState*/;
+  static bool get locked => Data.factoryModeState;
 
-  static lock() {
-    _dubioslock = true;
-    if (updater != null) {
-      updater!();
-    }
+  static lock() async {
+    await write(Data.OPEN_FACTORY_MODE);
   }
 
-  static unLock() {
-    _dubioslock = false;
-    if (updater != null) {
-      updater!();
-    }
+  static unLock() async {
+    await write(Data.OPEN_FACTORY_MODE);
   }
 
   static get warantyVoided => _warantyVoided;
@@ -407,15 +401,10 @@ class Be {
   }
 
   static readWhatsLeft() async {
-    read(Data.DEVICE_NAME_PAYLOAD).then((value) {
-      read(Data.MANUF_PAYLOAD).then((value) {
-        read(Data.BAL_PAYLOAD).then(
-          (value) {
-            updater!();
-          },
-        );
-      });
-    });
+    await read(Data.DEVICE_NAME_PAYLOAD);
+    await read(Data.MANUF_PAYLOAD);
+    await read(Data.BAL_PAYLOAD);
+    updater!();
   }
 }
 
@@ -436,12 +425,15 @@ class Data {
   //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
   static const EXIT_FACTORY_MODE = 0x01;
+  static const OPEN_FACTORY_MODE = [ENTER_FACTORY_MODE, 0x02, 0x56, 0x78];
+  static const CLOSE_FACTORY_MODE = [EXIT_FACTORY_MODE, 0x02, 0x28, 0x28];
 
   //Read Payloads
   static const BASIC_INFO_PAYLOAD = [BASIC_INFO, 0x00];
   static const CELL_INFO_PAYLOAD = [CELL_VOLTAGE, 0x00];
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
   static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
+
   // 0xfa, 0x03, 0x00, 0x38, 0x10
   static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
@@ -455,8 +447,14 @@ class Data {
 
   static final Map<String, List<int>> _data = {};
   static bool availableData = false;
+  static bool? _factory;
 
-  static bool get factoryModeState => false;
+  static bool get factoryModeState {
+    if (_factory == null) {
+      return false;
+    }
+    return _factory!;
+  }
 
   static String get pack_mv => (_data["pack_mv"] == null)
       ? "0.0"
@@ -478,7 +476,8 @@ class Data {
       ? "0.0"
       : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
           .toStringAsFixed(1);
-  //BAttery capacity
+
+  //Battery capacity
   static String get design_cap => (_data["design_cap"] == null)
       ? "0.0"
       : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
@@ -729,9 +728,9 @@ class Data {
     return biggest - smallest;
   }
 
-  static bool setBatchData(List<int> batch, int register) {
+  static bool setBatchData(List<int> batch, int registerResponse) {
     setAvailableData(true);
-    if (register == BASIC_INFO) {
+    if (registerResponse == BASIC_INFO) {
       int afterNtc = 0;
 
       _data["pack_mv"] = batch.sublist(0, 2);
@@ -765,7 +764,7 @@ class Data {
       return true;
     }
 
-    if (register == CELL_VOLTAGE) {
+    if (registerResponse == CELL_VOLTAGE) {
       int j = 0;
       for (int i = 0; i < cell_cnt; i++) {
         var key = "cell${i}_mv";
@@ -776,7 +775,7 @@ class Data {
       return true;
     }
 
-    if (register == STAT_INFO) {
+    if (registerResponse == STAT_INFO) {
       List<String> keys = [
         "sc_err_cnt",
         "chgoc_err_cnt",
@@ -803,14 +802,14 @@ class Data {
       return true;
     }
 
-    if (register == DEVICE_NAME) {
+    if (registerResponse == DEVICE_NAME) {
       // _data["device_name_lenght"] = [batch[0]];
       _data["device_name"] = batch;
       setAvailableData(false);
       return true;
     }
 
-    if (register == PARAMETERS) {
+    if (registerResponse == PARAMETERS) {
       switch (batch[1]) {
         case BAL_START:
           _data["bal_start"] = batch.sublist(3, 5);
@@ -827,6 +826,17 @@ class Data {
       return true;
     }
 
+    if (registerResponse == OPEN_FACTORY_MODE) {
+      _factory = true;
+      setAvailableData(false);
+      return true;
+    }
+
+    if (registerResponse == CLOSE_FACTORY_MODE) {
+      _factory = true;
+      setAvailableData(false);
+      return true;
+    }
     print("uncaught registery");
     setAvailableData(false);
     return false;

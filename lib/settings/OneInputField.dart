@@ -32,12 +32,18 @@ class ValueField extends StatelessWidget {
   final Function(String) onChange;
   String? header;
   String? unit;
+  double? width;
 
   ValueField(
-      {super.key, required this.onChange, this.initialValue, this.header});
+      {super.key,
+      required this.onChange,
+      this.width,
+      this.initialValue,
+      this.header});
 
   @override
   Widget build(BuildContext context) {
+    width ??= 80;
     return Column(children: [
       if (header != null)
         Text(header!,
@@ -49,7 +55,7 @@ class ValueField extends StatelessWidget {
               color: (!Be.locked)
                   ? const Color(0xFF001424)
                   : const Color(0xFF00223D)),
-          width: 80,
+          width: width,
           height: 30,
           padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
           child: TextFormField(

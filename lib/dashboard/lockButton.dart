@@ -54,7 +54,7 @@ class _LockButtonState extends State<LockButton> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog.adaptive(
-                                    title: Text("Warranty waiving Action"),
+                                    title: Text("Warranty Waiving Action"),
                                     icon: Icon(Icons.warning),
                                     content: const Column(children: [
                                       Divider(),
