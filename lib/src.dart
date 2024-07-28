@@ -391,10 +391,12 @@ class Be {
 
   static lock() async {
     await write(Data.OPEN_FACTORY_MODE);
+    updater!();
   }
 
   static unLock() async {
     await write(Data.OPEN_FACTORY_MODE);
+    updater!();
   }
 
   static get warantyVoided => _warantyVoided;
