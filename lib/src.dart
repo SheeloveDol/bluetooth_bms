@@ -20,7 +20,6 @@ class Be {
   static Function? updater;
   static bool _communicatingNow = false;
   static bool _warantyVoided = false;
-  static bool _dubioslock = true;
 
   static Future<bool> init() async {
     bool status = false;
@@ -831,6 +830,7 @@ class Data {
     }
 
     if (registerResponse == ENTER_FACTORY_MODE) {
+      print("ENTER_FACTORY_MODE");
       _factory = true;
       setAvailableData(false);
       return true;
