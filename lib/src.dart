@@ -387,7 +387,7 @@ class Be {
 
   static bool get communicatingNow => _communicatingNow;
 
-  static bool get locked => Data.factoryModeState;
+  static bool get locked => !Data.factoryModeState;
 
   static lock() async {
     await write(Data.OPEN_FACTORY_MODE);
@@ -835,7 +835,7 @@ class Data {
     }
 
     if (registerResponse == CLOSE_FACTORY_MODE) {
-      _factory = true;
+      _factory = false;
       setAvailableData(false);
       return true;
     }
