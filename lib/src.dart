@@ -828,13 +828,13 @@ class Data {
       return true;
     }
 
-    if (registerResponse == OPEN_FACTORY_MODE) {
+    if (registerResponse == ENTER_FACTORY_MODE) {
       _factory = true;
       setAvailableData(false);
       return true;
     }
 
-    if (registerResponse == CLOSE_FACTORY_MODE) {
+    if (registerResponse == EXIT_FACTORY_MODE) {
       _factory = false;
       setAvailableData(false);
       return true;
