@@ -236,7 +236,7 @@ class Be {
     });
 
     List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-    print("sending command : $cmd");
+    print("reading command : $cmd");
     int j = 0;
     do {
       for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -290,6 +290,7 @@ class Be {
       confirmation.addAll(event);
     });
     List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
+    print("writing command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
       if (wake) {
@@ -301,6 +302,7 @@ class Be {
     while (confirmation.isEmpty) {
       await Future.delayed(const Duration(milliseconds: 300));
     }
+    print("received from write command : $confirmation");
     _communicatingNow = false;
     notifySub.cancel();
   }
