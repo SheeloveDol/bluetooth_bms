@@ -51,6 +51,7 @@ class _LockButtonState extends State<LockButton> {
                         onPressed: () {
                           if (Be.warantyVoided) {
                             Be.unLock();
+                            return;
                           }
                           var result = showDialog(
                               context: context,
@@ -99,7 +100,7 @@ class _LockButtonState extends State<LockButton> {
                             FloatingActionButton(
                                 splashColor: Colors.transparent,
                                 backgroundColor: Colors.white,
-                                onPressed: () => setState(() => Be.lock()),
+                                onPressed: () => Be.lock(),
                                 child: icon)
                           ]))));
   }
