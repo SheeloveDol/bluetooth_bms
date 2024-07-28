@@ -49,11 +49,13 @@ class _LockButtonState extends State<LockButton> {
                         splashColor: Colors.transparent,
                         backgroundColor: Colors.white,
                         onPressed: () {
-                          if (!Be.warantyVoided) {
-                            var result = showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog.adaptive(
+                          if (Be.warantyVoided) {
+                            Be.unLock();
+                          }
+                          var result = showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog.adaptive(
                                     title: Text("Warranty Waiving Action"),
                                     icon: Icon(Icons.warning),
                                     content: const Column(children: [
@@ -73,13 +75,8 @@ class _LockButtonState extends State<LockButton> {
                                           onPressed: () =>
                                               Navigator.pop(context, false),
                                           child: Text("I Disagree"))
-                                    ],
-                                  );
-                                });
-                          } else {
-                            Be.unLock();
-                          }
-                          setState(() {});
+                                    ]);
+                              });
                         },
                         child: icon)
                     : Row(
