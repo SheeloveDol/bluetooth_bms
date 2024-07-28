@@ -272,7 +272,7 @@ class Be {
     return good2;
   }
 
-  static write(List<int> payload) async {
+  static Future<List<int>> write(List<int> payload) async {
     while (_communicatingNow) {
       await Future.delayed(const Duration(milliseconds: 300));
     }
@@ -281,7 +281,7 @@ class Be {
     //TODO: Do we still need this _setWake function?
 
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
-    var confirmation = [];
+    List<int> confirmation = [];
 
     //subscribe to read charac
     await readCharacteristics!.setNotifyValue(true);
@@ -304,6 +304,8 @@ class Be {
     print("received from write command : $confirmation");
     _communicatingNow = false;
     notifySub.cancel();
+
+    return confirmation;
   }
 
   static bool _verifyReadings(List<int> rawData) {
@@ -389,12 +391,14 @@ class Be {
   static bool get locked => !Data.factoryModeState;
 
   static lock() async {
-    await write(Data.OPEN_FACTORY_MODE);
+    var batch = await write(Data.OPEN_FACTORY_MODE);
+    Data.setBatchData(batch, batch[1]);
     updater!();
   }
 
   static unLock() async {
-    await write(Data.OPEN_FACTORY_MODE);
+    var batch = await write(Data.OPEN_FACTORY_MODE);
+    Data.setBatchData(batch, batch[1]);
     updater!();
   }
 
