@@ -478,7 +478,7 @@ class Data {
   static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
   static const DESIGN_CAP = [PARAMETERS, 0x03, 0x00, 0x00, 0x1];
-  static const DESIGN_CAP_WRITE = [PARAMETERS, 0x00, 7, 0x00, 0x00, 66, 204];
+  static const DESIGN_CAP_WRITE = [PARAMETERS, 0x00, 5, 0x00, 0x00, 66, 204];
 
   //write payloads
   static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
