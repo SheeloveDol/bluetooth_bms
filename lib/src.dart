@@ -407,12 +407,18 @@ class Be {
   static bool get locked => !Data.factoryModeState;
 
   static lock() async {
+    if (locked) {
+      return;
+    }
     var batch = await write(Data.CLOSE_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
     updater!();
   }
 
   static unLock() async {
+    if (!locked) {
+      return;
+    }
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
     updater!();
