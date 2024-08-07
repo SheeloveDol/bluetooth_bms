@@ -276,7 +276,6 @@ class Be {
     print(answer);
     if (!good) {
       good = await resetConnection();
-      Data.clear();
       print("RECONNECTED: $good");
       if (good) _communicatingNow = false;
       return good;
