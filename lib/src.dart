@@ -197,6 +197,7 @@ class Be {
 
   static Future<bool> resetConnection() async {
     await disconnect(totaly: false);
+    Data.clear();
     try {
       await savedDevice!.connect();
       await savedDevice!.discoverServices();
