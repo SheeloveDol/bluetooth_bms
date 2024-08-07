@@ -199,12 +199,27 @@ class Be {
     await disconnect(totaly: false);
     try {
       await savedDevice!.connect();
+      await savedDevice!.discoverServices();
+      //getting first basic info
+      var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
+      readSuccessFully = (readSuccessFully)
+          ? await read(Data.CELL_INFO_PAYLOAD)
+          : readSuccessFully;
+      readSuccessFully = (readSuccessFully)
+          ? await read(Data.STATS_PAYLOAD)
+          : readSuccessFully;
+
+      if (readSuccessFully) {
+        readWhatsLeft();
+        Data.setAvailableData(true);
+        return true;
+      }
+      Data.clear();
+      return false;
     } catch (e) {
       quicktell(context!, "Lost connection with device");
       return false;
     }
-    await savedDevice!.discoverServices();
-    return true;
   }
 
   static List<int> checksumtoRead(List<int> payload) {
@@ -261,6 +276,7 @@ class Be {
     print(answer);
     if (!good) {
       good = await resetConnection();
+      Data.clear();
       print("RECONNECTED: $good");
       if (good) _communicatingNow = false;
       return good;
@@ -340,6 +356,7 @@ class Be {
         ]} is not ${rawData.sublist(rawData.length - 3)} for ${rawData[1]}");
         print(rawData);
         rawData.clear();
+        Data.clear();
         print(rawData);
       }
     } catch (e) {
