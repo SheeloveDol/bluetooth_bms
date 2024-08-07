@@ -21,20 +21,23 @@ class _DashBoardState extends State<DashBoard> {
   ScrollController controller = ScrollController();
   double height = 0;
   late Map<String, dynamic> configMap;
-  Timer? _timer;
+  Timer? _t;
   bool alternate = true;
   bool done = false;
   double size = 0;
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _t?.cancel();
     controller.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
+    if (!Be.locked) {
+      Be.lock();
+    }
     controller.addListener(() {
       if (controller.offset > 2) {
         setState(() {
@@ -58,11 +61,9 @@ class _DashBoardState extends State<DashBoard> {
         done = true;
         if (map["error"] == null) {
           setState(() {});
-
-          _timer =
-              Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
+          _t = Timer.periodic(const Duration(milliseconds: 1500), (t) async {
             if (!Be.locked) {
-              return;
+              await Be.lock();
             }
 
             if (!Be.communicatingNow) {
@@ -71,7 +72,7 @@ class _DashBoardState extends State<DashBoard> {
             }
           });
         } else {
-          if (this.mounted) {
+          if (mounted) {
             setState(() {});
             quicktell(context, "Could not connect to $title ${map["error"]}");
           }

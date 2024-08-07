@@ -375,7 +375,6 @@ class Be {
 
   static void reset() async {
     await write(Data.RESET_PAYLOAD);
-    await getBasicInfo();
   }
 
   static void _setWake(bool wakeValue) {
@@ -399,6 +398,11 @@ class Be {
   static unLock() async {
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
+    updater!();
+  }
+
+  static resetAlarm() async {
+    await write(Data.RESET_PAYLOAD);
     updater!();
   }
 
@@ -845,6 +849,7 @@ class Data {
       setAvailableData(false);
       return true;
     }
+
     print("uncaught registery");
     setAvailableData(false);
     return false;
