@@ -9,10 +9,9 @@ import 'package:flutter/material.dart';
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-  
+    Be.read_design_cap();
     return Container(
         height: MediaQuery.sizeOf(context).height,
         decoration: const BoxDecoration(

@@ -440,6 +440,10 @@ class Be {
     await read(Data.BAL_PAYLOAD);
     updater!();
   }
+
+  static read_design_cap() async {
+    await read(Data.DESIGN_CAP);
+  }
 }
 
 class Data {
@@ -471,6 +475,7 @@ class Data {
   // 0xfa, 0x03, 0x00, 0x38, 0x10
   static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
+  static const DESIGN_CAP = [PARAMETERS, 0x03, 0x00, 0x00, 0x2];
 
   //write payloads
   static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
@@ -480,6 +485,7 @@ class Data {
   static const RESET_PAYLOAD = [CMD_CTRL, 0x02, 0x04, 0x00];
 
   static final Map<String, List<int>> _data = {};
+  static final Map<String, List<int>> _settingsData = {};
   static bool availableData = false;
   static bool? _factory;
 
@@ -844,6 +850,7 @@ class Data {
     }
 
     if (registerResponse == PARAMETERS) {
+      print(batch);
       switch (batch[1]) {
         case BAL_START:
           _data["bal_start"] = batch.sublist(3, 5);
@@ -885,5 +892,6 @@ class Data {
   static clear() {
     setAvailableData(false);
     _data.clear();
+    _settingsData.clear();
   }
 }
