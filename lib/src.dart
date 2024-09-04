@@ -207,9 +207,10 @@ class Be {
     await disconnect(totaly: false);
     Data.clear();
     try {
-      await savedDevice?.connect();
-      await savedDevice?.discoverServices();
+      await savedDevice!.connect();
+      await savedDevice!.discoverServices();
       print("RECONNECTED");
+      setConnectionState(DeviceConnectionState.connected);
       return true;
     } catch (e) {
       disconnect(totaly: true);
