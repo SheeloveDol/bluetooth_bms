@@ -355,7 +355,7 @@ class Be {
         print(rawData);
       }
     } catch (e) {
-      print("could not verify the readings");
+      print("could not verify the readings ${e.toString()}");
       return false;
     }
     return true;
