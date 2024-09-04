@@ -250,18 +250,17 @@ class Be {
     int k = 0;
     do {
       //subscribe to read charac
-
       await readCharacteristics?.setNotifyValue(true);
 
-      var notifySub = readCharacteristics?.onValueReceived.listen((event) {
+      var notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
       });
       List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-      print("reading command : $cmd");
+      print("sendind read command : $cmd");
       int j = 0;
       do {
         for (var i = (wake) ? 0 : 1; i < 2; i++) {
-          await writeCharacteristics?.write(cmd, withoutResponse: true);
+          await writeCharacteristics!.write(cmd, withoutResponse: true);
           if (wake) {
             await Future.delayed(const Duration(milliseconds: 300));
           }
@@ -272,7 +271,7 @@ class Be {
         j++;
         if (j > 5) break;
       } while (answer.isEmpty);
-      notifySub?.cancel();
+      notifySub.cancel();
       good = _verifyReadings(answer);
       print(answer);
 
@@ -594,7 +593,7 @@ class Data {
 
   // Parameters payload read
   static const ALL_PARAMS_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 56]; // i want registry 0 all the way to 55;
-  static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
+  static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 10];
 
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
   static const DESIGN_CAP_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 0x1];
