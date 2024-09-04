@@ -250,7 +250,7 @@ class Be {
     int k = 0;
     do {
       //subscribe to read charac
-      await readCharacteristics?.setNotifyValue(true);
+      await readCharacteristics!.setNotifyValue(true);
 
       var notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
@@ -437,8 +437,8 @@ class Be {
   }
 
   static void setConnectionState(DeviceConnectionState state) {
-    updater!();
     _currentState = state;
+    updater!();
   }
 
   static bool get warantyVoided => _warantyVoided;
