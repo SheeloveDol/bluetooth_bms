@@ -431,9 +431,9 @@ class Be {
   static void readWhatsLeft() async {
     await read(Data.DEVICE_NAME_PAYLOAD);
     updater!();
-    unLock();
+    await unLock();
     await read(Data.MANUF_PAYLOAD);
-    lock();
+    await lock();
     //await read(Data.BAL_PAYLOAD);
     //updater!();
   }
@@ -887,6 +887,7 @@ class Data {
         return true;
 
       case EXIT_FACTORY_MODE:
+        print("EXIT_FACTORY_MODE");
         _factory = false;
         return true;
 
