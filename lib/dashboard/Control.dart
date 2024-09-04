@@ -34,18 +34,13 @@ class _BatteryControlState extends State<BatteryControl> {
             ? BatteryControlSmall()
             : Column(children: [
                 if (size > 360)
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Left(), Middle(title: widget.title), Right()]),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Left(), Middle(title: widget.title), Right()]),
                 if (size < 360)
                   Column(children: [
                     Middle(title: widget.title),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [Left(), Right()])
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [Left(), Right()])
                   ]),
-                Text(Data.timeLeft,
-                    style: const TextStyle(color: Colors.white, fontSize: 20))
+                Text(Data.timeLeft, style: const TextStyle(color: Colors.white, fontSize: 20))
               ]));
   }
 }
@@ -76,12 +71,10 @@ class _RightState extends State<Right> {
           Bolts(position: BoltPosition.right),
           (Data.pack_ma[0] != "-")
               ? const SizedBox(height: 15)
-              : Text(ma,
-                  style: const TextStyle(fontSize: 11, color: Colors.white)),
+              : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
           (Data.pack_ma[0] != "-")
               ? const SizedBox(height: 15)
-              : Text(watts,
-                  style: const TextStyle(fontSize: 11, color: Colors.white))
+              : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
         ]),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
@@ -117,17 +110,13 @@ class _MiddleState extends State<Middle> {
         child: Column(children: [
           Text(widget.title,
               style: TextStyle(
-                  fontSize: (widget.title.length > 20) ? 10 : 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
+                  fontSize: (widget.title.length > 20) ? 10 : 15, fontWeight: FontWeight.bold, color: Colors.white)),
           Stack(alignment: Alignment.centerLeft, children: [
             AnimatedContainer(
                 duration: Durations.extralong3,
                 margin: const EdgeInsets.only(left: 7),
                 color: const Color(0xFF00C106),
-                width: (level * batterySize * 0.0187 - 20 < 0)
-                    ? 0
-                    : level * batterySize * 0.0187 - 20,
+                width: (level * batterySize * 0.0187 - 20 < 0) ? 0 : level * batterySize * 0.0187 - 20,
                 height: batterySize - 2),
             Stack(alignment: Alignment.center, children: [
               Image.asset(
@@ -137,17 +126,13 @@ class _MiddleState extends State<Middle> {
               Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text(
                   "${Data.cap_pct}%",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                      fontSize: 20),
+                  style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 20),
                 ),
                 Text(
                   "${Data.pack_mv}V",
                   style: const TextStyle(height: 0, fontSize: 10),
                 ),
-                Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah",
-                    style: const TextStyle(height: 0, fontSize: 10))
+                Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: const TextStyle(height: 0, fontSize: 10))
               ])
             ])
           ])
@@ -168,30 +153,25 @@ class _LeftState extends State<Left> {
         "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
     var watts =
         "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Padding(padding: EdgeInsets.only(top: 35)),
-          Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Bolts(position: BoltPosition.left),
-            (Data.pack_ma[0] == "-")
-                ? const SizedBox(height: 15)
-                : Text(ma,
-                    style: const TextStyle(fontSize: 11, color: Colors.white)),
-            (Data.pack_ma[0] == "-")
-                ? const SizedBox(height: 15)
-                : Text(watts,
-                    style: const TextStyle(fontSize: 11, color: Colors.white))
-          ]),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
-          CupertinoButton(
-              pressedOpacity: 0.1,
-              color: (Data.chargeStatus) ? Colors.green : Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              onPressed: chargePressed,
-              child: const Text("Charge", style: TextStyle(fontSize: 11)))
-        ]);
+    return Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children: [
+      const Padding(padding: EdgeInsets.only(top: 35)),
+      Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Bolts(position: BoltPosition.left),
+        (Data.pack_ma[0] == "-")
+            ? const SizedBox(height: 15)
+            : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
+        (Data.pack_ma[0] == "-")
+            ? const SizedBox(height: 15)
+            : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
+      ]),
+      const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
+      CupertinoButton(
+          pressedOpacity: 0.1,
+          color: (Data.chargeStatus) ? Colors.green : Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          onPressed: chargePressed,
+          child: const Text("Charge", style: TextStyle(fontSize: 11)))
+    ]);
   }
 }
 
@@ -218,9 +198,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
       Stack(alignment: Alignment.centerLeft, children: [
         Container(
             decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 0, 193, 3),
-                borderRadius:
-                    BorderRadius.horizontal(left: Radius.circular(30))),
+                color: Color.fromARGB(255, 0, 193, 3), borderRadius: BorderRadius.horizontal(left: Radius.circular(30))),
             width: (level - 15 < 0) ? 0 : level - 15,
             height: 49),
         Container(
@@ -233,10 +211,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
               ),
               Text(
                 "${Data.cap_pct}%",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                    fontSize: 15),
+                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 15),
               )
             ],
           ),
@@ -302,12 +277,7 @@ class Bolts extends StatefulWidget {
 }
 
 class _BoltsState extends State<Bolts> {
-  List<Color> colors = [
-    Colors.yellow,
-    Colors.yellow,
-    Colors.yellow,
-    Colors.yellow
-  ];
+  List<Color> colors = [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow];
   int c = 0;
   Timer? _timer;
 
@@ -320,8 +290,7 @@ class _BoltsState extends State<Bolts> {
   void stop() {
     _timer?.cancel();
     _timer = null;
-    setState(() => colors.setAll(
-        0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
+    setState(() => colors.setAll(0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]));
   }
 
   void start() {
@@ -339,8 +308,7 @@ class _BoltsState extends State<Bolts> {
           c = 0;
         }
         setState(() {
-          colors.setAll(
-              0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
+          colors.setAll(0, [Colors.yellow, Colors.yellow, Colors.yellow, Colors.yellow]);
           colors[c] = Colors.green;
         });
       });

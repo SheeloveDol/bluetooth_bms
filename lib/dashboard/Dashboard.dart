@@ -20,10 +20,8 @@ class _DashBoardState extends State<DashBoard> {
   String title = "No Device";
   ScrollController controller = ScrollController();
   double height = 0;
-  late Map<String, dynamic> configMap;
   Timer? _t;
   bool alternate = true;
-  bool done = false;
   double size = 0;
 
   @override
@@ -31,6 +29,19 @@ class _DashBoardState extends State<DashBoard> {
     _t?.cancel();
     controller.dispose();
     super.dispose();
+  }
+
+  void runPeriodic() {
+    _t = Timer.periodic(const Duration(milliseconds: 1500), (t) async {
+      if (!Be.locked) {
+        await Be.lock();
+      }
+
+      if (!Be.communicatingNow) {
+        (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
+        alternate = !alternate;
+      }
+    });
   }
 
   @override
@@ -52,32 +63,17 @@ class _DashBoardState extends State<DashBoard> {
         return;
       }
     });
-    if (Be.savedDevice == null) {
+    if (Be.conectionState == DeviceConnectionState.disconnected) {
       super.initState();
-    } else {
+      return;
+    }
+    if (Be.conectionState == DeviceConnectionState.connected) {
+      runPeriodic();
+      super.initState();
+      return;
+    }
+    if (Be.conectionState == DeviceConnectionState.connecting) {
       title = Be.title!;
-      Be.connect(Be.savedDevice!).then((map) async {
-        configMap = map;
-        done = true;
-        if (map["error"] == null) {
-          setState(() {});
-          _t = Timer.periodic(const Duration(milliseconds: 1500), (t) async {
-            if (!Be.locked) {
-              await Be.lock();
-            }
-
-            if (!Be.communicatingNow) {
-              (alternate) ? await Be.getBasicInfo() : await Be.getCellInfo();
-              alternate = !alternate;
-            }
-          });
-        } else {
-          if (mounted) {
-            setState(() {});
-            quicktell(context, "Could not connect to $title ${map["error"]}");
-          }
-        }
-      });
       super.initState();
     }
   }
@@ -86,34 +82,26 @@ class _DashBoardState extends State<DashBoard> {
   Widget build(BuildContext context) {
     size = MediaQuery.sizeOf(context).width;
     return Container(
-        decoration: const BoxDecoration(
-            gradient:
-                LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
+        decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
         child: SafeArea(
             bottom: false,
             child: Stack(children: <Widget>[
               Container(
-                  margin: EdgeInsets.only(
-                      top: (size > 360) ? 235 - height : 350 - height),
+                  margin: EdgeInsets.only(top: (size > 360) ? 235 - height : 350 - height),
                   child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       controller: controller,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            DelayedBuilder(child: BatteryState()),
-                            DelayedBuilder(child: CellsState()),
-                            DelayedBuilder(child: Temperatures()),
-                            DelayedBuilder(child: Reports())
-                          ]))),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+                        DelayedBuilder(child: BatteryState()),
+                        DelayedBuilder(child: CellsState()),
+                        DelayedBuilder(child: Temperatures()),
+                        DelayedBuilder(child: Reports())
+                      ]))),
               BatteryControl(title: title, height: height),
               Visibility(
-                  visible: !done && (Be.savedDevice != null),
+                  visible: Be.conectionState == DeviceConnectionState.connecting,
                   child: Container(
-                      color: Colors.white10,
-                      child: const Center(
-                          child:
-                              CircularProgressIndicator(color: Colors.black))))
+                      color: Colors.white10, child: const Center(child: CircularProgressIndicator(color: Colors.black))))
             ])));
   }
 }

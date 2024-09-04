@@ -21,30 +21,25 @@ class TwoInputField extends SettingsElement {
   final String text;
   final Function(String) firstOnChange;
   final Function(String) secondOnChange;
-  final TextStyle titleStyle = const TextStyle(
-      fontSize: 14,
-      color: Color.fromARGB(255, 183, 183, 183),
-      fontWeight: FontWeight.bold);
+  final TextStyle titleStyle = const TextStyle(fontSize: 14, color: Color(0xFFB7B7B7), fontWeight: FontWeight.bold);
   @override
   Widget build(Object context) {
     return Container(
         alignment: Alignment.bottomLeft,
         margin: const EdgeInsets.all(3),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(width: 110, child: Text(text, style: titleStyle)),
-              ValueField(
-                onChange: firstOnChange,
-                initialValue: firstInitialValue,
-                header: firstHeader,
-              ),
-              ValueField(
-                onChange: secondOnChange,
-                initialValue: secondInitialValue,
-                header: secondHeader,
-              ),
-            ]));
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center, children: [
+          SizedBox(width: 110, child: Text(text, style: titleStyle)),
+          ValueField(
+            onChange: firstOnChange,
+            initialValue: firstInitialValue,
+            header: firstHeader,
+          ),
+          ValueField(
+            onChange: secondOnChange,
+            initialValue: secondInitialValue,
+            header: secondHeader,
+          ),
+        ]));
   }
 }

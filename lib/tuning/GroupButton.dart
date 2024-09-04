@@ -42,9 +42,7 @@ class VoltsTuning extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.electric_bolt_rounded, color: Colors.amber, size: 30),
-          if (selected)
-            Text("Volts",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
+          if (selected) Text("Volts", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
         ]));
   }
 }
@@ -59,9 +57,7 @@ class AmpsTuning extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.electric_bolt_rounded, color: Colors.blueAccent, size: 30),
-          if (selected)
-            Text("Amps",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
+          if (selected) Text("Amps", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
         ]));
   }
 }
@@ -76,9 +72,7 @@ class TempTuning extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.thermostat, color: Colors.greenAccent, size: 30),
-          if (selected)
-            Text("Temps",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
+          if (selected) Text("Temps", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
         ]));
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bluetooth_bms/src.dart';
@@ -31,8 +29,10 @@ class _DeviceState extends State<Device> {
     });
     Future.delayed(Durations.medium2, () {
       Be.title = widget.title;
-      Be.setDevice(widget.title, widget.device);
+      Be.setDeviceTitle(widget.title);
+      Be.setConnectionState(DeviceConnectionState.connecting);
       widget.goToDashboard();
+      Be.connect(widget.device);
     });
   }
 
@@ -59,13 +59,10 @@ class _DeviceState extends State<Device> {
                       Icon(Icons.bluetooth),
                       Container(
                           width: size - 210,
-                          child: Text(widget.title,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 15)))
+                          child: Text(widget.title, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15)))
                     ]),
                     CupertinoButton(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         borderRadius: BorderRadius.circular(15),
                         color: Color.fromARGB(255, 13, 22, 50),
                         onPressed: (connecting) ? null : () => onConnect(),

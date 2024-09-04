@@ -27,10 +27,8 @@ class ThreeInputField extends SettingsElement {
   final Function(String) firstOnChange;
   final Function(String) secondOnChange;
   final Function(String) thirdOnChange;
-  final TextStyle titleStyle = const TextStyle(
-      fontSize: 14,
-      color: Color.fromARGB(255, 183, 183, 183),
-      fontWeight: FontWeight.bold);
+  final TextStyle titleStyle =
+      const TextStyle(fontSize: 14, color: Color.fromARGB(255, 183, 183, 183), fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
     double l = MediaQuery.sizeOf(context).width;
@@ -38,9 +36,7 @@ class ThreeInputField extends SettingsElement {
         alignment: Alignment.bottomLeft,
         margin: const EdgeInsets.all(3),
         child: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-          SizedBox(
-              width: (l > 250) ? 110 : 200,
-              child: Text(text, style: titleStyle)),
+          SizedBox(width: (l > 250) ? 110 : 200, child: Text(text, style: titleStyle)),
           SizedBox(
               width: 250,
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [

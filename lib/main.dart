@@ -1,6 +1,5 @@
 import 'package:bluetooth_bms/dashboard/Dashboard.dart';
 import 'package:bluetooth_bms/dashboard/lockButton.dart';
-import 'package:bluetooth_bms/scan/Devices.dart';
 import 'package:bluetooth_bms/scan/Scan.dart';
 import 'package:bluetooth_bms/settings/settingsPage.dart';
 import 'package:bluetooth_bms/src.dart';
@@ -12,15 +11,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
+  final List<int> settingTiles = [0, 1, 2, 3, 4, 5];
   runApp(MaterialApp(
-      theme: ThemeData.from(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
-      home: Main()));
+      theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
+      home: Main(settingTiles: settingTiles)));
 }
 
 class Main extends StatefulWidget {
-  Main({super.key});
+  Main({super.key, required this.settingTiles});
+  final List<int> settingTiles;
   @override
   State<Main> createState() => _MainState();
 }
@@ -50,20 +49,16 @@ class _MainState extends State<Main> {
         } catch (e) {
           print("failed to properly disconnect");
         }
-        _controller.animateToPage(0,
-            duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(0, duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.dashboard:
-        _controller.animateToPage(1,
-            duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(1, duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.settings:
-        _controller.animateToPage(2,
-            duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(2, duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.tune:
-        _controller.animateToPage(3,
-            duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(3, duration: Durations.long3, curve: Curves.ease);
         break;
     }
   }
@@ -81,8 +76,7 @@ class _MainState extends State<Main> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black,
       systemNavigationBarColor: Colors.transparent, // Navigation bar color
@@ -103,14 +97,13 @@ class _MainState extends State<Main> {
     var pages = [
       ScanPage(gotoDashboard: gotoDashboard),
       DashBoard(),
-      SettingsPage(),
+      SettingsPage(tiles: widget.settingTiles),
       TuningPage()
     ];
     sScreen = MediaQuery.sizeOf(context).width;
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
     return GestureDetector(
-        onTap: () =>
-            SystemChannels.textInput.invokeMethod<void>('TextInput.hide'),
+        onTap: () => SystemChannels.textInput.invokeMethod<void>('TextInput.hide'),
         child: Scaffold(
             backgroundColor: Colors.black,
             body: Container(
@@ -122,12 +115,9 @@ class _MainState extends State<Main> {
                       return pages[index];
                     })),
             extendBody: true,
-            resizeToAvoidBottomInset:
-                (_selectedTab == _SelectedTab.scan) ? false : true,
+            resizeToAvoidBottomInset: (_selectedTab == _SelectedTab.scan) ? false : true,
             floatingActionButton: LockButton(
-                visible: (_selectedTab != _SelectedTab.scan &&
-                    _selectedTab != _SelectedTab.dashboard &&
-                    !keyboardIsOpen)),
+                visible: (_selectedTab != _SelectedTab.scan && _selectedTab != _SelectedTab.dashboard && !keyboardIsOpen)),
             bottomNavigationBar: AnimatedOpacity(
               duration: Durations.long1,
               opacity: (_selectedTab == _SelectedTab.scan) ? 0 : 1,
@@ -141,16 +131,14 @@ class _MainState extends State<Main> {
               child: AnimatedContainer(
                   duration: Durations.long1,
                   color: Colors.white,
-                  padding: EdgeInsets.only(
-                      bottom: (_selectedTab == _SelectedTab.scan) ? 0 : 20),
+                  padding: EdgeInsets.only(bottom: (_selectedTab == _SelectedTab.scan) ? 0 : 20),
                   child: Visibility(
                       //visible: showbar,
                       child: DotNavigationBar(
                     enableFloatingNavBar: false,
                     marginR: const EdgeInsets.symmetric(horizontal: 10),
                     paddingR: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.symmetric(
-                        horizontal: sScreen / 30, vertical: 0),
+                    itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
                     currentIndex: _SelectedTab.values.indexOf(_selectedTab),
                     unselectedItemColor: Colors.grey[300],
                     splashColor: Colors.transparent,

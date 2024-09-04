@@ -54,8 +54,7 @@ class AppState extends State<App> {
                 for (var device in devicesRaw) {
                   devices.add(TextButton(
                       onPressed: () async {
-                        var map =
-                            await connect(device, data, () => setState(() {}));
+                        var map = await connect(device, data, () => setState(() {}));
                         currentChar = map["char"];
                         currentSub = map["sub"];
                         currentNotify = map["notify"];
@@ -69,12 +68,12 @@ class AppState extends State<App> {
           Wrap(children: [...devices]),
           ElevatedButton(
               onPressed: () async {
-                read(currentChar);
+                write(currentChar);
               },
               child: Text("read")),
           ElevatedButton(
               onPressed: () async {
-                read(currentChar, true);
+                write(currentChar, true);
               },
               child: Text("wake & read")),
           Text("$data"),
@@ -102,8 +101,7 @@ Future<bool> init() async {
     print("Bluetooth not supported by this device");
     return false;
   }
-  var subscription =
-      FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+  var subscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
     if (state == BluetoothAdapterState.on) {
       status = true;
     } else {
@@ -134,9 +132,7 @@ Future<List<BluetoothDevice>> scan() async {
     onError: (e) => print(e),
   );
   FlutterBluePlus.cancelWhenScanComplete(subscription);
-  await FlutterBluePlus.adapterState
-      .where((val) => val == BluetoothAdapterState.on)
-      .first;
+  await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
   await FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
 
   // wait for scanning to stop
@@ -144,16 +140,14 @@ Future<List<BluetoothDevice>> scan() async {
   return devices;
 }
 
-Future<Map<String, dynamic>> connect(
-    BluetoothDevice device, List<int> data, Function state) async {
+Future<Map<String, dynamic>> connect(BluetoothDevice device, List<int> data, Function state) async {
   // listen for disconnection
 
   if (FlutterBluePlus.isScanningNow) {
     await FlutterBluePlus.stopScan();
   }
 
-  var subscription =
-      device.connectionState.listen((BluetoothConnectionState state) async {
+  var subscription = device.connectionState.listen((BluetoothConnectionState state) async {
     if (state == BluetoothConnectionState.disconnected) {
       // 1. typically, start a periodic timer that tries to
       //    reconnect, or just call connect() again right now
@@ -200,11 +194,7 @@ Future<Map<String, dynamic>> connect(
     print(event);
   });
 
-  return {
-    "sub": subscription,
-    "char": writeCharacteristics,
-    "notify": notifySub
-  };
+  return {"sub": subscription, "char": writeCharacteristics, "notify": notifySub};
 }
 
 List<int> checksumtoRead(List<int> payload) {
@@ -227,15 +217,30 @@ List<int> checksumtoRead(List<int> payload) {
 
 read(writeCharacteristics, [wake = false]) async {
   //write something to write and wait for read
-  // Everytime you send type of data you must change the checksum ie: 0xfd --> oxfc
-  List<int> payload = [
-    0xfa,
-    0x03,
-    0x00,
-    0x38,
-    0x10
-  ]; // manufacturer specific command 0xfa, 0x03, 0x00, 0x38, 0x10   factoryMode: 0x00, 0x02, 0x56, 0x78
+  // Everytime you send type of data you must change the checksum ie: 0xfd --> 0xfc
+  // manufacturer specific command 0xfa, 0x03, 0x00, 0x38, 0x10   factoryMode: 0x00, 0x02, 0x56, 0x78
+  List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
   List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+  for (var i = (wake) ? 0 : 1; i < 2; i++) {
+    writeCharacteristics.write(cmd, withoutResponse: true);
+    await Future.delayed(Duration(milliseconds: 700));
+  }
+}
+
+const FET_CTRL = 0xE1;
+const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
+const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x01];
+const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x02];
+const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x03];
+
+write(writeCharacteristics, [wake = false]) async {
+  //write something to write and wait for notif
+  //
+  // List<int> payload = ON_DSICHARGE_ON_CHARGE_PAYLOAD;
+  // List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
+  // List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
+  List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
+  List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
   for (var i = (wake) ? 0 : 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
     await Future.delayed(Duration(milliseconds: 700));

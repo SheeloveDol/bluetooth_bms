@@ -6,8 +6,11 @@ import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+enum DeviceConnectionState { connecting, connected, disconnected }
+
 class Be {
   static BluetoothDevice? savedDevice;
+  static DeviceConnectionState _currentState = DeviceConnectionState.disconnected;
   static String? title;
   static BluetoothService? service;
   static BluetoothCharacteristic? readCharacteristics;
@@ -27,8 +30,7 @@ class Be {
       print("Bluetooth not supported by this device");
       return false;
     }
-    var subscription =
-        FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+    var subscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
       if (state == BluetoothAdapterState.on) {
         status = true;
       } else {
@@ -52,10 +54,7 @@ class Be {
           if (results.isNotEmpty) {
             ScanResult r = results.last;
             onFound(
-                (r.advertisementData.advName.length > 1)
-                    ? r.advertisementData.advName
-                    : "${r.device.remoteId}",
-                r.device);
+                (r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device);
           }
         } catch (e) {
           print("switched window");
@@ -64,9 +63,7 @@ class Be {
       onError: (e) => print(e),
     );
     FlutterBluePlus.cancelWhenScanComplete(subscription);
-    await FlutterBluePlus.adapterState
-        .where((val) => val == BluetoothAdapterState.on)
-        .first;
+    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
@@ -77,14 +74,12 @@ class Be {
     }
   }
 
-  static setDevice(String title, BluetoothDevice device) {
-    savedDevice = device;
+  static setDeviceTitle(String title) {
     title = title;
   }
 
-  static Future<Map<String, String?>> connect(BluetoothDevice device) async {
-    var subscription =
-        device.connectionState.listen((BluetoothConnectionState state) async {
+  static Future<bool> connect(BluetoothDevice device) async {
+    var subscription = device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
         print("Device Disconnected : ${device.disconnectReason}");
       }
@@ -103,7 +98,12 @@ class Be {
         error = "failed to connect";
       }
     }
-    if (error != null) return {"error": error};
+    if (error != null) {
+      setConnectionState(DeviceConnectionState.disconnected);
+      title ??= "Bluetooth Device";
+      quicktell(context, "failed to connect to $title");
+      return false;
+    }
 
     try {
       //get service
@@ -128,30 +128,33 @@ class Be {
         }
       }
     } catch (e) {
-      return {"error": "device not compatible"};
+      setConnectionState(DeviceConnectionState.disconnected);
+      quicktell(context, "Device $title is not compatible");
+      return false;
     }
 
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.CELL_INFO_PAYLOAD)
-          : readSuccessFully;
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.STATS_PAYLOAD)
-          : readSuccessFully;
+      readSuccessFully = (readSuccessFully) ? await read(Data.CELL_INFO_PAYLOAD) : readSuccessFully;
+      readSuccessFully = (readSuccessFully) ? await read(Data.STATS_PAYLOAD) : readSuccessFully;
 
       if (readSuccessFully) {
         savedDevice = device;
         savedSubscription = subscription;
         readWhatsLeft();
         Data.setAvailableData(true);
-        return {"error": null};
+        setConnectionState(DeviceConnectionState.connected);
+        return true;
       }
       Data.clear();
-      return {"error": "could not read device"};
+      setConnectionState(DeviceConnectionState.disconnected);
+      quicktell(context, "Could not read from $title");
+      return false;
     } catch (e) {
-      return {"error": "failed to read device"};
+      setConnectionState(DeviceConnectionState.disconnected);
+      quicktell(context, "failed to read from $title");
+      return false;
     }
   }
 
@@ -192,33 +195,23 @@ class Be {
     if (totaly) {
       savedDevice = null;
       title = null;
+      setConnectionState(DeviceConnectionState.disconnected);
     }
   }
 
   static Future<bool> resetConnection() async {
+    print("RECONNECTING");
+    setConnectionState(DeviceConnectionState.connecting);
     await disconnect(totaly: false);
     Data.clear();
     try {
-      await savedDevice!.connect();
-      await savedDevice!.discoverServices();
-      //getting first basic info
-      var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.CELL_INFO_PAYLOAD)
-          : readSuccessFully;
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.STATS_PAYLOAD)
-          : readSuccessFully;
-
-      if (readSuccessFully) {
-        readWhatsLeft();
-        Data.setAvailableData(true);
-        return true;
-      }
-      Data.clear();
-      return false;
+      await savedDevice?.connect();
+      await savedDevice?.discoverServices();
+      print("RECONNECTED");
+      return true;
     } catch (e) {
-      quicktell(context!, "Lost connection with device");
+      disconnect(totaly: true);
+      quicktell(context, "Lost connection with device");
       return false;
     }
   }
@@ -244,58 +237,60 @@ class Be {
   static Future<bool> read(List<int> payload) async {
     _communicatingNow = true;
     List<int> answer = [];
-    //subscribe to read charac
-    await readCharacteristics!.setNotifyValue(true);
-    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
-      answer.addAll(event);
-    });
+    var good = false;
 
-    List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-    print("reading command : $cmd");
-    int j = 0;
-    do {
-      for (var i = (wake) ? 0 : 1; i < 2; i++) {
-        await writeCharacteristics!.write(cmd, withoutResponse: true);
-        if (wake) {
-          await Future.delayed(const Duration(milliseconds: 300));
-        }
-        _setWake(false);
-      }
-      //maybe this will fail on a 100 cells battery
-
-      await Future.delayed(Duration(milliseconds: 200 + j * 300));
-
-      j++;
-      if (j > 5) {
-        break;
-      }
-    } while (answer.isEmpty);
-
-    notifySub.cancel();
-
-    var good = _verifyReadings(answer);
-    print(answer);
-    if (!good) {
-      good = await resetConnection();
-      print("RECONNECTED: $good");
-      if (good) _communicatingNow = false;
-      return good;
+    if (_currentState != DeviceConnectionState.connected) {
+      print("no device is currently connefcted");
+      return false;
     }
 
+    int k = 0;
+    do {
+      //subscribe to read charac
+
+      await readCharacteristics?.setNotifyValue(true);
+
+      var notifySub = readCharacteristics?.onValueReceived.listen((event) {
+        answer.addAll(event);
+      });
+      List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+      print("reading command : $cmd");
+      int j = 0;
+      do {
+        for (var i = (wake) ? 0 : 1; i < 2; i++) {
+          await writeCharacteristics?.write(cmd, withoutResponse: true);
+          if (wake) {
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+          _setWake(false);
+        }
+        //maybe this will fail on a 100 cells battery
+        await Future.delayed(Duration(milliseconds: 200 + j * 300));
+        j++;
+        if (j > 5) break;
+      } while (answer.isEmpty);
+      notifySub?.cancel();
+      good = _verifyReadings(answer);
+      print(answer);
+
+      if (!good) await resetConnection();
+      k++;
+      if (k > 2) return false;
+    } while (!good);
+
     var data = answer.sublist(4, answer.length - 3);
-    var good2 = Data.setBatchData(data, answer[1]);
+    good = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
-    return good2;
+    return good;
   }
 
   static Future<List<int>> write(List<int> payload) async {
     while (_communicatingNow) {
-      await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 100));
     }
     _communicatingNow = true;
 
     //TODO: Do we still need this _setWake function?
-
     Future.delayed(const Duration(minutes: 1)).then((value) => _setWake(true));
     List<int> confirmation = [];
 
@@ -320,7 +315,6 @@ class Be {
     print("received from write command : $confirmation");
     _communicatingNow = false;
     notifySub.cancel();
-
     return confirmation;
   }
 
@@ -346,10 +340,8 @@ class Be {
       }
 
       var payload = rawData.sublist(3, rawData.length - 3);
-      if (rawData.sublist(rawData.length - 3)[0] !=
-              checksumtoRead(payload)[0] ||
-          rawData.sublist(rawData.length - 3)[1] !=
-              checksumtoRead(payload)[1]) {
+      if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
+          rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
         print("corupted data ${[
           ...checksumtoRead(payload),
           0x77
@@ -360,7 +352,7 @@ class Be {
         print(rawData);
       }
     } catch (e) {
-      print("could not verufy the readings");
+      print("could not verify the readings");
       return false;
     }
     return true;
@@ -431,12 +423,11 @@ class Be {
     updater!();
   }
 
-  static get warantyVoided => _warantyVoided;
   static voidWaranty() {
     _warantyVoided = true;
   }
 
-  static readWhatsLeft() async {
+  static void readWhatsLeft() async {
     await read(Data.DEVICE_NAME_PAYLOAD);
     await read(Data.MANUF_PAYLOAD);
     await read(Data.BAL_PAYLOAD);
@@ -444,8 +435,16 @@ class Be {
   }
 
   static read_design_cap() async {
-    await read(Data.DESIGN_CAP);
+    await read(Data.DESIGN_CAP_PAYLOAD);
   }
+
+  static void setConnectionState(DeviceConnectionState state) {
+    updater!();
+    _currentState = state;
+  }
+
+  static bool get warantyVoided => _warantyVoided;
+  static DeviceConnectionState get conectionState => _currentState;
 }
 
 class Data {
@@ -458,9 +457,73 @@ class Data {
   static const FET_CTRL = 0xE1;
   static const CMD_CTRL = 0x0A;
 
-  //Parameters
-  static const BAL_START = 0x26;
-  static const MFG_NAME = 0x38;
+  //Parameters registeries
+  static const DESIGN_CAP = 0;
+  static const CYCLE_CAP = 1;
+  static const CELL_FULL_MV = 2;
+  static const CELL_MIN_MV = 3;
+  static const CELL_D_PERC = 4;
+  /*TODO: 
+  static const CELL_100 = 0;
+  static const CELL_90 = 0;
+  static const CELL_80 = 0;
+  static const CELL_70 = 0;
+  static const CELL_60 = 0;
+  static const CELL_50 = 0;
+  static const CELL_40 = 0;
+  static const CELL_30 = 0;
+  static const CELL_20 = 0;
+  static const CELL_10 = 0;*/
+  static const PROT_C_HIGH_TEMP_TRIG = 8;
+  static const PROT_C_HIGH_TEMP_REL = 9;
+  static const PROT_C_LOW_TEMP_TRIG = 10;
+  static const PROT_C_LOW_TEMP_REL = 11;
+  static const PROT_D_HIGH_TEMP_TRIG = 12;
+  static const PROT_D_HIGH_TEMP_REL = 13;
+  static const PROT_D_LOW_TEMP_TRIG = 14;
+  static const PROT_D_LOW_TEMP_REL = 15;
+  static const PROT_BAT_HIGH_TRIG = 16;
+  static const PROT_BAT_HIGH_REL = 17;
+  static const PROT_BAT_LOW_TRIG = 18;
+  static const PROT_BAT_LOW_REL = 19;
+  static const PROT_CELL_HIGH_TRIG = 20;
+  static const PROT_CELL_HIGH_REL = 21;
+  static const PROT_CELL_LOW_TRIG = 22;
+  static const PROT_CELL_LOW_REL = 23;
+  static const PROT_CH_HIGH_MA = 23;
+  static const PROT_CH_LOW_MA = 23;
+  static const BAL_START = 26;
+  static const BAL_DELTA = 27;
+  static const BAL_EN = 29;
+  static const BAL_EN_C = 29;
+  static const NTC_EN = 30;
+  static const CELL_CNT = 31;
+  static const DEL_FET_CTRL_SW = 32;
+  static const DEL_LED = 33;
+  // TODO: SEE VALEUES FOR THIS GAP
+  static const ADV_HIGH_V_TRIG = 38;
+  static const ADV_LOW_V_TRIG = 39;
+  static const ADV_PROT_HIGH_MA = 40;
+  static const SC_PROT_SET = 41;
+  static const DEL_ADV_HIGH_LOW_V = 42;
+  static const DEL_SC_REL = 43;
+  static const DEL_LOW_CH_TEMP = 44;
+  static const DEL_HIGH_CH_TEMP = 45;
+  static const DEL_LOW_D_TEMP = 46;
+  static const DEL_HIGH_D_TEMP = 47;
+  static const DEL_LOW_BAT_V = 48;
+  static const DEL_HIGH_BAT_V = 49;
+  static const DEL_LOW_CELL_V = 50;
+  static const DEL_HIGH_CELL_V = 51;
+  static const DEL_HIGH_MA = 52;
+  static const DEL_HIGH_MA_REL = 53;
+  static const DEL_LOW_MA = 54;
+  static const DEL_LOW_MA_REL = 55;
+  static const MFG_NAME = 56;
+  //Unecessary values for this GAP
+  static const GPS_SHUTD = 104;
+  static const DEL_GPS_SHUTD = 105;
+  //106 to 111 are cell %
 
   //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
@@ -474,13 +537,17 @@ class Data {
   static const STATS_PAYLOAD = [STAT_INFO, 0x00];
   static const DEVICE_NAME_PAYLOAD = [DEVICE_NAME, 0x00];
 
-  // 0xfa, 0x03, 0x00, 0x38, 0x10
+  // Parameters payload read
+  static const ALL_PARAMS_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 56]; // i want registry 0 all the way to 55;
   static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 0x10];
+
   static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
-  static const DESIGN_CAP = [PARAMETERS, 0x03, 0x00, 0x00, 0x1];
+  static const DESIGN_CAP_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 0x1];
+
+  // Parameters payload write
   static const DESIGN_CAP_WRITE = [PARAMETERS, 0x00, 5, 0x00, 0x00, 66, 204];
 
-  //write payloads
+  //command write payloads
   static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
   static const ON_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x01];
   static const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x02];
@@ -492,61 +559,37 @@ class Data {
   static bool availableData = false;
   static bool? _factory;
 
-  static bool get factoryModeState {
-    if (_factory == null) {
-      return false;
-    }
-    return _factory!;
-  }
-
-  static String get pack_mv => (_data["pack_mv"] == null)
-      ? "0.0"
-      : (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01)
-          .toStringAsFixed(2);
-
-  static String get pack_ma {
-    if (_data["pack_ma"] == null) return "0.00";
-    int result =
-        (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
-    // Check the sign bit (MSB)
-    if (result & 0x8000 != 0) {
-      result = -(0x10000 - result);
-    }
-    return (result * 0.01).toStringAsFixed(2);
-  }
-
-  static String get cycle_cap => (_data["cycle_cap"] == null)
-      ? "0.0"
-      : (((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]) * 0.01)
-          .toStringAsFixed(1);
-
-  //Battery capacity
-  static String get design_cap => (_data["design_cap"] == null)
-      ? "0.0"
-      : (((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]) * 0.01)
-          .toStringAsFixed(1);
-
-  static String get cycle_cnt => (_data["cycle_cnt"] == null)
-      ? "0"
-      : (((_data["cycle_cnt"]![0] << 8) + _data["cycle_cnt"]![1])).toString();
-
-  static bool get chargeStatus {
-    if (_data["fet_status"] == null) return false;
-    return (_data["fet_status"]![0] & 0x1) != 0;
-  }
-
-  static bool get dischargeStatus {
-    if (_data["fet_status"] == null) return false;
-    return (_data["fet_status"]![0] & 0x2) != 0;
-  }
+  static bool get factoryModeState => (_factory == null) ? false : _factory!;
+  static String get pack_mv => _unsigned10Mili(_data["pack_mv"]).toStringAsFixed(2);
+  static String get pack_ma => _signed10Mili(_data["pack_ma"]).toStringAsFixed(2);
+  static String get cycle_cap => _unsigned10Mili(_data["cycle_cap"]).toStringAsFixed(1);
+  static String get design_cap => _unsigned10Mili(_data["design_cap"]).toStringAsFixed(1);
+  static String get cycle_cnt => _oneUnit(_data["cycle_cnt"]).toString();
+  static bool get chargeStatus => _oneBool(_data["fet_status"], 0x01); // position 01
+  static bool get dischargeStatus => _oneBool(_data["fet_status"], 0x02); // position 10
+  static int get cap_pct => _oneByteOneUnit(_data["cap_pct"]);
+  static int get cell_cnt => _oneByteOneUnit(_data["cell_cnt"]);
+  static int get ntc_cnt => _oneByteOneUnit(_data["ntc_cnt"]);
+  static int get unknown => 0;
+  static int get sc_err_cnt => _oneUnit(_data["sc_err_cnt"]);
+  static int get chgoc_err_cnt => _oneUnit(_data["chgoc_err_cnt"]);
+  static int get dsgoc_err_cnt => _oneUnit(_data["dsgoc_err_cnt"]);
+  static int get covp_err_cnt => _oneUnit(_data["covp_err_cnt"]);
+  static int get cuvp_err_cnt => _oneUnit(_data["cuvp_err_cnt"]);
+  static int get chgot_err_cnt => _oneUnit(_data["chgot_err_cnt"]);
+  static int get chgut_err_cnt => _oneUnit(_data["chgut_err_cnt"]);
+  static int get dsgot_err_cnt => _oneUnit(_data["dsgot_err_cnt"]);
+  static int get dsgut_err_cnt => _oneUnit(_data["dsgut_err_cnt"]);
+  static int get povp_err_cnt => _oneUnit(_data["povp_err_cnt"]);
+  static int get puvp_err_cnt => _oneUnit(_data["puvp_err_cnt"]);
+  static String get device_name => (_data["device_name"] == null) ? "" : String.fromCharCodes(_data["device_name"]!);
+  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
 
   static List<String> get curr_err {
     if (_data["curr_err"] == null) return [];
     List<String> err = [];
     for (int i = 15; i >= 0; i--) {
-      bool bit =
-          (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) !=
-              0;
+      bool bit = (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) != 0;
       if (bit) {
         switch (i) {
           case 0:
@@ -605,8 +648,7 @@ class Data {
 
   static String get date {
     if (_data["date"] == null) return "";
-    var dateData = ((_data["date"]![0] << 8) + _data["date"]![1]);
-    // Extract year, month, and day components using bitwise operations and bit masking
+    var dateData = _combine(_data["date"]!, 0, 1);
     int year = (dateData >> 9) & 0x7F;
     int month = (dateData >> 5) & 0xF;
     int day = dateData & 0x1F;
@@ -619,7 +661,7 @@ class Data {
   static List<bool> get bal {
     if (_data["bal"] == null) return [];
     List<bool> bal = [];
-    int combined = ((_data["bal"]![0] << 8) + _data["bal"]![1]);
+    int combined = _combine(_data["bal"]!, 0, 1);
     for (int i = 0; i < 16; i++) {
       bool bit = (combined & (1 << i)) != 0;
       bal.add(bit);
@@ -627,24 +669,12 @@ class Data {
     return bal;
   }
 
-  static int get cap_pct =>
-      (_data["cap_pct"] == null) ? 0 : _data["cap_pct"]![0];
-
-  static int get cell_cnt =>
-      (_data["cell_cnt"] == null) ? 0 : _data["cell_cnt"]![0];
-
-  static int get ntc_cnt =>
-      (_data["ntc_cnt"] == null) ? 0 : _data["ntc_cnt"]![0];
-
   static List<String> get ntc_temp {
     if (_data["ntc_temp"] == null) return [];
     List<String> temps = [];
     int j = 0;
     for (var i = 0; i < ntc_cnt; i++) {
-      temps.add(
-          (((_data["ntc_temp"]![j] << 8) + _data["ntc_temp"]![j + 1]) * 0.1 -
-                  273.15)
-              .toStringAsFixed(1));
+      temps.add((_unsigned100Mili(_data["ntc_temp"], j, j + 1) - 273.15).toStringAsFixed(1));
       j += 2;
     }
     return temps;
@@ -653,92 +683,44 @@ class Data {
   static List<double> get cell_mv {
     List<double> cells = [];
     for (int i = 0; i < cell_cnt; i++) {
-      if (_data["cell${i}_mv"] == null) continue;
-      cells.add(
-          ((_data["cell${i}_mv"]![0] << 8) + _data["cell${i}_mv"]![1]) * 0.001);
+      if (_data["cell${i}_mv"] == null) {
+        cells.add(0.0);
+        continue;
+      }
+      cells.add(_unsignedOneMili(_data["cell${i}_mv"]));
     }
-
     return cells;
   }
 
-  static int get unknown => 0;
-  static int get sc_err_cnt => _getIntValue(_data["sc_err_cnt"]);
-  static int get chgoc_err_cnt => _getIntValue(_data["chgoc_err_cnt"]);
-  static int get dsgoc_err_cnt => _getIntValue(_data["dsgoc_err_cnt"]);
-  static int get covp_err_cnt => _getIntValue(_data["covp_err_cnt"]);
-  static int get cuvp_err_cnt => _getIntValue(_data["cuvp_err_cnt"]);
-  static int get chgot_err_cnt => _getIntValue(_data["chgot_err_cnt"]);
-  static int get chgut_err_cnt => _getIntValue(_data["chgut_err_cnt"]);
-  static int get dsgot_err_cnt => _getIntValue(_data["dsgot_err_cnt"]);
-  static int get dsgut_err_cnt => _getIntValue(_data["dsgut_err_cnt"]);
-  static int get povp_err_cnt => _getIntValue(_data["povp_err_cnt"]);
-  static int get puvp_err_cnt => _getIntValue(_data["puvp_err_cnt"]);
-
-  static int _getIntValue(List<int>? bytes) {
-    if (bytes == null) return 0;
-    int value = (bytes[0] << 8) + bytes[1];
-    return value;
-  }
-
-  static int get device_name_lenght => (_data["device_name_lenght"] == null)
-      ? 0
-      : _data["device_name_lenght"]![0];
-
-  static String get device_name => (_data["device_name"] == null)
-      ? ""
-      : String.fromCharCodes(_data["device_name"]!);
-
-  // static int get mfg_name_lenght =>
-  //     (_data["mfg_name_lenght"] == null) ? 0 : _data["mfg_name_lenght"]![0];
-
-  static String get mfg_name => (_data["mfg_name"] == null)
-      ? "Royer Batteries"
-      : String.fromCharCodes(_data["mfg_name"]!);
-
-  static double get bal_start {
-    if (_data["bal_start"] == null) return 0.0;
-    var bal = (((_data["bal_start"]![0] << 8) + _data["bal_start"]![1]) * 0.01);
-    print(bal);
-    return bal;
-  }
+  static double get bal_start => _unsigned10Mili(_data["bal_start"]);
 
   static String get watts {
     if (_data["pack_ma"] == null || _data["pack_mv"] == null) return "0.0";
-    int result =
-        (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
-
+    int result = _combineSigned(_data["pack_ma"]!, 0, 1);
     // Check the sign bit (MSB)
-    var doubleResult =
-        (result & 0x8000 != 0) ? -(0x10000 - result) * 1.0 : result * 1.0;
-
-    return (doubleResult *
-            (((_data["pack_mv"]![0] << 8) + _data["pack_mv"]![1]) * 0.01) *
-            0.01)
-        .round()
-        .toString();
+    var doubleResult = (result & 0x8000 != 0) ? -(0x10000 - result) * 1.0 : result * 1.0;
+    return (doubleResult * _combine(_data["pack_ma"]!, 0, 1) * 0.01).round().toString();
   }
 
   static String get timeLeft {
-    if (_data["cycle_cap"] == null ||
-        _data["design_cap"] == null ||
-        _data["pack_ma"] == null) return "0 Minutes left";
-
-    int capacityLeft = ((_data["cycle_cap"]![0] << 8) + _data["cycle_cap"]![1]);
-    int totalCapacity =
-        ((_data["design_cap"]![0] << 8) + _data["design_cap"]![1]);
-    int AmperageInputAndOutput =
-        (_data["pack_ma"]![1] & 0xFF) | ((_data["pack_ma"]![0] << 8) & 0xFF00);
-    // Check the sign bit (MSB)
-    if (AmperageInputAndOutput & 0x8000 != 0) {
-      AmperageInputAndOutput = -(0x10000 - AmperageInputAndOutput);
+    if (_data["cycle_cap"] == null || _data["design_cap"] == null || _data["pack_ma"] == null) {
+      return "0 Minutes left";
     }
-    if (AmperageInputAndOutput == 0) {
+
+    int capacityLeft = _combine(_data["cycle_cap"]!, 0, 1);
+    int totalCapacity = _combine(_data["design_cap"]!, 0, 1);
+    int amperageInputAndOutput = _combineSigned(_data["pack_ma"]!, 0, 1);
+    // Check the sign bit (MSB)
+    if (amperageInputAndOutput & 0x8000 != 0) {
+      amperageInputAndOutput = -(0x10000 - amperageInputAndOutput);
+    }
+    if (amperageInputAndOutput == 0) {
       return "999 hours left";
     }
 
-    var decimalHours = capacityLeft / AmperageInputAndOutput;
+    var decimalHours = capacityLeft / amperageInputAndOutput;
     if (!decimalHours.isNegative) {
-      decimalHours = (totalCapacity - capacityLeft) / AmperageInputAndOutput;
+      decimalHours = (totalCapacity - capacityLeft) / amperageInputAndOutput;
     }
 
     int hours = decimalHours.truncate();
@@ -772,120 +754,170 @@ class Data {
   }
 
   static bool setBatchData(List<int> batch, int registerResponse) {
-    setAvailableData(true);
-    if (registerResponse == BASIC_INFO) {
-      int afterNtc = 0;
-
-      _data["pack_mv"] = batch.sublist(0, 2);
-      _data["pack_ma"] = batch.sublist(0x2, 0x4);
-      _data["cycle_cap"] = batch.sublist(0x4, 0x6);
-      _data["design_cap"] = batch.sublist(0x6, 0x8);
-      _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
-      _data["date"] = batch.sublist(0xA, 0xC);
-      _data["bal"] = batch.sublist(0xC, 0x10);
-      _data["curr_err"] = batch.sublist(0x10, 0x12);
-      _data["version"] = [batch[0x12]];
-      _data["cap_pct"] = [batch[0x13]];
-      _data["fet_status"] = [batch[0x14]];
-      _data["cell_cnt"] = [batch[0x15]];
-      _data["ntc_cnt"] = [batch[0x16]];
-      afterNtc = 0x017 + ntc_cnt * 2;
-      _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
-
-      try {
-        _data["humidity"] = [batch[afterNtc]];
-        _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
-        _data["full_charge_capacity"] =
-            batch.sublist(afterNtc + 1, afterNtc + 3);
-        _data["remaining_capacity"] = batch.sublist(afterNtc + 3, afterNtc + 5);
-        _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
-      } catch (e) {
-        print(
-            "Data humidity, alarm, full_charge_capacity, remining_capacity and balance curent was not found in basic info");
-      }
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == CELL_VOLTAGE) {
-      int j = 0;
-      for (int i = 0; i < cell_cnt; i++) {
-        var key = "cell${i}_mv";
-        _data[key] = batch.sublist(j, j + 2);
-        j += 2;
-      }
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == STAT_INFO) {
-      List<String> keys = [
-        "sc_err_cnt",
-        "chgoc_err_cnt",
-        "dsgoc_err_cnt",
-        "covp_err_cnt",
-        "cuvp_err_cnt",
-        "chgot_err_cnt",
-        "chgut_err_cnt",
-        "dsgot_err_cnt",
-        "dsgut_err_cnt",
-        "povp_err_cnt",
-        "puvp_err_cnt"
-      ];
-
-      int startOffset = 0;
-      int endOffset = 2;
-
-      for (String key in keys) {
-        _data[key] = batch.sublist(startOffset, endOffset);
-        startOffset += 2;
-        endOffset += 2;
-      }
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == DEVICE_NAME) {
-      // _data["device_name_lenght"] = [batch[0]];
-      _data["device_name"] = batch;
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == PARAMETERS) {
-      print(batch);
-      switch (batch[1]) {
-        case BAL_START:
-          _data["bal_start"] = batch.sublist(3, 5);
-          setAvailableData(false);
-          return true;
-        case MFG_NAME:
-          var mfg_name_lenght = batch[3];
-          _data["mfg_name"] = batch.sublist(4, 4 + mfg_name_lenght);
-          setAvailableData(false);
-          return true;
-      }
-
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == ENTER_FACTORY_MODE) {
-      print("ENTER_FACTORY_MODE");
-      _factory = true;
-      setAvailableData(false);
-      return true;
-    }
-
-    if (registerResponse == EXIT_FACTORY_MODE) {
-      _factory = false;
-      setAvailableData(false);
-      return true;
-    }
-
-    print("uncaught registery");
     setAvailableData(false);
+    switch (registerResponse) {
+      case BASIC_INFO:
+        int afterNtc = 0;
+        _data["pack_mv"] = batch.sublist(0, 2);
+        _data["pack_ma"] = batch.sublist(0x2, 0x4);
+        _data["cycle_cap"] = batch.sublist(0x4, 0x6);
+        _data["design_cap"] = batch.sublist(0x6, 0x8);
+        _data["cycle_cnt"] = batch.sublist(0x8, 0xA);
+        _data["date"] = batch.sublist(0xA, 0xC);
+        _data["bal"] = batch.sublist(0xC, 0x10);
+        _data["curr_err"] = batch.sublist(0x10, 0x12);
+        _data["version"] = [batch[0x12]];
+        _data["cap_pct"] = [batch[0x13]];
+        _data["fet_status"] = [batch[0x14]];
+        _data["cell_cnt"] = [batch[0x15]];
+        _data["ntc_cnt"] = [batch[0x16]];
+        afterNtc = 0x017 + ntc_cnt * 2;
+        _data["ntc_temp"] = batch.sublist(0x17, afterNtc);
+
+        try {
+          _data["humidity"] = [batch[afterNtc]];
+          _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
+          _data["full_charge_capacity"] = batch.sublist(afterNtc + 1, afterNtc + 3);
+          _data["remaining_capacity"] = batch.sublist(afterNtc + 3, afterNtc + 5);
+          _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
+        } catch (e) {
+          print("Data humidity, alarm, full_charge_capacity, remining_capacity and balance current was not found");
+        }
+        return true;
+
+      case CELL_VOLTAGE:
+        int j = 0;
+        for (int i = 0; i < cell_cnt; i++) {
+          var key = "cell${i}_mv";
+          _data[key] = batch.sublist(j, j + 2);
+          j += 2;
+        }
+        return true;
+
+      case STAT_INFO:
+        List<String> keys = [
+          "sc_err_cnt",
+          "chgoc_err_cnt",
+          "dsgoc_err_cnt",
+          "covp_err_cnt",
+          "cuvp_err_cnt",
+          "chgot_err_cnt",
+          "chgut_err_cnt",
+          "dsgot_err_cnt",
+          "dsgut_err_cnt",
+          "povp_err_cnt",
+          "puvp_err_cnt"
+        ];
+
+        int startOffset = 0;
+        int endOffset = 2;
+
+        for (String key in keys) {
+          _data[key] = batch.sublist(startOffset, endOffset);
+          startOffset += 2;
+          endOffset += 2;
+        }
+        return true;
+
+      case DEVICE_NAME:
+        _data["device_name"] = batch;
+        return true;
+
+      case PARAMETERS:
+        return _handleParameterData(batch);
+
+      case ENTER_FACTORY_MODE:
+        print("ENTER_FACTORY_MODE");
+        _factory = true;
+        return true;
+
+      case EXIT_FACTORY_MODE:
+        _factory = false;
+        return true;
+
+      default:
+        print("uncaught registery");
+        return false;
+    }
+  }
+
+  static bool _handleParameterData(List<int> batch) {
+    print(batch);
+    var registers = batch[1];
+    switch (registers) {
+      case DESIGN_CAP:
+        return _handleBatchParameterData(batch.sublist(3), 5, DESIGN_CAP);
+      case MFG_NAME:
+        var mfg_name_lenght = batch[3];
+        _data["mfg_name"] = batch.sublist(4, 4 + mfg_name_lenght);
+        return true;
+    }
     return false;
+  }
+
+  static bool _handleBatchParameterData(List<int> batch, int index, int param) {
+    if (param == MFG_NAME) {
+      return true;
+    }
+
+    //chat gpt this please
+    switch (param) {
+      case DESIGN_CAP:
+        _settingsData["design_cap"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+      default:
+        return false;
+    }
+  }
+
+  /// combine two bytes;
+  static int _combine(List<int> data, int index, int nextIndex) {
+    return (data[index] << 8) + data[nextIndex];
+  }
+
+  /// combine two bytes with sign (usually for amps);
+  static int _combineSigned(List<int> data, int index, int nextIndex) {
+    return (data[nextIndex] & 0xFF) | ((data[index] << 8) & 0xFF00);
+  }
+
+  /// converts 2 bytes to a value of unit of unsigned 1mili
+  static double _unsignedOneMili(List<int>? data) {
+    return (data == null) ? 0.0 : _combine(data, 0, 1) * 0.001;
+  }
+
+  /// converts 2 bytes to a value of unit of unsigned 10mili
+  static double _unsigned10Mili(List<int>? data) {
+    return (data == null) ? 0.0 : _combine(data, 0, 1) * 0.01;
+  }
+
+  /// converts 2 bytes to a value of unit of unsigned 100mili
+  static double _unsigned100Mili(List<int>? data, [int index = 0, int nextIndex = 1]) {
+    return (data == null) ? 0.0 : _combine(data, index, nextIndex) * 0.1;
+  }
+
+  /// converts 2 bytes to a value of unit of signed 10mili
+  static double _signed10Mili(List<int>? data) {
+    if (data == null) return 0.00;
+    int result = (data[1] & 0xFF) | ((data[0] << 8) & 0xFF00);
+    // Check the sign bit (MSB)
+    if (result & 0x8000 != 0) result = -(0x10000 - result);
+    return (result * 0.01);
+  }
+
+  /// converts 2 bytes to a value of one unit 1;
+  static int _oneUnit(List<int>? data) {
+    return (data == null) ? 0 : _combine(data, 0, 1);
+  }
+
+  /// converts 1 bytes to a value of one unit 1;
+  static int _oneByteOneUnit(List<int>? data) {
+    return (data == null) ? 0 : data[0];
+  }
+
+  /// converts 1 bytes to a value of a bool;
+  static bool _oneBool(List<int>? data, int position) {
+    if (data == null) return false;
+    return (data[0] & position) != 0;
   }
 
   static setAvailableData(bool isBLEConnected) {

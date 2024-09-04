@@ -62,7 +62,8 @@ class _LockButtonState extends State<LockButton> {
                                     content: const Column(children: [
                                       Divider(),
                                       Text(
-                                          "By pushing and getting values directly to the battery you agree that this will void your waranty")
+                                          "By pushing and getting values directly to the battery you agree that this will void your waranty." +
+                                              "\n\nThis functionality will allow you to read and write to the BMS.")
                                     ]),
                                     actions: [
                                       CupertinoButton(
@@ -73,35 +74,29 @@ class _LockButtonState extends State<LockButton> {
                                           },
                                           child: Text("I Agree")),
                                       CupertinoButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
-                                          child: Text("I Disagree"))
+                                          onPressed: () => Navigator.pop(context, false), child: Text("I Disagree"))
                                     ]);
                               });
                         },
                         child: icon)
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                            FloatingActionButton.extended(
-                                splashColor: Colors.transparent,
-                                backgroundColor: Colors.white,
-                                onPressed: () {},
-                                label: Text("Push", style: textStyle),
-                                icon: const Icon(Icons.upload_rounded,
-                                    color: const Color(0xFF002A4D))),
-                            FloatingActionButton.extended(
-                                splashColor: Colors.transparent,
-                                backgroundColor: Colors.white,
-                                onPressed: () {},
-                                label: Text("Get", style: textStyle),
-                                icon: const Icon(Icons.download_rounded,
-                                    color: const Color(0xFF002A4D))),
-                            FloatingActionButton(
-                                splashColor: Colors.transparent,
-                                backgroundColor: Colors.white,
-                                onPressed: () => Be.lock(),
-                                child: icon)
-                          ]))));
+                    : Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                        FloatingActionButton.extended(
+                            splashColor: Colors.transparent,
+                            backgroundColor: Colors.white,
+                            onPressed: () {},
+                            label: Text("Push", style: textStyle),
+                            icon: const Icon(Icons.upload_rounded, color: const Color(0xFF002A4D))),
+                        FloatingActionButton.extended(
+                            splashColor: Colors.transparent,
+                            backgroundColor: Colors.white,
+                            onPressed: () {},
+                            label: Text("Get", style: textStyle),
+                            icon: const Icon(Icons.download_rounded, color: const Color(0xFF002A4D))),
+                        FloatingActionButton(
+                            splashColor: Colors.transparent,
+                            backgroundColor: Colors.white,
+                            onPressed: () => Be.lock(),
+                            child: icon)
+                      ]))));
   }
 }

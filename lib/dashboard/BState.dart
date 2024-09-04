@@ -15,33 +15,23 @@ class _BatteryStateState extends State<BatteryState> {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 5),
         padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: const Color(0x2EFFFFFF)),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "State",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    ActiveStates()
-                  ]),
-              // CupertinoButton(
-              //     color: Colors.white,
-              //     padding: const EdgeInsets.all(3),
-              //     onPressed: Be.reset,
-              //     child: const Text("Reset",
-              //         style: TextStyle(fontSize: 11, color: Colors.black)))
-            ]));
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0x2EFFFFFF)),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text(
+              "State",
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            ActiveStates()
+          ]),
+          // CupertinoButton(
+          //     color: Colors.white,
+          //     padding: const EdgeInsets.all(3),
+          //     onPressed: Be.reset,
+          //     child: const Text("Reset",
+          //         style: TextStyle(fontSize: 11, color: Colors.black)))
+        ]));
   }
 }
 
@@ -65,14 +55,12 @@ class _ActiveStatesState extends State<ActiveStates> {
     }
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text("$title",
-          style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+      Text("$title", style: TextStyle(color: color, fontWeight: FontWeight.bold)),
       const Padding(padding: EdgeInsets.only(left: 5)),
       (title == "SL")
-          ? AnimatedTextKit(repeatForever: true, animatedTexts: [
-              FlickerAnimatedText(description,
-                  textStyle: TextStyle(fontSize: 12, color: Colors.red))
-            ])
+          ? AnimatedTextKit(
+              repeatForever: true,
+              animatedTexts: [FlickerAnimatedText(description, textStyle: TextStyle(fontSize: 12, color: Colors.red))])
           : Text(
               description,
               style: TextStyle(fontSize: 12, color: Colors.white),
@@ -83,8 +71,7 @@ class _ActiveStatesState extends State<ActiveStates> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [for (var err in Data.curr_err) generateStateElement(err)]);
+        crossAxisAlignment: CrossAxisAlignment.start, children: [for (var err in Data.curr_err) generateStateElement(err)]);
   }
 }
 

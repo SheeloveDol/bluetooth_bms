@@ -12,16 +12,12 @@ class _TemperaturesState extends State<Temperatures> {
     return Container(
         margin: const EdgeInsets.all(3),
         padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-            color: const Color(0x2DFFFFFF),
-            borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(color: const Color(0x2DFFFFFF), borderRadius: BorderRadius.circular(10)),
         child: Row(children: [
           const Icon(Icons.thermostat, size: 20),
           Column(children: [
-            Text(title,
-                style: const TextStyle(fontSize: 11, color: Colors.white)),
-            Text(Data.ntc_temp[index],
-                style: const TextStyle(fontSize: 11, color: Colors.white))
+            Text(title, style: const TextStyle(fontSize: 11, color: Colors.white)),
+            Text(Data.ntc_temp[index], style: const TextStyle(fontSize: 11, color: Colors.white))
           ])
         ]));
   }
@@ -33,9 +29,7 @@ class _TemperaturesState extends State<Temperatures> {
       padding: const EdgeInsets.all(15),
       height: 90,
       width: 80,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: const Color(0x2EFFFFFF)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0x2EFFFFFF)),
       child: ListView.builder(
           itemCount: Data.ntc_cnt,
           scrollDirection: Axis.horizontal,

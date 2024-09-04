@@ -43,12 +43,10 @@ class _CellsStateState extends State<CellsState> {
           Column(children: [
             Text(
               title,
-              style: TextStyle(
-                  fontSize: 12, color: titleColor, fontWeight: titleWeight),
+              style: TextStyle(fontSize: 12, color: titleColor, fontWeight: titleWeight),
             ),
             Text("${Data.cell_mv[index].toStringAsFixed(3)}V",
-                style: TextStyle(
-                    fontSize: 12, height: 0, color: color, fontWeight: weight))
+                style: TextStyle(fontSize: 12, height: 0, color: color, fontWeight: weight))
           ])
         ])
       ]),
@@ -60,34 +58,20 @@ class _CellsStateState extends State<CellsState> {
     return Container(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
         padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: const Color(0x2EFFFFFF)),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(children: [
-                for (int i = 0; i < Data.cell_cnt; i++) cell("cell${i + 1}", i)
-              ]),
-              Wrap(alignment: WrapAlignment.spaceBetween, children: [
-                Text("Cell Difference:${Data.celldif.toStringAsFixed(3)}",
-                    style: const TextStyle(
-                        color: Colors.green, fontWeight: FontWeight.bold)),
-                const Padding(padding: EdgeInsets.only(left: 5)),
-                const Text("Balance inactive",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))
-              ]),
-              const Wrap(alignment: WrapAlignment.spaceBetween, children: [
-                Text("High cell group",
-                    style: TextStyle(
-                        color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
-                Padding(padding: EdgeInsets.only(left: 5)),
-                Text("Low cell group",
-                    style: TextStyle(
-                        color: Colors.yellow, fontWeight: FontWeight.bold))
-              ])
-            ]));
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0x2EFFFFFF)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Wrap(children: [for (int i = 0; i < Data.cell_cnt; i++) cell("cell${i + 1}", i)]),
+          Wrap(alignment: WrapAlignment.spaceBetween, children: [
+            Text("Cell Difference:${Data.celldif.toStringAsFixed(3)}",
+                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            const Padding(padding: EdgeInsets.only(left: 5)),
+            const Text("Balance inactive", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold))
+          ]),
+          const Wrap(alignment: WrapAlignment.spaceBetween, children: [
+            Text("High cell group", style: TextStyle(color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
+            Padding(padding: EdgeInsets.only(left: 5)),
+            Text("Low cell group", style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold))
+          ])
+        ]));
   }
 }
