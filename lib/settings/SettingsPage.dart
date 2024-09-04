@@ -108,7 +108,6 @@ class _SettingsPage extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Be.read_design_cap();
     return Container(
         height: MediaQuery.sizeOf(context).height,
         decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Color(0xFF002A4D)])),

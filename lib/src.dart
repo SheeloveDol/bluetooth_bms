@@ -385,8 +385,8 @@ class Be {
     await getBasicInfo();
   }
 
-  static void reset() async {
-    await write(Data.RESET_PAYLOAD);
+  static read_design_cap() async {
+    await read(Data.DESIGN_CAP_PAYLOAD);
   }
 
   static void _setWake(bool wakeValue) {
@@ -435,10 +435,6 @@ class Be {
     // updater!();
     //await read(Data.BAL_PAYLOAD);
     //updater!();
-  }
-
-  static read_design_cap() async {
-    await read(Data.DESIGN_CAP_PAYLOAD);
   }
 
   static void setConnectionState(DeviceConnectionState state) {
@@ -493,11 +489,11 @@ class Data {
   static const PROT_CELL_HIGH_REL = 21;
   static const PROT_CELL_LOW_TRIG = 22;
   static const PROT_CELL_LOW_REL = 23;
-  static const PROT_CH_HIGH_MA = 23;
-  static const PROT_CH_LOW_MA = 23;
+  static const PROT_CH_HIGH_MA = 24;
+  static const PROT_CH_LOW_MA = 25;
   static const BAL_START = 26;
   static const BAL_DELTA = 27;
-  static const BAL_EN = 29;
+  static const BAL_EN = 28;
   static const BAL_EN_C = 29;
   static const NTC_EN = 30;
   static const CELL_CNT = 31;
@@ -527,6 +523,61 @@ class Data {
   static const GPS_SHUTD = 104;
   static const DEL_GPS_SHUTD = 105;
   //106 to 111 are cell %
+
+  static final Map<int, String> parameterRegistry = {
+    0: 'DESIGN_CAP',
+    1: 'CYCLE_CAP',
+    2: 'CELL_FULL_MV',
+    3: 'CELL_MIN_MV',
+    4: 'CELL_D_PERC',
+    8: 'PROT_C_HIGH_TEMP_TRIG',
+    9: 'PROT_C_HIGH_TEMP_REL',
+    10: 'PROT_C_LOW_TEMP_TRIG',
+    11: 'PROT_C_LOW_TEMP_REL',
+    12: 'PROT_D_HIGH_TEMP_TRIG',
+    13: 'PROT_D_HIGH_TEMP_REL',
+    14: 'PROT_D_LOW_TEMP_TRIG',
+    15: 'PROT_D_LOW_TEMP_REL',
+    16: 'PROT_BAT_HIGH_TRIG',
+    17: 'PROT_BAT_HIGH_REL',
+    18: 'PROT_BAT_LOW_TRIG',
+    19: 'PROT_BAT_LOW_REL',
+    20: 'PROT_CELL_HIGH_TRIG',
+    21: 'PROT_CELL_HIGH_REL',
+    22: 'PROT_CELL_LOW_TRIG',
+    23: 'PROT_CELL_LOW_REL',
+    24: 'PROT_CH_HIGH_MA',
+    25: 'PROT_CH_LOW_MA',
+    26: 'BAL_START',
+    27: 'BAL_DELTA',
+    28: 'BAL_EN',
+    29: 'BAL_EN_C',
+    30: 'NTC_EN',
+    31: 'CELL_CNT',
+    32: 'DEL_FET_CTRL_SW',
+    33: 'DEL_LED',
+    38: 'ADV_HIGH_V_TRIG',
+    39: 'ADV_LOW_V_TRIG',
+    40: 'ADV_PROT_HIGH_MA',
+    41: 'SC_PROT_SET',
+    42: 'DEL_ADV_HIGH_LOW_V',
+    43: 'DEL_SC_REL',
+    44: 'DEL_LOW_CH_TEMP',
+    45: 'DEL_HIGH_CH_TEMP',
+    46: 'DEL_LOW_D_TEMP',
+    47: 'DEL_HIGH_D_TEMP',
+    48: 'DEL_LOW_BAT_V',
+    49: 'DEL_HIGH_BAT_V',
+    50: 'DEL_LOW_CELL_V',
+    51: 'DEL_HIGH_CELL_V',
+    52: 'DEL_HIGH_MA',
+    53: 'DEL_HIGH_MA_REL',
+    54: 'DEL_LOW_MA',
+    55: 'DEL_LOW_MA_REL',
+    56: 'MFG_NAME',
+    104: 'GPS_SHUTD',
+    105: 'DEL_GPS_SHUTD',
+  };
 
   //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
@@ -845,10 +896,11 @@ class Data {
   }
 
   static bool _handleParameterData(List<int> batch) {
-    print(batch);
-    var registers = batch[1];
-    switch (registers) {
+    var register = batch[1];
+    print("handeling ${parameterRegistry[register]} payload : $batch");
+    switch (register) {
       case DESIGN_CAP:
+        print("Starting recursion");
         return _handleBatchParameterData(batch.sublist(3), 5, DESIGN_CAP);
       case MFG_NAME:
         var mfg_name_lenght = batch[3];
@@ -859,17 +911,224 @@ class Data {
   }
 
   static bool _handleBatchParameterData(List<int> batch, int index, int param) {
+    print("handeling $param:${parameterRegistry[param]} payload left: $batch");
     if (param == MFG_NAME) {
       return true;
     }
 
     //chat gpt this please
+
     switch (param) {
       case DESIGN_CAP:
-        _settingsData["design_cap"] = batch.sublist(3, index);
+        _settingsData["DESIGN_CAP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case CYCLE_CAP:
+        _settingsData["CYCLE_CAP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case CELL_FULL_MV:
+        _settingsData["CELL_FULL_MV"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case CELL_MIN_MV:
+        _settingsData["CELL_MIN_MV"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case CELL_D_PERC:
+        _settingsData["CELL_D_PERC"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_C_HIGH_TEMP_TRIG:
+        _settingsData["PROT_C_HIGH_TEMP_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_C_HIGH_TEMP_REL:
+        _settingsData["PROT_C_HIGH_TEMP_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_C_LOW_TEMP_TRIG:
+        _settingsData["PROT_C_LOW_TEMP_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_C_LOW_TEMP_REL:
+        _settingsData["PROT_C_LOW_TEMP_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_D_HIGH_TEMP_TRIG:
+        _settingsData["PROT_D_HIGH_TEMP_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_D_HIGH_TEMP_REL:
+        _settingsData["PROT_D_HIGH_TEMP_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_D_LOW_TEMP_TRIG:
+        _settingsData["PROT_D_LOW_TEMP_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_D_LOW_TEMP_REL:
+        _settingsData["PROT_D_LOW_TEMP_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_BAT_HIGH_TRIG:
+        _settingsData["PROT_BAT_HIGH_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_BAT_HIGH_REL:
+        _settingsData["PROT_BAT_HIGH_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_BAT_LOW_TRIG:
+        _settingsData["PROT_BAT_LOW_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_BAT_LOW_REL:
+        _settingsData["PROT_BAT_LOW_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CELL_HIGH_TRIG:
+        _settingsData["PROT_CELL_HIGH_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CELL_HIGH_REL:
+        _settingsData["PROT_CELL_HIGH_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CELL_LOW_TRIG:
+        _settingsData["PROT_CELL_LOW_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CELL_LOW_REL:
+        _settingsData["PROT_CELL_LOW_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CH_HIGH_MA:
+        _settingsData["PROT_CH_HIGH_MA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case PROT_CH_LOW_MA:
+        _settingsData["PROT_CH_LOW_MA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case BAL_START:
+        _settingsData["BAL_START"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case BAL_DELTA:
+        _settingsData["BAL_DELTA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case BAL_EN:
+        _settingsData["BAL_EN"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case BAL_EN_C:
+        _settingsData["BAL_EN_C"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case NTC_EN:
+        _settingsData["NTC_EN"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case CELL_CNT:
+        _settingsData["CELL_CNT"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_FET_CTRL_SW:
+        _settingsData["DEL_FET_CTRL_SW"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LED:
+        _settingsData["DEL_LED"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case ADV_HIGH_V_TRIG:
+        _settingsData["ADV_HIGH_V_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case ADV_LOW_V_TRIG:
+        _settingsData["ADV_LOW_V_TRIG"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case ADV_PROT_HIGH_MA:
+        _settingsData["ADV_PROT_HIGH_MA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case SC_PROT_SET:
+        _settingsData["SC_PROT_SET"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_ADV_HIGH_LOW_V:
+        _settingsData["DEL_ADV_HIGH_LOW_V"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_SC_REL:
+        _settingsData["DEL_SC_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_CH_TEMP:
+        _settingsData["DEL_LOW_CH_TEMP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_CH_TEMP:
+        _settingsData["DEL_HIGH_CH_TEMP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_D_TEMP:
+        _settingsData["DEL_LOW_D_TEMP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_D_TEMP:
+        _settingsData["DEL_HIGH_D_TEMP"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_BAT_V:
+        _settingsData["DEL_LOW_BAT_V"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_BAT_V:
+        _settingsData["DEL_HIGH_BAT_V"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_CELL_V:
+        _settingsData["DEL_LOW_CELL_V"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_CELL_V:
+        _settingsData["DEL_HIGH_CELL_V"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_MA:
+        _settingsData["DEL_HIGH_MA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_HIGH_MA_REL:
+        _settingsData["DEL_HIGH_MA_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_MA:
+        _settingsData["DEL_LOW_MA"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_LOW_MA_REL:
+        _settingsData["DEL_LOW_MA_REL"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case MFG_NAME:
+        _settingsData["MFG_NAME"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case GPS_SHUTD:
+        _settingsData["GPS_SHUTD"] = batch.sublist(3, index);
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
+
+      case DEL_GPS_SHUTD:
+        _settingsData["DEL_GPS_SHUTD"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
       default:
-        return false;
+        print("param:$param unknown: $batch");
+        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
     }
   }
 

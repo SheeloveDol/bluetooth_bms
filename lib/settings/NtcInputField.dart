@@ -1,14 +1,11 @@
-import 'package:bluetooth_bms/settings/OneInputField.dart';
 import 'package:bluetooth_bms/settings/SettingsSection.dart';
 import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class NtcInputfield extends SettingsElement {
   List<bool> value = [];
   final String text;
   final Function(List<bool>) onChange;
-  List<NtcField> ntcs = [];
   NtcInputfield({super.key, required this.text, required this.onChange});
 
   final TextStyle titleStyle =
@@ -20,6 +17,7 @@ class NtcInputfield extends SettingsElement {
 
   @override
   Widget build(BuildContext context) {
+    List<NtcField> ntcs = [];
     for (var i = 1; i <= Data.ntc_cnt; i++) {
       value.add(true); //to change to add a list of NTCs
       ntcs.add(NtcField(
