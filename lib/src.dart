@@ -435,8 +435,8 @@ class Be {
     updater!();
     await read(Data.MANUF_PAYLOAD);
     updater!();
-    await read(Data.BAL_PAYLOAD);
-    updater!();
+    //await read(Data.BAL_PAYLOAD);
+    //updater!();
   }
 
   static read_design_cap() async {
