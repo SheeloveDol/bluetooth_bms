@@ -67,5 +67,5 @@ void showDialogAdaptive(
 
 quicktell(BuildContext? context, String message) {
   if (context == null) return;
-  ScaffoldMessenger.of(context!).showSnackBar(SnackBar(content: Text(message)));
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }

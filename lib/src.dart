@@ -133,6 +133,8 @@ class Be {
       return false;
     }
 
+    setConnectionState(DeviceConnectionState.connected);
+
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
