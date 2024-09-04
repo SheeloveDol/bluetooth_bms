@@ -432,7 +432,9 @@ class Be {
 
   static void readWhatsLeft() async {
     await read(Data.DEVICE_NAME_PAYLOAD);
+    updater!();
     await read(Data.MANUF_PAYLOAD);
+    updater!();
     await read(Data.BAL_PAYLOAD);
     updater!();
   }
