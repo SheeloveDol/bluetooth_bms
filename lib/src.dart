@@ -286,6 +286,47 @@ class Be {
     return good;
   }
 
+  static Future<List<int>> releaseRead(List<int> payload) async {
+    _communicatingNow = true;
+    List<int> answer = [];
+    var good = false;
+
+    if (_currentState != DeviceConnectionState.connected) {
+      print("no device is currently connected");
+      return [];
+    }
+    //subscribe to read charac
+    await readCharacteristics!.setNotifyValue(true);
+
+    var notifySub = readCharacteristics!.onValueReceived.listen((event) {
+      answer.addAll(event);
+    });
+    List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
+    print("sendind read command : $cmd");
+    for (var i = (wake) ? 0 : 1; i < 2; i++) {
+      await writeCharacteristics!.write(cmd, withoutResponse: true);
+      if (wake) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+      _setWake(false);
+    }
+    int k = 0;
+    while (answer.isEmpty) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (k > 5) return [];
+    }
+    notifySub.cancel();
+    good = _verifyReadings(answer);
+    List<int> data = [];
+    if (good) {
+      data.addAll(answer.sublist(4, answer.length - 3));
+      good = Data.setBatchData(data, answer[1]);
+    }
+    _communicatingNow = false;
+
+    return data;
+  }
+
   static Future<List<int>> write(List<int> payload) async {
     while (_communicatingNow) {
       await Future.delayed(const Duration(milliseconds: 100));
@@ -430,8 +471,12 @@ class Be {
   static void readWhatsLeft() async {
     await read(Data.DEVICE_NAME_PAYLOAD);
     updater!();
-    await read(Data.MANUF_PAYLOAD);
-    updater!();
+    var batch = await releaseRead(Data.MANUF_PAYLOAD);
+    if (batch.isNotEmpty) {
+      Data.setBatchData(batch, Data.MFG_NAME);
+      updater!();
+    }
+
     //await read(Data.BAL_PAYLOAD);
     //updater!();
   }
