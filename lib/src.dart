@@ -407,7 +407,6 @@ class Be {
     }
     var batch = await write(Data.CLOSE_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
-    read_design_cap();
     updater!();
   }
 
@@ -417,7 +416,6 @@ class Be {
     }
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
-    batch = await write(Data.DESIGN_CAP_WRITE);
     updater!();
   }
 

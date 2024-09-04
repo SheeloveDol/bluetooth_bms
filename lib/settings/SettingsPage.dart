@@ -101,13 +101,8 @@ class _SettingsPage extends State<SettingsPage> {
               elevation: 3,
               margin: EdgeInsets.all(10),
               child: Padding(
-                padding: EdgeInsets.all(70),
-                child: Center(
-                    child: Text(
-                  "Drag",
-                  style: TextStyle(color: Color(0xFF00233F), fontSize: 50),
-                )),
-              ));
+                  padding: EdgeInsets.all(70),
+                  child: Center(child: Text("Drag", style: TextStyle(color: Color(0xFF00233F), fontSize: 50)))));
         });
   }
 
