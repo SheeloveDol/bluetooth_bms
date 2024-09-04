@@ -313,7 +313,8 @@ class Be {
     int k = 0;
     while (answer.isEmpty) {
       await Future.delayed(const Duration(milliseconds: 300));
-      if (k > 5) return [];
+      k++;
+      if (k > 4) return [];
     }
     notifySub.cancel();
     good = _verifyReadings(answer);
