@@ -485,8 +485,10 @@ class Be {
     if (batch.isNotEmpty) {
       Data.setBatchData(batch, Data.DESIGN_CAP);
     }
-    Data.setAvailableData(true);
-    updater!();
+    await Future.delayed(Durations.extralong1, () {
+      Data.setAvailableData(true);
+      updater!();
+    });
   }
 
   static void setConnectionState(DeviceConnectionState state) {
@@ -839,7 +841,7 @@ class Data {
   }
 
   static double get celldif {
-    if (!availableData) return 0;
+    if (cell_mv.isEmpty) return 0;
     var current = cell_mv[0];
     for (var i = 0; i < cell_cnt; i++) {
       if (current > cell_mv[i]) {

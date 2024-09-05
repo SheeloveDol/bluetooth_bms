@@ -8,9 +8,7 @@ import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({super.key, required this.tiles}) {
-    Be.readSettings();
-  }
+  SettingsPage({super.key, required this.tiles});
   List<int> tiles;
   @override
   State<StatefulWidget> createState() => _SettingsPage();
@@ -80,6 +78,7 @@ class _SettingsPage extends State<SettingsPage> {
     for (var i = 0; i < widget.tiles.length; i++) {
       tiles.add(tilesMap[widget.tiles[i]]!);
     }
+    Be.readSettings();
     super.initState();
   }
 
