@@ -8,7 +8,9 @@ import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({super.key, required this.tiles});
+  SettingsPage({super.key, required this.tiles}) {
+    Be.readSettings();
+  }
   List<int> tiles;
   @override
   State<StatefulWidget> createState() => _SettingsPage();
@@ -17,49 +19,47 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPage extends State<SettingsPage> {
   Map<int, Widget> tilesMap = {
     0: SettingsSection(key: UniqueKey(), title: "General", settingsElements: [
-      OneInputField(text: "Number of Cells", onChange: (v) {}),
-      OneInputField(text: "Number of Sensors", onChange: (v) {}),
-      NtcInputfield(text: "Activated Temperatue Sensors", onChange: (v) {})
+      OneInputField(text: "Number of Cells", initialValue: Data.cell_cnt, onChange: (v) {}),
+      OneInputField(text: "Number of Sensors", initialValue: Data.ntc_cnt, onChange: (v) {}),
+      NtcInputfield(text: "Activated Temperatue Sensors", onChange: (v) {}) //TODO
     ]),
     1: SettingsSection(key: UniqueKey(), title: "Capacity Configuration", settingsElements: [
-      OneInputField(text: "Total Battery Capacity", onChange: (v) {}),
-      OneInputField(text: "Total Cycle Capacity", onChange: (v) {}),
-      OneInputField(text: "Cell Full Voltage", onChange: (v) {}),
-      OneInputField(text: "Cell Minimal Voltage", onChange: (v) {}),
-      OneInputField(text: "Cell Self Discharge", onChange: (v) {}),
-      OneInputField(text: "100% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "90% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "80% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "70% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "60% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "50% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "40% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "30% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "20% Capacity Voltage", onChange: (v) {}),
-      OneInputField(text: "10% Capacity Voltage", onChange: (v) {}),
+      OneInputField(text: "Total Battery Capacity", initialValue: Data.param_design_cap, onChange: (v) {}),
+      OneInputField(text: "Total Cycle Capacity", initialValue: Data.param_cycle_cap, onChange: (v) {}),
+      OneInputField(text: "Cell Full Voltage", initialValue: Data.param_cell_full_mv, onChange: (v) {}),
+      OneInputField(text: "Cell Minimal Voltage", initialValue: Data.param_cell_min_mv, onChange: (v) {}),
+      OneInputField(text: "Cell Self Discharge", initialValue: Data.param_cell_d_perc, onChange: (v) {}),
+      // OneInputField(text: "100% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "90% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "80% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "70% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "60% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "50% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "40% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "30% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "20% Capacity Voltage", onChange: (v) {}),
+      // OneInputField(text: "10% Capacity Voltage", onChange: (v) {}),
     ]),
     2: SettingsSection(key: UniqueKey(), title: "Ballancer Configuration", settingsElements: [
-      OneInputField(text: "Start Voltage", onChange: (v) {}),
-      OneInputField(text: "Delta to Balance", onChange: (v) {}),
-      SwitchField(value: false, text: "Balancer Enabled", onChange: (v) {}),
-      SwitchField(value: true, text: "Balance only while charging", onChange: (v) {})
+      OneInputField(text: "Start Voltage", initialValue: Data.param_bal_start, onChange: (v) {}),
+      OneInputField(text: "Delta to Balance", initialValue: Data.param_bal_delta, onChange: (v) {}),
+      SwitchField(value: false, text: "Balancer Enabled", onChange: (v) {}), //TODO
+      SwitchField(value: true, text: "Balance only while charging", onChange: (v) {}) //TODO
     ]),
     3: SettingsSection(key: UniqueKey(), title: "Function Configuration", settingsElements: [
       SwitchField(value: false, text: "SW switch circuit", onChange: (v) {}),
-      SwitchField(value: true, text: "Show Celsius", onChange: (v) {})
+      OneInputField(text: "Mosfet switch delay", initialValue: Data.param_del_fet_ctrl_sw, onChange: (v) {}),
+      OneInputField(text: "LED delay", initialValue: Data.param_del_led, onChange: (v) {})
     ]),
     4: SettingsSection(key: UniqueKey(), title: "Protection", settingsElements: [
       ThreeInputField(
-          text: "OverVoltage II",
+          text: "Charging Over temp",
           firstOnChange: (v) {},
           secondOnChange: (v) {},
           thirdOnChange: (v) {},
           firstHeader: "Trigger",
           secondHeader: "Release",
           thirdHeader: "Delay")
-      //twoInputField SettingsElement
-      //twoInputField SettingsElement
-      //ThreeInputField SettingsElement
     ]),
     5: SettingsSection(key: UniqueKey(), title: "Advanced Protection", settingsElements: [
       TwoInputField(
@@ -108,14 +108,33 @@ class _SettingsPage extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: MediaQuery.sizeOf(context).height,
-        decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Color(0xFF002A4D)])),
-        child: ReorderableListView(
-            onReorder: reorder,
-            proxyDecorator: proxyDecorator,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.only(bottom: 180, top: 80),
-            children: tiles));
+    return Stack(
+      children: [
+        Container(
+            height: MediaQuery.sizeOf(context).height,
+            decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Color(0xFF002A4D)])),
+            child: ReorderableListView(
+                onReorder: reorder,
+                proxyDecorator: proxyDecorator,
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.only(bottom: 180, top: 80),
+                children: tiles)),
+        if (!Data.availableData)
+          Positioned(
+              top: 30,
+              right: 30,
+              child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  decoration: BoxDecoration(
+                      color: Color(0xFF003F73),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 5, offset: Offset(4, 4))]),
+                  child: const Row(children: [
+                    Text("Getting Data", style: TextStyle(color: Colors.white, fontSize: 20)),
+                    SizedBox(width: 10),
+                    CircularProgressIndicator.adaptive(strokeWidth: 6, backgroundColor: Color(0xFF002A4D))
+                  ])))
+      ],
+    );
   }
 }

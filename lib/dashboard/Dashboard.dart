@@ -49,25 +49,13 @@ class _DashBoardState extends State<DashBoard> {
     if (!Be.locked) {
       Be.lock();
     }
-    controller.addListener(() {
-      if (controller.offset > 2) {
-        setState(() {
-          height = (size > 360) ? 100 : 210;
-        });
-        return;
-      }
-      if (controller.offset.isNegative) {
-        setState(() {
-          height = 0;
-        });
-        return;
-      }
-    });
+    controller.addListener(() => (controller.offset > 2) ? setState(() => height = (size > 360) ? 100 : 210) : null);
     if (Be.conectionState == DeviceConnectionState.disconnected) {
       super.initState();
       return;
     }
     if (Be.conectionState == DeviceConnectionState.connected) {
+      Data.setAvailableData(true);
       runPeriodic();
       super.initState();
       return;
@@ -86,17 +74,26 @@ class _DashBoardState extends State<DashBoard> {
         child: SafeArea(
             bottom: false,
             child: Stack(children: <Widget>[
-              Container(
-                  margin: EdgeInsets.only(top: (size > 360) ? 235 - height : 350 - height),
-                  child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      controller: controller,
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
-                        DelayedBuilder(child: BatteryState()),
-                        DelayedBuilder(child: CellsState()),
-                        DelayedBuilder(child: Temperatures()),
-                        DelayedBuilder(child: Reports())
-                      ]))),
+              Listener(
+                  onPointerMove: (event) {
+                    if (controller.offset == 0 && !event.delta.dy.isNegative)
+                      setState(() {
+                        height = 0;
+                      });
+                  },
+                  child: Container(
+                      child: SingleChildScrollView(
+                          controller: controller,
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+                            AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                height: (size > 360) ? 235 - height : 350 - height),
+                            DelayedBuilder(child: BatteryState()),
+                            DelayedBuilder(child: CellsState()),
+                            DelayedBuilder(child: Temperatures()),
+                            DelayedBuilder(child: Reports()),
+                            const SizedBox(height: 90)
+                          ])))),
               BatteryControl(title: title, height: height),
               Visibility(
                   visible: Be.conectionState == DeviceConnectionState.connecting,

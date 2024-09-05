@@ -312,7 +312,7 @@ class Be {
     }
     int k = 0;
     while (answer.isEmpty) {
-      await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 400));
       k++;
       if (k > 4) return [];
     }
@@ -477,9 +477,16 @@ class Be {
       Data.setBatchData(batch, Data.MFG_NAME);
       updater!();
     }
+  }
 
-    //await read(Data.BAL_PAYLOAD);
-    //updater!();
+  static void readSettings() async {
+    Data.setAvailableData(false);
+    var batch = await releaseRead(Data.ALL_PARAMS_PAYLOAD);
+    if (batch.isNotEmpty) {
+      Data.setBatchData(batch, Data.DESIGN_CAP);
+    }
+    Data.setAvailableData(true);
+    updater!();
   }
 
   static void setConnectionState(DeviceConnectionState state) {
@@ -538,8 +545,8 @@ class Data {
   static const PROT_CH_LOW_MA = 25;
   static const BAL_START = 26;
   static const BAL_DELTA = 27;
-  static const BAL_EN = 28;
-  static const BAL_EN_C = 29;
+  static const RESISTOR = 28;
+  static const FUNCTION = 29;
   static const NTC_EN = 30;
   static const CELL_CNT = 31;
   static const DEL_FET_CTRL_SW = 32;
@@ -595,8 +602,8 @@ class Data {
     25: 'PROT_CH_LOW_MA',
     26: 'BAL_START',
     27: 'BAL_DELTA',
-    28: 'BAL_EN',
-    29: 'BAL_EN_C',
+    28: 'RESISTOR',
+    29: 'FUNCTION',
     30: 'NTC_EN',
     31: 'CELL_CNT',
     32: 'DEL_FET_CTRL_SW',
@@ -619,7 +626,6 @@ class Data {
     53: 'DEL_HIGH_MA_REL',
     54: 'DEL_LOW_MA',
     55: 'DEL_LOW_MA_REL',
-    56: 'MFG_NAME',
     104: 'GPS_SHUTD',
     105: 'DEL_GPS_SHUTD',
   };
@@ -655,9 +661,10 @@ class Data {
 
   static final Map<String, List<int>> _data = {};
   static final Map<String, List<int>> _settingsData = {};
-  static bool availableData = false;
+  static bool _availableData = false;
   static bool? _factory;
 
+  //Basic info and Cell info and Stats info and Device name
   static bool get factoryModeState => (_factory == null) ? false : _factory!;
   static String get pack_mv => _unsigned10Mili(_data["pack_mv"]).toStringAsFixed(2);
   static String get pack_ma => _signed10Mili(_data["pack_ma"]).toStringAsFixed(2);
@@ -682,7 +689,6 @@ class Data {
   static int get povp_err_cnt => _oneUnit(_data["povp_err_cnt"]);
   static int get puvp_err_cnt => _oneUnit(_data["puvp_err_cnt"]);
   static String get device_name => (_data["device_name"] == null) ? "" : String.fromCharCodes(_data["device_name"]!);
-  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
 
   static List<String> get curr_err {
     if (_data["curr_err"] == null) return [];
@@ -758,7 +764,7 @@ class Data {
   }
 
   static List<bool> get bal {
-    if (_data["bal"] == null) return [];
+    if (_data["bal"] == null) return [for (var i = 0; i < 16; i++) false];
     List<bool> bal = [];
     int combined = _combine(_data["bal"]!, 0, 1);
     for (int i = 0; i < 16; i++) {
@@ -773,7 +779,7 @@ class Data {
     List<String> temps = [];
     int j = 0;
     for (var i = 0; i < ntc_cnt; i++) {
-      temps.add((_unsigned100Mili(_data["ntc_temp"], j, j + 1) - 273.15).toStringAsFixed(1));
+      temps.add((_kelvinsToCelcius(_data["ntc_temp"], j, j + 1)).toStringAsFixed(1));
       j += 2;
     }
     return temps;
@@ -936,7 +942,7 @@ class Data {
         return true;
 
       default:
-        print("uncaught registery");
+        print("uncaught registery $registerResponse");
         return false;
     }
   }
@@ -956,13 +962,75 @@ class Data {
     return false;
   }
 
+  // Parameters info
+
+  static String get param_design_cap => _unsigned10Mili(_settingsData["DESIGN_CAP"]).toStringAsFixed(2);
+  static String get param_cycle_cap => _unsigned10Mili(_settingsData["CYCLE_CAP"]).toStringAsFixed(2);
+  static String get param_cell_full_mv => _unsignedOneMili(_settingsData["CELL_FULL_MV"]).toStringAsFixed(2);
+  static String get param_cell_min_mv => _unsignedOneMili(_settingsData["CELL_MIN_MV"]).toStringAsFixed(2);
+  static String get param_cell_d_perc => _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(2);
+  static String get param_prot_c_high_temp_trig =>
+      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_high_temp_rel =>
+      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_trig =>
+      _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_trig =>
+      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_rel =>
+      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_low_temp_trig =>
+      _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_d_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_bat_high_trig => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_bat_high_rel => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_REL"]).toStringAsFixed(2);
+  static String get param_prot_bat_low_trig => _unsigned10Mili(_settingsData["PROT_BAT_LOW_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_bat_low_rel => _unsigned10Mili(_settingsData["PROT_BAT_LOW_REL"]).toStringAsFixed(2);
+  static String get param_prot_cell_high_trig => _unsignedOneMili(_settingsData["PROT_CELL_HIGH_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_cell_high_rel => _unsignedOneMili(_settingsData["PROT_CELL_HIGH_REL"]).toStringAsFixed(2);
+  static String get param_prot_cell_low_trig => _unsignedOneMili(_settingsData["PROT_CELL_LOW_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_cell_low_rel => _unsignedOneMili(_settingsData["PROT_CELL_LOW_REL"]).toStringAsFixed(2);
+  static String get param_prot_ch_high_ma => _unsigned10Mili(_settingsData["PROT_CH_HIGH_MA"]).toStringAsFixed(2);
+  static String get param_prot_ch_low_ma => _unsigned10Mili(_settingsData["PROT_CH_LOW_MA"]).toStringAsFixed(2);
+  static String get param_bal_start => _unsignedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
+  static String get param_bal_delta => _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
+  static String get param_resistor => _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
+  static int get param_cell_cnt => _oneUnit(_settingsData["CELL_CNT"]);
+  static int get param_del_fet_ctrl_sw => _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
+  static int get param_del_led => _oneUnit(_settingsData["DEL_LED"]);
+  static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
+  static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
+
+  static int get param_del_sc_rel => _oneUnit(_settingsData["DEL_SC_REL"]);
+  static int get param_del_low_ch_temp => _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
+  static int get param_del_high_ch_temp => _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
+  static int get param_del_low_d_temp => _oneUnit(_settingsData["DEL_LOW_D_TEMP"]);
+  static int get param_del_high_d_temp => _oneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
+  static int get param_del_low_bat_v => _oneUnit(_settingsData["DEL_LOW_BAT_V"]);
+  static int get param_del_high_bat_v => _oneUnit(_settingsData["DEL_HIGH_BAT_V"]);
+  static int get param_del_low_cell_v => _oneUnit(_settingsData["DEL_LOW_CELL_V"]);
+  static int get param_del_high_cell_v => _oneUnit(_settingsData["DEL_HIGH_CELL_V"]);
+  static int get param_del_high_ma => _oneUnit(_settingsData["DEL_HIGH_MA"]);
+  static int get param_del_high_ma_rel => _oneUnit(_settingsData["DEL_HIGH_MA_REL"]);
+  static int get param_del_low_ma => _oneUnit(_settingsData["DEL_LOW_MA"]);
+  static int get param_del_low_ma_rel => _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
+  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
+  static String get param_gps_shutd => _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
+  static int get param_del_gps_shutd => _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
+
+  static String get param_function => _unsigned10Mili(_settingsData["FUNCTION"]).toStringAsFixed(2);
+  static String get param_ntc_en => _unsigned10Mili(_settingsData["NTC_EN"]).toStringAsFixed(2);
+  static String get param_adv_prot_high_ma => _unsigned10Mili(_settingsData["ADV_PROT_HIGH_MA"]).toStringAsFixed(2);
+  static String get param_sc_prot_set => _unsigned10Mili(_settingsData["SC_PROT_SET"]).toStringAsFixed(2);
+  static String get param_del_adv_high_low_v => _unsigned10Mili(_settingsData["DEL_ADV_HIGH_LOW_V"]).toStringAsFixed(2);
   static bool _handleBatchParameterData(List<int> batch, int index, int param) {
     print("handeling $param:${parameterRegistry[param]} payload left: $batch");
-    if (param == MFG_NAME) {
+    if (param == DEL_GPS_SHUTD) {
+      _settingsData["DEL_GPS_SHUTD"] = batch.sublist(3, index);
+      _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
       return true;
     }
-
-    //chat gpt this please
 
     switch (param) {
       case DESIGN_CAP:
@@ -1065,12 +1133,12 @@ class Data {
         _settingsData["BAL_DELTA"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
 
-      case BAL_EN:
-        _settingsData["BAL_EN"] = batch.sublist(3, index);
+      case RESISTOR:
+        _settingsData["RESISTOR"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
 
-      case BAL_EN_C:
-        _settingsData["BAL_EN_C"] = batch.sublist(3, index);
+      case FUNCTION:
+        _settingsData["FUNCTION"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
 
       case NTC_EN:
@@ -1161,10 +1229,6 @@ class Data {
         _settingsData["DEL_LOW_MA_REL"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
 
-      case MFG_NAME:
-        _settingsData["MFG_NAME"] = batch.sublist(3, index);
-        return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
-
       case GPS_SHUTD:
         _settingsData["GPS_SHUTD"] = batch.sublist(3, index);
         return _handleBatchParameterData(batch.sublist(index), index + 2, param + 1);
@@ -1203,6 +1267,11 @@ class Data {
     return (data == null) ? 0.0 : _combine(data, index, nextIndex) * 0.1;
   }
 
+  /// converts 2 bytes to a value of unit of unsigned 100mili then substracts 273.15
+  static double _kelvinsToCelcius(List<int>? data, [int index = 0, int nextIndex = 1]) {
+    return (data == null) ? 0.0 : _unsigned100Mili(data, index, nextIndex) - 273.15;
+  }
+
   /// converts 2 bytes to a value of unit of signed 10mili
   static double _signed10Mili(List<int>? data) {
     if (data == null) return 0.00;
@@ -1229,8 +1298,10 @@ class Data {
   }
 
   static setAvailableData(bool isBLEConnected) {
-    availableData = isBLEConnected;
+    _availableData = isBLEConnected;
   }
+
+  static bool get availableData => _availableData;
 
   static clear() {
     setAvailableData(false);

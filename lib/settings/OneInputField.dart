@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 
 class OneInputField extends SettingsElement {
   OneInputField({super.key, required this.text, required this.onChange, this.initialValue});
-  String? initialValue;
+
+  ///this should be a string or an int
+  dynamic initialValue;
   final String text;
   final Function(String) onChange;
   final TextStyle titleStyle = const TextStyle(fontSize: 14, color: Color(0xFFB7B7B7), fontWeight: FontWeight.bold);
@@ -23,7 +25,7 @@ class OneInputField extends SettingsElement {
 }
 
 class ValueField extends SettingsField {
-  String? initialValue;
+  dynamic initialValue;
   final Function(String) onChange;
   String? header;
   String? unit;
@@ -47,7 +49,7 @@ class ValueField extends SettingsField {
               height: 30,
               padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
               child: TextFormField(
-                  initialValue: initialValue,
+                  initialValue: (initialValue != null) ? "$initialValue" : "",
                   enabled: !Be.locked,
                   onChanged: (value) => onChange(value),
                   onTapOutside: (PointerDownEvent event) {

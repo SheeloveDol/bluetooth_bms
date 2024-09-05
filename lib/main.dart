@@ -12,13 +12,19 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
   final List<int> settingTiles = [0, 1, 2, 3, 4, 5];
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent, // Navigation bar color
+  ));
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(MaterialApp(
       theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
       home: Main(settingTiles: settingTiles)));
 }
 
 class Main extends StatefulWidget {
-  Main({super.key, required this.settingTiles});
+  const Main({super.key, required this.settingTiles});
   final List<int> settingTiles;
   @override
   State<Main> createState() => _MainState();
@@ -27,7 +33,7 @@ class Main extends StatefulWidget {
 enum _SelectedTab { scan, dashboard, settings, tune }
 
 class _MainState extends State<Main> {
-  PageController _controller = PageController();
+  final PageController _controller = PageController();
   var _selectedTab = _SelectedTab.scan;
   double sScreen = 0;
   bool showbar = false;
@@ -76,11 +82,6 @@ class _MainState extends State<Main> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-      systemNavigationBarColor: Colors.transparent, // Navigation bar color
-    ));
     Be.setCurrentContext(context);
     Be.setUpdater(() => setState(() {}));
     super.initState();
@@ -102,14 +103,17 @@ class _MainState extends State<Main> {
     ];
     sScreen = MediaQuery.sizeOf(context).width;
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
-    return GestureDetector(
-        onTap: () => SystemChannels.textInput.invokeMethod<void>('TextInput.hide'),
+    return Listener(
+        onPointerDown: (e) {
+          SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+        },
         child: Scaffold(
             backgroundColor: Colors.black,
             body: Container(
                 color: const Color(0xFF002A4D),
                 child: PageView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     controller: _controller,
                     itemBuilder: (BuildContext context, int index) {
                       return pages[index];
@@ -174,13 +178,13 @@ class _MainState extends State<Main> {
                       ),
 
                       /// Tune
-                      DotNavigationBarItem(
-                        icon: Icon(
-                          Icons.settings_input_composite_rounded,
-                          size: sScreen / 10,
-                        ),
-                        selectedColor: const Color(0xFF002A4D),
-                      )
+                      // DotNavigationBarItem(
+                      //   icon: Icon(
+                      //     Icons.settings_input_composite_rounded,
+                      //     size: sScreen / 10,
+                      //   ),
+                      //   selectedColor: const Color(0xFF002A4D),
+                      // )
                     ],
                   ))),
             )));

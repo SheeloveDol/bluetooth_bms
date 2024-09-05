@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
-  flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
+  flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796

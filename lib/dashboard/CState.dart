@@ -32,13 +32,13 @@ class _CellsStateState extends State<CellsState> {
       weight = FontWeight.bold;
     }
     return Container(
-      width: 75,
-      padding: EdgeInsets.all(2),
+      width: 80,
+      margin: EdgeInsets.all(2),
       child: Row(children: [
         Stack(alignment: Alignment.center, children: [
           Image.asset(
             "assets/bat.png",
-            height: 35,
+            height: 40,
           ),
           Column(children: [
             Text(
@@ -61,13 +61,13 @@ class _CellsStateState extends State<CellsState> {
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0x2EFFFFFF)),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Wrap(children: [for (int i = 0; i < Data.cell_cnt; i++) cell("cell${i + 1}", i)]),
-          Wrap(alignment: WrapAlignment.spaceBetween, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             Text("Cell Difference:${Data.celldif.toStringAsFixed(3)}",
                 style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
             const Padding(padding: EdgeInsets.only(left: 5)),
             const Text("Balance inactive", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold))
           ]),
-          const Wrap(alignment: WrapAlignment.spaceBetween, children: [
+          const Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             Text("High cell group", style: TextStyle(color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
             Padding(padding: EdgeInsets.only(left: 5)),
             Text("Low cell group", style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold))
