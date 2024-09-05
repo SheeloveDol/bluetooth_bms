@@ -103,8 +103,8 @@ class _MainState extends State<Main> {
     ];
     sScreen = MediaQuery.sizeOf(context).width;
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
-    return Listener(
-        onPointerDown: (e) {
+    return GestureDetector(
+        onTap: () {
           SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
         },
