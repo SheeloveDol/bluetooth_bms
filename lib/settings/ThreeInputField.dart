@@ -20,9 +20,9 @@ class ThreeInputField extends SettingsElement {
   String? firstHeader;
   String? secondHeader;
   String? thirdHeader;
-  String? firstInitialValue;
-  String? secondInitialValue;
-  String? thirdInitialValue;
+  dynamic firstInitialValue;
+  dynamic secondInitialValue;
+  dynamic thirdInitialValue;
   final String text;
   final Function(String) firstOnChange;
   final Function(String) secondOnChange;
@@ -56,6 +56,7 @@ class ThreeInputField extends SettingsElement {
                   onChange: thirdOnChange,
                   initialValue: thirdInitialValue,
                   header: thirdHeader,
+                  width: 45,
                 ),
                 const Padding(padding: EdgeInsets.only(right: 3))
               ]))

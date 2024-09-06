@@ -959,7 +959,7 @@ class Data {
     switch (register) {
       case DESIGN_CAP:
         print("Starting recursion");
-        return _handleBatchParameterData(batch.sublist(3), 5, DESIGN_CAP);
+        return _handleBatchParameterData(batch.sublist(3), DESIGN_CAP);
       case MFG_NAME:
         var mfg_name_lenght = batch[3];
         _data["mfg_name"] = batch.sublist(4, 4 + mfg_name_lenght);
@@ -1031,224 +1031,264 @@ class Data {
   static String get param_sc_prot_set => _unsigned10Mili(_settingsData["SC_PROT_SET"]).toStringAsFixed(2);
   static String get param_del_adv_high_low_v => _unsigned10Mili(_settingsData["DEL_ADV_HIGH_LOW_V"]).toStringAsFixed(2);
 
-  static bool _handleBatchParameterData(List<int> batch, int index, int param) {
-    print("handeling $param:${parameterRegistry[param]} payload left: $batch");
-
+  static bool _handleBatchParameterData(List<int> batch, int param) {
     if (batch.isEmpty) {
       return true;
     }
     if (param == DEL_GPS_SHUTD) {
       _settingsData["DEL_GPS_SHUTD"] = batch.sublist(0, 2);
+      print(" [param] ${parameterRegistry[param]}:$param_del_gps_shutd");
       return true;
     }
 
     switch (param) {
       case DESIGN_CAP:
         _settingsData["DESIGN_CAP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_design_cap");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case CYCLE_CAP:
         _settingsData["CYCLE_CAP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_cycle_cap");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case CELL_FULL_MV:
         _settingsData["CELL_FULL_MV"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_cell_full_mv");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case CELL_MIN_MV:
         _settingsData["CELL_MIN_MV"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_cell_min_mv");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case CELL_D_PERC:
         _settingsData["CELL_D_PERC"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_cell_d_perc");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_HIGH_TEMP_TRIG:
         _settingsData["PROT_C_HIGH_TEMP_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_HIGH_TEMP_REL:
         _settingsData["PROT_C_HIGH_TEMP_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_LOW_TEMP_TRIG:
         _settingsData["PROT_C_LOW_TEMP_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_LOW_TEMP_REL:
         _settingsData["PROT_C_LOW_TEMP_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_HIGH_TEMP_TRIG:
         _settingsData["PROT_D_HIGH_TEMP_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_HIGH_TEMP_REL:
         _settingsData["PROT_D_HIGH_TEMP_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_LOW_TEMP_TRIG:
         _settingsData["PROT_D_LOW_TEMP_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_LOW_TEMP_REL:
         _settingsData["PROT_D_LOW_TEMP_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_BAT_HIGH_TRIG:
         _settingsData["PROT_BAT_HIGH_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_bat_high_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_BAT_HIGH_REL:
         _settingsData["PROT_BAT_HIGH_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_bat_high_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_BAT_LOW_TRIG:
         _settingsData["PROT_BAT_LOW_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_bat_low_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_BAT_LOW_REL:
         _settingsData["PROT_BAT_LOW_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_bat_low_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CELL_HIGH_TRIG:
         _settingsData["PROT_CELL_HIGH_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_cell_high_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CELL_HIGH_REL:
         _settingsData["PROT_CELL_HIGH_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_cell_high_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CELL_LOW_TRIG:
         _settingsData["PROT_CELL_LOW_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_cell_low_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CELL_LOW_REL:
         _settingsData["PROT_CELL_LOW_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_cell_low_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CH_HIGH_MA:
         _settingsData["PROT_CH_HIGH_MA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_ch_high_ma");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CH_LOW_MA:
         _settingsData["PROT_CH_LOW_MA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_ch_low_ma");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case BAL_START:
         _settingsData["BAL_START"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_bal_start");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case BAL_DELTA:
         _settingsData["BAL_DELTA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
-
-      case RESISTOR:
-        _settingsData["RESISTOR"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
-
-      case FUNCTION:
-        _settingsData["FUNCTION"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_bal_delta");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case NTC_EN:
         _settingsData["NTC_EN"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_ntc_en");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case CELL_CNT:
         _settingsData["CELL_CNT"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_cell_cnt");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_FET_CTRL_SW:
         _settingsData["DEL_FET_CTRL_SW"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_fet_ctrl_sw");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LED:
         _settingsData["DEL_LED"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_led");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case ADV_HIGH_V_TRIG:
         _settingsData["ADV_HIGH_V_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_adv_high_v_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case ADV_LOW_V_TRIG:
         _settingsData["ADV_LOW_V_TRIG"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_adv_low_v_trig");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case ADV_PROT_HIGH_MA:
         _settingsData["ADV_PROT_HIGH_MA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_adv_prot_high_ma");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case SC_PROT_SET:
         _settingsData["SC_PROT_SET"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_sc_prot_set");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_ADV_HIGH_LOW_V:
         _settingsData["DEL_ADV_HIGH_LOW_V"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_adv_high_low_v");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_SC_REL:
         _settingsData["DEL_SC_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_sc_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_CH_TEMP:
         _settingsData["DEL_LOW_CH_TEMP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_ch_temp");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_CH_TEMP:
         _settingsData["DEL_HIGH_CH_TEMP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_ch_temp");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_D_TEMP:
         _settingsData["DEL_LOW_D_TEMP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_d_temp");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_D_TEMP:
         _settingsData["DEL_HIGH_D_TEMP"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_d_temp");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_BAT_V:
         _settingsData["DEL_LOW_BAT_V"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_bat_v");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_BAT_V:
         _settingsData["DEL_HIGH_BAT_V"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_bat_v");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_CELL_V:
         _settingsData["DEL_LOW_CELL_V"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_cell_v");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_CELL_V:
         _settingsData["DEL_HIGH_CELL_V"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_cell_v");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_MA:
         _settingsData["DEL_HIGH_MA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_ma");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_HIGH_MA_REL:
         _settingsData["DEL_HIGH_MA_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_high_ma_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_MA:
         _settingsData["DEL_LOW_MA"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_ma");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_LOW_MA_REL:
         _settingsData["DEL_LOW_MA_REL"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_low_ma_rel");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case GPS_SHUTD:
         _settingsData["GPS_SHUTD"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_gps_shutd");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case DEL_GPS_SHUTD:
         _settingsData["DEL_GPS_SHUTD"] = batch.sublist(0, 2);
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        print(" [param] ${parameterRegistry[param]}:$param_del_gps_shutd");
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
       default:
         print("param:$param unknown: $batch");
-        return _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
+        return _handleBatchParameterData(batch.sublist(2), param + 1);
     }
   }
 
