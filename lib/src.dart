@@ -487,7 +487,7 @@ class Be {
     Data.setAvailableData(false);
     var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isNotEmpty) {
-      Data.setBatchData(batch, Data.DESIGN_CAP);
+      Data.setBatchData(batch, Data.PARAMETERS);
     }
     await Future.delayed(Durations.extralong1, () {
       Data.setAvailableData(true);
