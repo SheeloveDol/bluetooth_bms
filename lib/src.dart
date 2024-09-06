@@ -1033,9 +1033,12 @@ class Data {
 
   static bool _handleBatchParameterData(List<int> batch, int index, int param) {
     print("handeling $param:${parameterRegistry[param]} payload left: $batch");
+
+    if (batch.isEmpty) {
+      return true;
+    }
     if (param == DEL_GPS_SHUTD) {
       _settingsData["DEL_GPS_SHUTD"] = batch.sublist(0, 2);
-      _handleBatchParameterData(batch.sublist(2), index + 2, param + 1);
       return true;
     }
 
