@@ -54,7 +54,7 @@ class _DashBoardState extends State<DashBoard> {
         setState(() => height = (size > 360) ? 100 : 210);
         return;
       }
-      if (controller.offset.isNegative) {
+      if (controller.offset.isNegative || controller.offset < 3) {
         setState(() => height = 0);
       }
     });
@@ -82,14 +82,18 @@ class _DashBoardState extends State<DashBoard> {
         child: SafeArea(
             bottom: false,
             child: Stack(children: <Widget>[
-              ListView(padding: const EdgeInsets.only(bottom: 90), controller: controller, children: <Widget>[
-                AnimatedContainer(
-                    duration: const Duration(milliseconds: 300), height: (size > 360) ? 235 - height : 350 - height),
-                DelayedBuilder(child: BatteryState()),
-                DelayedBuilder(child: CellsState()),
-                DelayedBuilder(child: Temperatures()),
-                DelayedBuilder(child: Reports())
-              ]),
+              ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 200),
+                  controller: controller,
+                  children: <Widget>[
+                    AnimatedContainer(
+                        duration: const Duration(milliseconds: 300), height: (size > 360) ? 235 - height : 350 - height),
+                    DelayedBuilder(child: BatteryState()),
+                    DelayedBuilder(child: CellsState()),
+                    DelayedBuilder(child: Temperatures()),
+                    DelayedBuilder(child: Reports())
+                  ]),
               BatteryControl(title: title, height: height),
               Visibility(
                   visible: Be.conectionState == DeviceConnectionState.connecting,

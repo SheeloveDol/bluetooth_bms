@@ -314,7 +314,11 @@ class Be {
     while (answer.isEmpty) {
       await Future.delayed(const Duration(milliseconds: 400));
       k++;
-      if (k > 4) return [];
+      if (k > 4) {
+        notifySub.cancel();
+        _communicatingNow = false;
+        return [];
+      }
     }
     notifySub.cancel();
     good = _verifyReadings(answer);
