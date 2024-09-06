@@ -5,6 +5,7 @@ import 'package:bluetooth_bms/settings/ThreeInputField.dart';
 import 'package:bluetooth_bms/settings/TwoInputField.dart';
 import 'package:bluetooth_bms/settings/ntcInputField.dart';
 import 'package:bluetooth_bms/src.dart';
+import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -120,19 +121,20 @@ class _SettingsPage extends State<SettingsPage> {
                 children: tiles)),
         if (!Data.availableData)
           Positioned(
-              top: 30,
-              right: 30,
-              child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: Color(0xFF003F73),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 5, offset: Offset(4, 4))]),
-                  child: const Row(children: [
-                    Text("Getting Data", style: TextStyle(color: Colors.white, fontSize: 20)),
-                    SizedBox(width: 10),
-                    CircularProgressIndicator.adaptive(strokeWidth: 6, backgroundColor: Color(0xFF002A4D))
-                  ])))
+              top: 40,
+              right: 10,
+              child: DelayedBuilder(
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF003F73),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 5, offset: Offset(4, 4))]),
+                      child: const Row(children: [
+                        Text("Getting Data", style: TextStyle(color: Colors.white, fontSize: 20)),
+                        SizedBox(width: 10),
+                        CircularProgressIndicator.adaptive(strokeWidth: 6, backgroundColor: Color(0xFF002A4D))
+                      ]))))
       ],
     );
   }

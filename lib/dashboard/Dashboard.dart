@@ -49,7 +49,15 @@ class _DashBoardState extends State<DashBoard> {
     if (!Be.locked) {
       Be.lock();
     }
-    controller.addListener(() => (controller.offset > 2) ? setState(() => height = (size > 360) ? 100 : 210) : null);
+    controller.addListener(() {
+      if (controller.offset > 2) {
+        setState(() => height = (size > 360) ? 100 : 210);
+        return;
+      }
+      if (controller.offset.isNegative) {
+        setState(() => height = 0);
+      }
+    });
     if (Be.conectionState == DeviceConnectionState.disconnected) {
       super.initState();
       return;
@@ -74,26 +82,14 @@ class _DashBoardState extends State<DashBoard> {
         child: SafeArea(
             bottom: false,
             child: Stack(children: <Widget>[
-              Listener(
-                  onPointerMove: (event) {
-                    if (controller.offset == 0 && !event.delta.dy.isNegative)
-                      setState(() {
-                        height = 0;
-                      });
-                  },
-                  child: Container(
-                      child: SingleChildScrollView(
-                          controller: controller,
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
-                            AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                height: (size > 360) ? 235 - height : 350 - height),
-                            DelayedBuilder(child: BatteryState()),
-                            DelayedBuilder(child: CellsState()),
-                            DelayedBuilder(child: Temperatures()),
-                            DelayedBuilder(child: Reports()),
-                            const SizedBox(height: 90)
-                          ])))),
+              ListView(padding: const EdgeInsets.only(bottom: 90), controller: controller, children: <Widget>[
+                AnimatedContainer(
+                    duration: const Duration(milliseconds: 300), height: (size > 360) ? 235 - height : 350 - height),
+                DelayedBuilder(child: BatteryState()),
+                DelayedBuilder(child: CellsState()),
+                DelayedBuilder(child: Temperatures()),
+                DelayedBuilder(child: Reports())
+              ]),
               BatteryControl(title: title, height: height),
               Visibility(
                   visible: Be.conectionState == DeviceConnectionState.connecting,

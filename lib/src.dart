@@ -676,7 +676,7 @@ class Data {
   static bool get chargeStatus => _oneBool(_data["fet_status"], 0x01); // position 01
   static bool get dischargeStatus => _oneBool(_data["fet_status"], 0x02); // position 10
   static int get cap_pct => _oneByteOneUnit(_data["cap_pct"]);
-  static int get cell_cnt => _oneByteOneUnit(_data["cell_cnt"]);
+  static int get cell_cnt => 8; // _oneByteOneUnit(_data["cell_cnt"]);
   static int get ntc_cnt => _oneByteOneUnit(_data["ntc_cnt"]);
   static int get unknown => 0;
   static int get sc_err_cnt => _oneUnit(_data["sc_err_cnt"]);
