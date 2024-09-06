@@ -328,6 +328,7 @@ class Be {
     }
     _communicatingNow = false;
 
+    print("[returned] : $data");
     return data;
   }
 
