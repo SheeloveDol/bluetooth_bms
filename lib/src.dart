@@ -286,7 +286,7 @@ class Be {
     return good;
   }
 
-  static Future<List<int>> releaseRead(List<int> payload) async {
+  static Future<List<int>> parameterRead(List<int> payload) async {
     _communicatingNow = true;
     List<int> answer = [];
     var good = false;
@@ -328,7 +328,7 @@ class Be {
     }
     _communicatingNow = false;
 
-    print("[returned] : $data");
+    print("[returned] : $answer");
     return data;
   }
 
@@ -476,7 +476,7 @@ class Be {
   static void readWhatsLeft() async {
     await read(Data.DEVICE_NAME_PAYLOAD);
     updater!();
-    var batch = await releaseRead(Data.MANUF_PAYLOAD);
+    var batch = await parameterRead(Data.MANUF_PAYLOAD);
     if (batch.isNotEmpty) {
       Data.setBatchData(batch, Data.MFG_NAME);
       updater!();
@@ -485,7 +485,7 @@ class Be {
 
   static void readSettings() async {
     Data.setAvailableData(false);
-    var batch = await releaseRead(Data.ALL_PARAMS_PAYLOAD);
+    var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isNotEmpty) {
       Data.setBatchData(batch, Data.DESIGN_CAP);
     }
