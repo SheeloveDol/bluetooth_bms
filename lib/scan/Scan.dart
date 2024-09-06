@@ -72,6 +72,7 @@ class _ScanPageState extends State<ScanPage> {
         return;
       }
     });
+    Be.setUpdater(() => setState(() {}));
     super.initState();
 
     Be.init().then((value) => {onScan()});

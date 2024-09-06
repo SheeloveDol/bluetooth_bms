@@ -1009,7 +1009,7 @@ class Data {
   static String get param_resistor => _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
   static int get param_cell_cnt => _oneUnit(_settingsData["CELL_CNT"]);
   static int get param_del_fet_ctrl_sw => _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
-  static int get param_del_led => _oneUnit(_settingsData["DEL_LED"]);
+  static int get param_del_led => 0; //_oneUnit(_settingsData["DEL_LED"]);
   static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
   static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
 
