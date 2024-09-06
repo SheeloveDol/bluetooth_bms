@@ -49,6 +49,7 @@ class _DashBoardState extends State<DashBoard> {
     if (!Be.locked) {
       Be.lock();
     }
+    Be.setUpdater(() => setState(() {}));
     controller.addListener(() {
       if (controller.offset > 2) {
         setState(() => height = (size > 360) ? 100 : 210);

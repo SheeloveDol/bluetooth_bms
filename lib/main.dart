@@ -11,13 +11,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
-  final List<int> settingTiles = [0, 1, 2, 3, 4, 5];
+  final List<int> settingTiles = [0, 1, 2, 3, 4];
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent, // Navigation bar color
   ));
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(MaterialApp(
       theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
       home: Main(settingTiles: settingTiles)));
@@ -78,6 +77,7 @@ class _MainState extends State<Main> {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

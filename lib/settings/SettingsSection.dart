@@ -40,7 +40,6 @@ abstract class SettingsField extends StatelessWidget {
   const SettingsField({super.key});
 
   void ontap(BuildContext con) {
-    print("tapped");
     if (Be.locked) {
       showDialogAdaptive(con,
           title: Text("Unable to modify"), content: Text(" Modification is currently locked"), actions: []);

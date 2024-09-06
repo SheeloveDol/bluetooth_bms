@@ -11,6 +11,7 @@ class ThreeInputField extends SettingsElement {
       required this.firstOnChange,
       required this.secondOnChange,
       required this.thirdOnChange,
+      this.pair,
       this.firstHeader,
       this.secondHeader,
       this.thirdHeader,
@@ -23,6 +24,7 @@ class ThreeInputField extends SettingsElement {
   dynamic firstInitialValue;
   dynamic secondInitialValue;
   dynamic thirdInitialValue;
+  bool? pair;
   final String text;
   final Function(String) firstOnChange;
   final Function(String) secondOnChange;
@@ -32,9 +34,12 @@ class ThreeInputField extends SettingsElement {
   @override
   Widget build(BuildContext context) {
     double l = MediaQuery.sizeOf(context).width;
+    pair ??= false;
     return Container(
+        decoration: (pair!) ? BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.black12) : null,
         alignment: Alignment.bottomLeft,
-        margin: const EdgeInsets.all(3),
+        padding: const EdgeInsets.all(3),
+        margin: const EdgeInsets.only(top: 1, bottom: 5, left: 1, right: 1),
         child: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
           SizedBox(width: (l > 250) ? 110 : 200, child: Text(text, style: titleStyle)),
           SizedBox(

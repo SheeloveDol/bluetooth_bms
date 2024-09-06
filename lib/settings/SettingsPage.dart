@@ -63,6 +63,7 @@ class _SettingsPage extends State<SettingsPage> {
           secondHeader: "Release",
           thirdHeader: "Delay"),
       ThreeInputField(
+          pair: true,
           text: "Charging under temp",
           firstInitialValue: Data.param_prot_c_low_temp_trig,
           secondInitialValue: Data.param_prot_c_low_temp_rel,
@@ -79,6 +80,7 @@ class _SettingsPage extends State<SettingsPage> {
           secondOnChange: (v) {},
           thirdOnChange: (v) {}),
       ThreeInputField(
+          pair: true,
           text: "Discharging under temp",
           firstInitialValue: Data.param_prot_d_low_temp_trig,
           secondInitialValue: Data.param_prot_d_low_temp_rel,
@@ -95,6 +97,7 @@ class _SettingsPage extends State<SettingsPage> {
           secondOnChange: (v) {},
           thirdOnChange: (v) {}),
       ThreeInputField(
+          pair: true,
           text: "Battery Under Voltage",
           firstInitialValue: Data.param_prot_bat_low_trig,
           secondInitialValue: Data.param_prot_bat_low_rel,
@@ -111,6 +114,7 @@ class _SettingsPage extends State<SettingsPage> {
           secondOnChange: (v) {},
           thirdOnChange: (v) {}),
       ThreeInputField(
+          pair: true,
           text: "Cell Under Voltage",
           firstInitialValue: Data.param_prot_cell_low_trig,
           secondInitialValue: Data.param_prot_cell_low_rel,
@@ -130,6 +134,7 @@ class _SettingsPage extends State<SettingsPage> {
           secondOnChange: (v) {},
           thirdOnChange: (v) {}),
       ThreeInputField(
+          pair: true,
           text: "Charge Under Current",
           firstInitialValue: Data.param_prot_ch_low_ma,
           secondInitialValue: Data.param_del_low_ma_rel,
@@ -157,6 +162,7 @@ class _SettingsPage extends State<SettingsPage> {
     for (var i = 0; i < widget.tiles.length; i++) {
       tiles.add(tilesMap[widget.tiles[i]]!);
     }
+    Be.setUpdater(() => setState(() {}));
     Be.readSettings();
     super.initState();
   }

@@ -21,6 +21,7 @@ class Be {
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
+  static Function? factoryUpdater;
   static bool _communicatingNow = false;
   static bool _warantyVoided = false;
 
@@ -410,6 +411,10 @@ class Be {
     updater = setstate;
   }
 
+  static void setFactryUpdater(void Function() setstate) {
+    factoryUpdater = setstate;
+  }
+
   static void on_discharge_on_charge() async {
     await write(Data.ON_DSICHARGE_ON_CHARGE_PAYLOAD);
     await getBasicInfo();
@@ -452,7 +457,7 @@ class Be {
     }
     var batch = await write(Data.CLOSE_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
-    updater!();
+    factoryUpdater!();
   }
 
   static unLock() async {
@@ -461,7 +466,7 @@ class Be {
     }
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
-    updater!();
+    factoryUpdater!();
   }
 
   static resetAlarm() async {

@@ -17,6 +17,13 @@ class _LockButtonState extends State<LockButton> {
   Icon icon = const Icon(Icons.lock);
   bool visi = true;
   TextStyle textStyle = const TextStyle(color: Color(0xFF002A4D));
+
+  @override
+  void initState() {
+    Be.setFactryUpdater(() => setState(() {}));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     icon = (Be.locked)
