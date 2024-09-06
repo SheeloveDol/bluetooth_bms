@@ -325,7 +325,6 @@ class Be {
     List<int> data = [];
     if (good) {
       data.addAll(answer.sublist(4, answer.length - 3));
-      good = Data.setBatchData(data, answer[1]);
     }
     _communicatingNow = false;
 
