@@ -58,9 +58,9 @@ class _RightState extends State<Right> {
   @override
   Widget build(BuildContext context) {
     var ma =
-        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+        "${(Data.pack_ma.isNegative) ? Data.pack_ma.toStringAsFixed(2).substring(1) : Data.pack_ma.toStringAsFixed(2)}A ${(Data.pack_ma.isNegative) ? "Out" : "In"}";
     var watts =
-        "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+        "${(Data.pack_ma.isNegative) ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma.isNegative) ? "Out" : "In"}";
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -69,10 +69,10 @@ class _RightState extends State<Right> {
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
-          (Data.pack_ma[0] != "-")
+          (!Data.pack_ma.isNegative)
               ? const SizedBox(height: 15)
               : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-          (Data.pack_ma[0] != "-")
+          (!Data.pack_ma.isNegative)
               ? const SizedBox(height: 15)
               : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
         ]),
@@ -150,17 +150,17 @@ class _LeftState extends State<Left> {
   @override
   Widget build(BuildContext context) {
     var ma =
-        "${(Data.pack_ma[0] == "-") ? Data.pack_ma.substring(1) : Data.pack_ma}A ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+        "${(Data.pack_ma.isNegative) ? Data.pack_ma.toStringAsFixed(2).substring(1) : Data.pack_ma.toStringAsFixed(2)}A ${(Data.pack_ma.isNegative) ? "Out" : "In"}";
     var watts =
-        "${(Data.pack_ma[0] == "-") ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma[0] == "-") ? "Out" : "In"}";
+        "${(Data.pack_ma.isNegative) ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma.isNegative) ? "Out" : "In"}";
     return Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children: [
       const Padding(padding: EdgeInsets.only(top: 35)),
       Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Bolts(position: BoltPosition.left),
-        (Data.pack_ma[0] == "-")
+        (Data.pack_ma.isNegative)
             ? const SizedBox(height: 15)
             : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-        (Data.pack_ma[0] == "-")
+        (Data.pack_ma.isNegative)
             ? const SizedBox(height: 15)
             : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
       ]),
@@ -296,8 +296,8 @@ class _BoltsState extends State<Bolts> {
   void start() {
     if (Data.pack_ma != "0.00" &&
         _timer == null &&
-        ((widget.position == BoltPosition.right && Data.pack_ma[0] == "-") ||
-            (widget.position == BoltPosition.left && Data.pack_ma[0] != "-"))) {
+        ((widget.position == BoltPosition.right && Data.pack_ma.isNegative) ||
+            (widget.position == BoltPosition.left && !Data.pack_ma.isNegative))) {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
         if (Data.pack_ma == "0.00") {
           stop();

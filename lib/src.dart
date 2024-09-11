@@ -673,8 +673,8 @@ class Data {
 
   //Basic info and Cell info and Stats info and Device name
   static bool get factoryModeState => (_factory == null) ? false : _factory!;
-  static String get pack_mv => _unsigned10Mili(_data["pack_mv"]).toStringAsFixed(2);
-  static String get pack_ma => _signed10Mili(_data["pack_ma"]).toStringAsFixed(2);
+  static double get pack_mv => _unsigned10Mili(_data["pack_mv"]);
+  static double get pack_ma => _signed10Mili(_data["pack_ma"]);
   static String get cycle_cap => _unsigned10Mili(_data["cycle_cap"]).toStringAsFixed(1);
   static String get design_cap => _unsigned10Mili(_data["design_cap"]).toStringAsFixed(1);
   static String get cycle_cnt => _oneUnit(_data["cycle_cnt"]).toString();
@@ -807,11 +807,7 @@ class Data {
   static double get bal_start => _unsigned10Mili(_data["bal_start"]);
 
   static String get watts {
-    if (_data["pack_ma"] == null || _data["pack_mv"] == null) return "0.0";
-    int result = _combineSigned(_data["pack_ma"]!, 0, 1);
-    // Check the sign bit (MSB)
-    var doubleResult = (result & 0x8000 != 0) ? -(0x10000 - result) * 1.0 : result * 1.0;
-    return (doubleResult * _combine(_data["pack_mv"]!, 0, 1) * 0.01).round().toString();
+    return (pack_ma * pack_mv).round().toString();
   }
 
   static String get timeLeft {
