@@ -294,7 +294,10 @@ class _BoltsState extends State<Bolts> {
   }
 
   void start() {
-    if (Data.pack_ma != 0 && _timer == null && (Data.dischargeStatus || Data.chargeStatus)) {
+    if (Data.pack_ma != 0 &&
+        _timer == null &&
+        ((widget.position == BoltPosition.left && ((Data.dischargeStatus && Data.chargeStatus) || Data.chargeStatus)) ||
+            (widget.position == BoltPosition.right && Data.dischargeStatus))) {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
         if (Data.pack_ma == 0) {
           stop();
