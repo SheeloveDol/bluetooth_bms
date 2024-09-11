@@ -50,7 +50,6 @@ class _DashBoardState extends State<DashBoard> {
     if (!Be.locked) {
       Be.lock();
     }
-    Be.setUpdater(() => setState(() {}));
     controller.addListener(() {
       if (controller.offset > 2) {
         setState(() => height = (size > 360) ? 100 : 210);
@@ -65,12 +64,14 @@ class _DashBoardState extends State<DashBoard> {
       return;
     }
     if (Be.conectionState == DeviceConnectionState.connected) {
+      Be.setUpdater(() => setState(() {}));
       Data.setAvailableData(true);
       runPeriodic();
       super.initState();
       return;
     }
     if (Be.conectionState == DeviceConnectionState.connecting) {
+      Be.setUpdater(() => setState(() {}));
       Be.onConnected(() {
         Data.setAvailableData(true);
         setState(() {});
@@ -83,7 +84,7 @@ class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.sizeOf(context).width;
-    title = Be.title!;
+    if (Be.title != null) title = Be.title!;
     return Container(
         decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF002A4D), Colors.black])),
         child: SafeArea(

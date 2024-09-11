@@ -135,58 +135,57 @@ class _MainState extends State<Main> {
               child: AnimatedContainer(
                   duration: Durations.long1,
                   color: Colors.white,
-                  padding: EdgeInsets.only(bottom: (_selectedTab == _SelectedTab.scan) ? 0 : 20),
                   child: Visibility(
-                      //visible: showbar,
+                      visible: showbar,
                       child: DotNavigationBar(
-                    enableFloatingNavBar: false,
-                    marginR: const EdgeInsets.symmetric(horizontal: 10),
-                    paddingR: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
-                    currentIndex: _SelectedTab.values.indexOf(_selectedTab),
-                    unselectedItemColor: Colors.grey[300],
-                    splashColor: Colors.transparent,
-                    enablePaddingAnimation: false,
-                    dotIndicatorColor: Colors.transparent,
-                    onTap: _handleIndexChanged,
-                    items: [
-                      /// ScanPage
-                      DotNavigationBarItem(
-                        icon: Icon(
-                          Icons.bluetooth_rounded,
-                          size: sScreen / 10,
-                        ),
-                        selectedColor: const Color(0xFF002A4D),
-                      ),
+                        enableFloatingNavBar: false,
+                        marginR: const EdgeInsets.symmetric(horizontal: 10),
+                        paddingR: EdgeInsets.zero,
+                        itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
+                        currentIndex: _SelectedTab.values.indexOf(_selectedTab),
+                        unselectedItemColor: Colors.grey[300],
+                        splashColor: Colors.transparent,
+                        enablePaddingAnimation: false,
+                        dotIndicatorColor: Colors.transparent,
+                        onTap: _handleIndexChanged,
+                        items: [
+                          /// ScanPage
+                          DotNavigationBarItem(
+                            icon: Icon(
+                              Icons.bluetooth_rounded,
+                              size: sScreen / 10,
+                            ),
+                            selectedColor: const Color(0xFF002A4D),
+                          ),
 
-                      /// Dashboard
-                      DotNavigationBarItem(
-                        icon: Icon(
-                          Icons.dashboard_rounded,
-                          size: sScreen / 10,
-                        ),
-                        selectedColor: const Color(0xFF002A4D),
-                      ),
+                          /// Dashboard
+                          DotNavigationBarItem(
+                            icon: Icon(
+                              Icons.dashboard_rounded,
+                              size: sScreen / 10,
+                            ),
+                            selectedColor: const Color(0xFF002A4D),
+                          ),
 
-                      /// Settings
-                      DotNavigationBarItem(
-                        icon: Icon(
-                          Icons.settings,
-                          size: sScreen / 10,
-                        ),
-                        selectedColor: const Color(0xFF002A4D),
-                      ),
+                          /// Settings
+                          DotNavigationBarItem(
+                            icon: Icon(
+                              Icons.settings,
+                              size: sScreen / 10,
+                            ),
+                            selectedColor: const Color(0xFF002A4D),
+                          ),
 
-                      /// Tune
-                      // DotNavigationBarItem(
-                      //   icon: Icon(
-                      //     Icons.settings_input_composite_rounded,
-                      //     size: sScreen / 10,
-                      //   ),
-                      //   selectedColor: const Color(0xFF002A4D),
-                      // )
-                    ],
-                  ))),
+                          /// Tune
+                          // DotNavigationBarItem(
+                          //   icon: Icon(
+                          //     Icons.settings_input_composite_rounded,
+                          //     size: sScreen / 10,
+                          //   ),
+                          //   selectedColor: const Color(0xFF002A4D),
+                          // )
+                        ],
+                      ))),
             )));
   }
 }
