@@ -21,6 +21,7 @@ class Be {
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
+  static Function? _onConectedCb;
   static Function? factoryUpdater;
   static bool _communicatingNow = false;
   static bool _warantyVoided = false;
@@ -148,6 +149,7 @@ class Be {
         readWhatsLeft();
         Data.setAvailableData(true);
         setConnectionState(DeviceConnectionState.connected);
+        _onConectedCb!();
         return true;
       }
       Data.clear();
@@ -159,6 +161,10 @@ class Be {
       quicktell(context, "failed to read from $title");
       return false;
     }
+  }
+
+  static void onConnected(Function cb) {
+    _onConectedCb = cb;
   }
 
   static Future<bool> getBasicInfo() async {
@@ -191,6 +197,7 @@ class Be {
     await savedDevice?.disconnect();
     await savedSubscription?.cancel();
     savedSubscription = null;
+    _onConectedCb = null;
     if (totaly) {
       savedDevice = null;
       title = null;
@@ -203,6 +210,7 @@ class Be {
     setConnectionState(DeviceConnectionState.connecting);
     await disconnect(totaly: false);
     Data.clear();
+    _onConectedCb = null;
     try {
       await savedDevice!.connect();
       await savedDevice!.discoverServices();
@@ -806,9 +814,7 @@ class Data {
 
   static double get bal_start => _unsigned10Mili(_data["bal_start"]);
 
-  static String get watts {
-    return (pack_ma * pack_mv).round().toString();
-  }
+  static String get watts => (pack_ma * pack_mv).round().toString();
 
   static String get timeLeft {
     if (_data["cycle_cap"] == null || _data["design_cap"] == null || _data["pack_ma"] == null) {

@@ -129,7 +129,7 @@ class _MiddleState extends State<Middle> {
                   style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 20),
                 ),
                 Text(
-                  "${Data.pack_mv}V",
+                  "${Data.pack_mv.toStringAsFixed(2)}V",
                   style: const TextStyle(height: 0, fontSize: 10),
                 ),
                 Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: const TextStyle(height: 0, fontSize: 10))
@@ -157,12 +157,12 @@ class _LeftState extends State<Left> {
       const Padding(padding: EdgeInsets.only(top: 35)),
       Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Bolts(position: BoltPosition.left),
-        (Data.pack_ma.isNegative)
-            ? const SizedBox(height: 15)
-            : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-        (Data.pack_ma.isNegative)
-            ? const SizedBox(height: 15)
-            : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
+        (!Data.pack_ma.isNegative || Data.dischargeStatus && Data.chargeStatus)
+            ? Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white))
+            : const SizedBox(height: 15),
+        (!Data.pack_ma.isNegative || Data.dischargeStatus && Data.chargeStatus)
+            ? Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
+            : const SizedBox(height: 15)
       ]),
       const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
       CupertinoButton(
@@ -294,12 +294,9 @@ class _BoltsState extends State<Bolts> {
   }
 
   void start() {
-    if (Data.pack_ma != "0.00" &&
-        _timer == null &&
-        ((widget.position == BoltPosition.right && Data.pack_ma.isNegative) ||
-            (widget.position == BoltPosition.left && !Data.pack_ma.isNegative))) {
+    if (Data.pack_ma != 0 && _timer == null && (Data.dischargeStatus || Data.chargeStatus)) {
       _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-        if (Data.pack_ma == "0.00") {
+        if (Data.pack_ma == 0) {
           stop();
           return;
         }
