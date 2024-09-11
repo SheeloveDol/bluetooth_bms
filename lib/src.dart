@@ -165,9 +165,7 @@ class Be {
     var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
     if (readSuccessFully) {
       Data.setAvailableData(true);
-      if (updater != null) {
-        updater!();
-      }
+      updater!();
     }
 
     return readSuccessFully;
@@ -177,9 +175,7 @@ class Be {
     var readSuccessFully = await read(Data.CELL_INFO_PAYLOAD);
     if (readSuccessFully) {
       Data.setAvailableData(true);
-      if (updater != null) {
-        updater!();
-      }
+      updater!();
     }
 
     return readSuccessFully;
