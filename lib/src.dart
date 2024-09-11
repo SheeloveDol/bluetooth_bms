@@ -244,11 +244,15 @@ class Be {
   }
 
   static Future<bool> read(List<int> payload) async {
+    while (_communicatingNow) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _communicatingNow = true;
     List<int> answer = [];
     var good = false;
 
     if (_currentState != DeviceConnectionState.connected) {
+      _communicatingNow = false;
       print("no device is currently connefcted");
       return false;
     }
@@ -283,9 +287,16 @@ class Be {
 
       if (!good) await resetConnection();
       k++;
-      if (k > 2) return false;
+      if (k > 2) {
+        _communicatingNow = true;
+        return false;
+      }
     } while (!good);
 
+    if (answer.isEmpty) {
+      _communicatingNow = false;
+      return false;
+    }
     var data = answer.sublist(4, answer.length - 3);
     good = Data.setBatchData(data, answer[1]);
     _communicatingNow = false;
@@ -293,6 +304,9 @@ class Be {
   }
 
   static Future<List<int>> parameterRead(List<int> payload) async {
+    while (_communicatingNow) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _communicatingNow = true;
     List<int> answer = [];
     var good = false;
