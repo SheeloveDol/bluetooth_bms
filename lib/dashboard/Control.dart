@@ -69,10 +69,10 @@ class _RightState extends State<Right> {
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
-          (Data.dischargeStatus)
+          (Data.dischargeStatus && !Data.chargeStatus)
               ? Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white))
               : const SizedBox(height: 15),
-          (Data.dischargeStatus)
+          (Data.dischargeStatus && !Data.chargeStatus)
               ? Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
               : const SizedBox(height: 15)
         ]),
