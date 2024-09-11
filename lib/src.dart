@@ -1326,7 +1326,7 @@ class Data {
   /// converts 2 bytes to a value of unit of signed 10mili
   static double _signed10Mili(List<int>? data) {
     if (data == null) return 0.00;
-    int result = (data[1] & 0xFF) | ((data[0] << 8) & 0xFF00);
+    int result = (data[0] & 0xFF) | ((data[1] << 8) & 0xFF00);
     // Check the sign bit (MSB)
     if (result & 0x8000 != 0) result = -(0x10000 - result);
     return (result * 0.01);
