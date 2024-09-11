@@ -811,7 +811,7 @@ class Data {
     int result = _combineSigned(_data["pack_ma"]!, 0, 1);
     // Check the sign bit (MSB)
     var doubleResult = (result & 0x8000 != 0) ? -(0x10000 - result) * 1.0 : result * 1.0;
-    return (doubleResult * _combine(_data["pack_ma"]!, 0, 1) * 0.01).round().toString();
+    return (doubleResult * _combine(_data["pack_mv"]!, 0, 1) * 0.01).round().toString();
   }
 
   static String get timeLeft {
