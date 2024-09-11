@@ -69,12 +69,12 @@ class _RightState extends State<Right> {
         const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
-          (!Data.pack_ma.isNegative)
-              ? const SizedBox(height: 15)
-              : Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white)),
-          (!Data.pack_ma.isNegative)
-              ? const SizedBox(height: 15)
-              : Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
+          (Data.dischargeStatus)
+              ? Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white))
+              : const SizedBox(height: 15),
+          (Data.dischargeStatus)
+              ? Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
+              : const SizedBox(height: 15)
         ]),
         const Padding(padding: EdgeInsets.symmetric(vertical: 3)),
         CupertinoButton(
@@ -157,10 +157,10 @@ class _LeftState extends State<Left> {
       const Padding(padding: EdgeInsets.only(top: 35)),
       Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Bolts(position: BoltPosition.left),
-        (!Data.pack_ma.isNegative || Data.dischargeStatus && Data.chargeStatus)
+        (Data.chargeStatus || Data.dischargeStatus && Data.chargeStatus)
             ? Text(ma, style: const TextStyle(fontSize: 11, color: Colors.white))
             : const SizedBox(height: 15),
-        (!Data.pack_ma.isNegative || Data.dischargeStatus && Data.chargeStatus)
+        (Data.chargeStatus || Data.dischargeStatus && Data.chargeStatus)
             ? Text(watts, style: const TextStyle(fontSize: 11, color: Colors.white))
             : const SizedBox(height: 15)
       ]),

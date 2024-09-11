@@ -218,6 +218,7 @@ class Be {
       setConnectionState(DeviceConnectionState.connected);
       return true;
     } catch (e) {
+      print("[FATAL] DISCONNECTED");
       disconnect(totaly: true);
       quicktell(context, "Lost connection with device");
       return false;
