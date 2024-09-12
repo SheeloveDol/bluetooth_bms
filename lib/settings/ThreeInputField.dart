@@ -41,7 +41,7 @@ class ThreeInputField extends SettingsElement {
         padding: const EdgeInsets.all(3),
         margin: const EdgeInsets.only(top: 1, bottom: 5, left: 1, right: 1),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          SizedBox(width: (l <= 360) ? 100 : 150, child: Text(text, style: titleStyle)),
+          SizedBox(width: (l <= 400) ? 100 : 150, child: Text(text, style: titleStyle)),
           SizedBox(
               width: 210,
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
