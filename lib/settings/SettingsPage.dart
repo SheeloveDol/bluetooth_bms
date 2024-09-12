@@ -158,9 +158,9 @@ class _SettingsPage extends State<SettingsPage> {
             thirdOnChange: (v) {}),
         ThreeInputField(
             text: "Charge Over Current",
-            firstHeader: "Trigger",
-            secondHeader: "Release delay",
-            thirdHeader: "Trigger delay",
+            firstHeader: "Trigger\n",
+            secondHeader: "Release\ndelay",
+            thirdHeader: "Trigger\ndelay",
             firstInitialValue: Data.param_prot_ch_high_ma,
             secondInitialValue: Data.param_del_high_ma_rel,
             thirdInitialValue: Data.param_del_high_ma,

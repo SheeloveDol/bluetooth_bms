@@ -244,18 +244,18 @@ class Be {
   }
 
   static Future<bool> read(List<int> payload) async {
+    if (_currentState != DeviceConnectionState.connected) {
+      _communicatingNow = false;
+      print("no device is currently connected to read");
+      return false;
+    }
+
     while (_communicatingNow) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
     _communicatingNow = true;
     List<int> answer = [];
     var good = false;
-
-    if (_currentState != DeviceConnectionState.connected) {
-      _communicatingNow = false;
-      print("no device is currently connefcted");
-      return false;
-    }
 
     int k = 0;
     do {
@@ -304,6 +304,10 @@ class Be {
   }
 
   static Future<List<int>> parameterRead(List<int> payload) async {
+    if (_currentState != DeviceConnectionState.connected) {
+      print("no device is currently connected to read");
+      return [];
+    }
     while (_communicatingNow) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
@@ -311,10 +315,6 @@ class Be {
     List<int> answer = [];
     var good = false;
 
-    if (_currentState != DeviceConnectionState.connected) {
-      print("no device is currently connected");
-      return [];
-    }
     //subscribe to read charac
     await readCharacteristics!.setNotifyValue(true);
 
@@ -353,6 +353,12 @@ class Be {
   }
 
   static Future<List<int>> write(List<int> payload) async {
+    if (_currentState != DeviceConnectionState.connected) {
+      _communicatingNow = false;
+      print("no device is currently connected to write");
+      return [0, 999];
+    }
+
     while (_communicatingNow) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
@@ -371,9 +377,7 @@ class Be {
     print("writing command : $cmd");
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
-      if (wake) {
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
+      if (wake) await Future.delayed(const Duration(milliseconds: 300));
       _setWake(false);
     }
     await Future.delayed(const Duration(milliseconds: 200));

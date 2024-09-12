@@ -37,7 +37,8 @@ class ValueField extends SettingsField {
   Widget build(BuildContext context) {
     width ??= 80;
     return Column(children: [
-      if (header != null) Text(header!, style: const TextStyle(fontSize: 10, color: Color(0xFFB7B7B7))),
+      if (header != null)
+        Text(header!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Color(0xFFB7B7B7))),
       GestureDetector(
           onTap: () => ontap(context),
           child: Container(

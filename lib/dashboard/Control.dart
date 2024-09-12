@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../src.dart';
@@ -19,7 +20,7 @@ class _BatteryControlState extends State<BatteryControl> {
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 40),
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.only(left: 5, right: 5, bottom: 15),
-        height: (size > 360) ? 190 - widget.height : 300 - widget.height,
+        height: (size > 260) ? 190 - widget.height : 300 - widget.height,
         decoration: BoxDecoration(
             color: (widget.height > 0) ? const Color(0xF2002A4D) : null,
             gradient: (widget.height > 0)
@@ -33,13 +34,14 @@ class _BatteryControlState extends State<BatteryControl> {
         child: (widget.height > 0)
             ? BatteryControlSmall()
             : Column(children: [
-                if (size > 360)
+                if (size > 260)
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [Left(), Middle(title: widget.title), Right()]),
-                if (size < 360)
+                if (size <= 260)
                   Column(children: [
                     Middle(title: widget.title),
                     Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [Left(), Right()])
                   ]),
+                const SizedBox(height: 5),
                 Text(Data.timeLeft, style: const TextStyle(color: Colors.white, fontSize: 20))
               ]));
   }
@@ -97,13 +99,13 @@ class Middle extends StatefulWidget {
 }
 
 class _MiddleState extends State<Middle> {
-  double batterySize = 80;
+  double batterySize = 70;
   @override
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
     var size = MediaQuery.sizeOf(context).width;
-    if (size > 360) batterySize = MediaQuery.sizeOf(context).width * 0.17;
-    if (size < 360) batterySize = MediaQuery.sizeOf(context).width * 0.24;
+    if (size > 260) batterySize = min(MediaQuery.sizeOf(context).width * 0.18, 105);
+    if (size <= 260) batterySize = MediaQuery.sizeOf(context).width * 0.24;
 
     return Container(
         padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
@@ -111,6 +113,7 @@ class _MiddleState extends State<Middle> {
           Text(widget.title,
               style: TextStyle(
                   fontSize: (widget.title.length > 20) ? 10 : 15, fontWeight: FontWeight.bold, color: Colors.white)),
+          SizedBox(height: 5),
           Stack(alignment: Alignment.centerLeft, children: [
             AnimatedContainer(
                 duration: Durations.extralong3,
@@ -234,15 +237,19 @@ void dischargePressed() {
   if (Data.dischargeStatus && Data.chargeStatus) {
     //send payload that turns off dischacharge and turns on charge
     Be.off_discharge_on_charge();
+    return;
   } else if (!Data.dischargeStatus && Data.chargeStatus) {
     //send payload that turns on dischacharge and turns on charge
     Be.on_discharge_on_charge();
+    return;
   } else if (!Data.dischargeStatus && !Data.chargeStatus) {
     //send payload that turns on dischacharge and turns off charge
     Be.on_discharge_off_charge();
+    return;
   } else if (Data.dischargeStatus && !Data.chargeStatus) {
     //send payload that turns off dischacharge and turns off charge
     Be.off_discharge_off_charge();
+    return;
   }
 }
 
@@ -250,15 +257,19 @@ void chargePressed() {
   if (Data.dischargeStatus && Data.chargeStatus) {
     //send payload that turns on dischacharge and turns off charge
     Be.on_discharge_off_charge();
+    return;
   } else if (!Data.dischargeStatus && Data.chargeStatus) {
     //send payload that turns off dischacharge and turns off charge
     Be.off_discharge_off_charge();
+    return;
   } else if (!Data.dischargeStatus && !Data.chargeStatus) {
     //send payload that turns off dischacharge and turns on charge
     Be.off_discharge_on_charge();
+    return;
   } else if (Data.dischargeStatus && !Data.chargeStatus) {
     //send payload that turns on dischacharge and turns on charge
     Be.on_discharge_on_charge();
+    return;
   }
 }
 

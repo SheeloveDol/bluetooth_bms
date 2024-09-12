@@ -52,7 +52,7 @@ class _DashBoardState extends State<DashBoard> {
     }
     controller.addListener(() {
       if (controller.offset > 2) {
-        setState(() => height = (size > 360) ? 100 : 210);
+        setState(() => height = (size > 260) ? 100 : 210);
         return;
       }
       if (controller.offset.isNegative || controller.offset < 3) {
@@ -96,7 +96,7 @@ class _DashBoardState extends State<DashBoard> {
                   controller: controller,
                   children: <Widget>[
                     AnimatedContainer(
-                        duration: const Duration(milliseconds: 300), height: (size > 360) ? 235 - height : 350 - height),
+                        duration: const Duration(milliseconds: 300), height: (size > 260) ? 235 - height : 350 - height),
                     DelayedBuilder(child: BatteryState()),
                     DelayedBuilder(child: CellsState()),
                     DelayedBuilder(child: Temperatures()),

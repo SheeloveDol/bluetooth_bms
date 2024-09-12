@@ -36,6 +36,7 @@ class _MainState extends State<Main> {
   var _selectedTab = _SelectedTab.scan;
   double sScreen = 0;
   bool showbar = false;
+  late List<Widget> pages;
 
   void _handleIndexChanged(int i) {
     setState(() {
@@ -77,13 +78,13 @@ class _MainState extends State<Main> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
     Be.setCurrentContext(context);
     Be.setUpdater(() => setState(() {}));
+    pages = [ScanPage(gotoDashboard: gotoDashboard), DashBoard(), SettingsPage(tiles: widget.settingTiles), TuningPage()];
     super.initState();
   }
 
@@ -95,18 +96,12 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
-    var pages = [
-      ScanPage(gotoDashboard: gotoDashboard),
-      DashBoard(),
-      SettingsPage(tiles: widget.settingTiles),
-      TuningPage()
-    ];
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     sScreen = MediaQuery.sizeOf(context).width;
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
     return GestureDetector(
         onTap: () {
           SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
         },
         child: Scaffold(
             backgroundColor: Colors.black,
@@ -136,56 +131,56 @@ class _MainState extends State<Main> {
                   duration: Durations.long1,
                   color: Colors.white,
                   child: Visibility(
-                      visible: showbar,
+                      //visible: showbar,
                       child: DotNavigationBar(
-                        enableFloatingNavBar: false,
-                        marginR: const EdgeInsets.symmetric(horizontal: 10),
-                        paddingR: EdgeInsets.zero,
-                        itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
-                        currentIndex: _SelectedTab.values.indexOf(_selectedTab),
-                        unselectedItemColor: Colors.grey[300],
-                        splashColor: Colors.transparent,
-                        enablePaddingAnimation: false,
-                        dotIndicatorColor: Colors.transparent,
-                        onTap: _handleIndexChanged,
-                        items: [
-                          /// ScanPage
-                          DotNavigationBarItem(
-                            icon: Icon(
-                              Icons.bluetooth_rounded,
-                              size: sScreen / 10,
-                            ),
-                            selectedColor: const Color(0xFF002A4D),
-                          ),
+                    enableFloatingNavBar: false,
+                    marginR: const EdgeInsets.symmetric(horizontal: 10),
+                    paddingR: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
+                    currentIndex: _SelectedTab.values.indexOf(_selectedTab),
+                    unselectedItemColor: Colors.grey[300],
+                    splashColor: Colors.transparent,
+                    enablePaddingAnimation: false,
+                    dotIndicatorColor: Colors.transparent,
+                    onTap: _handleIndexChanged,
+                    items: [
+                      /// ScanPage
+                      DotNavigationBarItem(
+                        icon: Icon(
+                          Icons.bluetooth_rounded,
+                          size: sScreen / 10,
+                        ),
+                        selectedColor: const Color(0xFF002A4D),
+                      ),
 
-                          /// Dashboard
-                          DotNavigationBarItem(
-                            icon: Icon(
-                              Icons.dashboard_rounded,
-                              size: sScreen / 10,
-                            ),
-                            selectedColor: const Color(0xFF002A4D),
-                          ),
+                      /// Dashboard
+                      DotNavigationBarItem(
+                        icon: Icon(
+                          Icons.dashboard_rounded,
+                          size: sScreen / 10,
+                        ),
+                        selectedColor: const Color(0xFF002A4D),
+                      ),
 
-                          /// Settings
-                          DotNavigationBarItem(
-                            icon: Icon(
-                              Icons.settings,
-                              size: sScreen / 10,
-                            ),
-                            selectedColor: const Color(0xFF002A4D),
-                          ),
+                      /// Settings
+                      DotNavigationBarItem(
+                        icon: Icon(
+                          Icons.settings,
+                          size: sScreen / 10,
+                        ),
+                        selectedColor: const Color(0xFF002A4D),
+                      ),
 
-                          /// Tune
-                          // DotNavigationBarItem(
-                          //   icon: Icon(
-                          //     Icons.settings_input_composite_rounded,
-                          //     size: sScreen / 10,
-                          //   ),
-                          //   selectedColor: const Color(0xFF002A4D),
-                          // )
-                        ],
-                      ))),
+                      /// Tune
+                      // DotNavigationBarItem(
+                      //   icon: Icon(
+                      //     Icons.settings_input_composite_rounded,
+                      //     size: sScreen / 10,
+                      //   ),
+                      //   selectedColor: const Color(0xFF002A4D),
+                      // )
+                    ],
+                  ))),
             )));
   }
 }

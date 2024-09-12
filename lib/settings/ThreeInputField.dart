@@ -40,21 +40,23 @@ class ThreeInputField extends SettingsElement {
         alignment: Alignment.bottomLeft,
         padding: const EdgeInsets.all(3),
         margin: const EdgeInsets.only(top: 1, bottom: 5, left: 1, right: 1),
-        child: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-          SizedBox(width: (l > 250) ? 110 : 200, child: Text(text, style: titleStyle)),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          SizedBox(width: (l <= 360) ? 100 : 150, child: Text(text, style: titleStyle)),
           SizedBox(
-              width: 250,
+              width: 210,
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 ValueField(
                   onChange: firstOnChange,
                   initialValue: firstInitialValue,
                   header: firstHeader,
+                  width: 70,
                 ),
                 const Padding(padding: EdgeInsets.only(right: 3)),
                 ValueField(
                   onChange: secondOnChange,
                   initialValue: secondInitialValue,
                   header: secondHeader,
+                  width: 70,
                 ),
                 const Padding(padding: EdgeInsets.only(right: 3)),
                 ValueField(
