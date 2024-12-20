@@ -8,8 +8,10 @@ class NtcInputfield extends SettingsElement {
   final Function(List<bool>) onChange;
   NtcInputfield({super.key, required this.text, required this.onChange});
 
-  final TextStyle titleStyle =
-      const TextStyle(fontSize: 14, color: Color.fromARGB(255, 183, 183, 183), fontWeight: FontWeight.bold);
+  final TextStyle titleStyle = const TextStyle(
+      fontSize: 14,
+      color: Color.fromARGB(255, 183, 183, 183),
+      fontWeight: FontWeight.bold);
 
   void onSingularChange(int index, bool activated) {
     value[index] = activated;
@@ -27,14 +29,16 @@ class NtcInputfield extends SettingsElement {
           onChange: onSingularChange));
     }
     if (ntcs.isEmpty) {
-      ntcs.add(NtcField(title: "T0", index: 0, activated: false, onChange: (i, v) {}));
+      ntcs.add(NtcField(
+          title: "T0", index: 0, activated: false, onChange: (i, v) {}));
     }
     return Container(
         alignment: Alignment.bottomLeft,
         margin: const EdgeInsets.all(3),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [SizedBox(width: 225, child: Text(text, style: titleStyle)), Wrap(children: ntcs)]));
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(width: 225, child: Text(text, style: titleStyle)),
+          Wrap(children: ntcs)
+        ]));
   }
 }
 
@@ -43,7 +47,12 @@ class NtcField extends SettingsField {
   final String title;
   final int index;
   final Function(int, bool) onChange;
-  NtcField({super.key, required this.title, required this.index, required this.activated, required this.onChange});
+  NtcField(
+      {super.key,
+      required this.title,
+      required this.index,
+      required this.activated,
+      required this.onChange});
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +67,14 @@ class NtcField extends SettingsField {
             height: 52,
             width: 52,
             decoration: BoxDecoration(
-                color: (activated) ? Colors.greenAccent : const Color(0xFF00192E), borderRadius: BorderRadius.circular(10)),
+                color:
+                    (activated) ? Colors.greenAccent : const Color(0xFF00192E),
+                borderRadius: BorderRadius.circular(10)),
             child: Row(children: [
               const Icon(Icons.thermostat, color: Colors.white, size: 30),
               Column(children: [
-                Text(title, style: const TextStyle(fontSize: 11, color: Colors.white)),
+                Text(title,
+                    style: const TextStyle(fontSize: 11, color: Colors.white))
               ])
             ])));
   }

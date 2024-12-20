@@ -14,11 +14,12 @@ void main() {
   final List<int> settingTiles = [0, 1, 2, 3, 4];
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    systemNavigationBarColor: Colors.transparent, // Navigation bar color
-  ));
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent));
   runApp(MaterialApp(
-      theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
+      theme: ThemeData.from(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: const Color(0xFF002A4D))),
       home: Main(settingTiles: settingTiles)));
 }
 
@@ -55,16 +56,20 @@ class _MainState extends State<Main> {
         } catch (e) {
           print("failed to properly disconnect");
         }
-        _controller.animateToPage(0, duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(0,
+            duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.dashboard:
-        _controller.animateToPage(1, duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(1,
+            duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.settings:
-        _controller.animateToPage(2, duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(2,
+            duration: Durations.long3, curve: Curves.ease);
         break;
       case _SelectedTab.tune:
-        _controller.animateToPage(3, duration: Durations.long3, curve: Curves.ease);
+        _controller.animateToPage(3,
+            duration: Durations.long3, curve: Curves.ease);
         break;
     }
   }
@@ -84,7 +89,12 @@ class _MainState extends State<Main> {
     ]);
     Be.setCurrentContext(context);
     Be.setUpdater(() => setState(() {}));
-    pages = [ScanPage(gotoDashboard: gotoDashboard), DashBoard(), SettingsPage(tiles: widget.settingTiles), TuningPage()];
+    pages = [
+      ScanPage(gotoDashboard: gotoDashboard),
+      DashBoard(),
+      SettingsPage(tiles: widget.settingTiles),
+      TuningPage()
+    ];
     super.initState();
   }
 
@@ -114,9 +124,12 @@ class _MainState extends State<Main> {
                       return pages[index];
                     })),
             extendBody: true,
-            resizeToAvoidBottomInset: (_selectedTab == _SelectedTab.scan) ? false : true,
+            resizeToAvoidBottomInset:
+                (_selectedTab == _SelectedTab.scan) ? false : true,
             floatingActionButton: LockButton(
-                visible: (_selectedTab != _SelectedTab.scan && _selectedTab != _SelectedTab.dashboard && !keyboardIsOpen)),
+                visible: (_selectedTab != _SelectedTab.scan &&
+                    _selectedTab != _SelectedTab.dashboard &&
+                    !keyboardIsOpen)),
             bottomNavigationBar: AnimatedOpacity(
               duration: Durations.long1,
               opacity: (_selectedTab == _SelectedTab.scan) ? 0 : 1,
@@ -136,7 +149,8 @@ class _MainState extends State<Main> {
                     enableFloatingNavBar: false,
                     marginR: const EdgeInsets.symmetric(horizontal: 10),
                     paddingR: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.symmetric(horizontal: sScreen / 30, vertical: 0),
+                    itemPadding: EdgeInsets.symmetric(
+                        horizontal: sScreen / 30, vertical: 0),
                     currentIndex: _SelectedTab.values.indexOf(_selectedTab),
                     unselectedItemColor: Colors.grey[300],
                     splashColor: Colors.transparent,

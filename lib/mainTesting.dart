@@ -54,7 +54,8 @@ class AppState extends State<App> {
                 for (var device in devicesRaw) {
                   devices.add(TextButton(
                       onPressed: () async {
-                        var map = await connect(device, data, () => setState(() {}));
+                        var map =
+                            await connect(device, data, () => setState(() {}));
                         currentChar = map["char"];
                         currentSub = map["sub"];
                         currentNotify = map["notify"];
@@ -101,7 +102,8 @@ Future<bool> init() async {
     print("Bluetooth not supported by this device");
     return false;
   }
-  var subscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+  var subscription =
+      FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
     if (state == BluetoothAdapterState.on) {
       status = true;
     } else {
@@ -132,26 +134,27 @@ Future<List<BluetoothDevice>> scan() async {
     onError: (e) => print(e),
   );
   FlutterBluePlus.cancelWhenScanComplete(subscription);
-  await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
-  await FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+  await FlutterBluePlus.adapterState
+      .where((val) => val == BluetoothAdapterState.on)
+      .first;
+  await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
 
   // wait for scanning to stop
   await FlutterBluePlus.isScanning.where((val) => val == false).first;
   return devices;
 }
 
-Future<Map<String, dynamic>> connect(BluetoothDevice device, List<int> data, Function state) async {
+Future<Map<String, dynamic>> connect(
+    BluetoothDevice device, List<int> data, Function state) async {
   // listen for disconnection
 
   if (FlutterBluePlus.isScanningNow) {
     await FlutterBluePlus.stopScan();
   }
 
-  var subscription = device.connectionState.listen((BluetoothConnectionState state) async {
+  var subscription =
+      device.connectionState.listen((BluetoothConnectionState state) async {
     if (state == BluetoothConnectionState.disconnected) {
-      // 1. typically, start a periodic timer that tries to
-      //    reconnect, or just call connect() again right now
-      // 2. you must always re-discover services after disconnection!
       print("Device Disconnected : ${device.disconnectReason}");
     }
   });
@@ -194,7 +197,11 @@ Future<Map<String, dynamic>> connect(BluetoothDevice device, List<int> data, Fun
     print(event);
   });
 
-  return {"sub": subscription, "char": writeCharacteristics, "notify": notifySub};
+  return {
+    "sub": subscription,
+    "char": writeCharacteristics,
+    "notify": notifySub
+  };
 }
 
 List<int> checksumtoRead(List<int> payload) {
@@ -234,22 +241,15 @@ const OFF_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x02];
 const OFF_DSICHARGE_OFF_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x01, 0x03];
 
 write(writeCharacteristics, [wake = false]) async {
-  //write something to write and wait for notif
-  //
-  // List<int> payload = ON_DSICHARGE_ON_CHARGE_PAYLOAD;
-  // List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
-  // List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
   List<int> payload = [0xfa, 0x03, 0x00, 0x38, 0x10];
   List<int> cmd = [0xDD, 0x5a, ...payload, ...checksumtoRead(payload), 0x77];
   for (var i = (wake) ? 0 : 1; i < 2; i++) {
     writeCharacteristics.write(cmd, withoutResponse: true);
-    await Future.delayed(Duration(milliseconds: 700));
+    await Future.delayed(const Duration(milliseconds: 700));
   }
 }
 
 disconnect(BluetoothDevice device, sub) async {
-// Disconnect from device
   await device.disconnect();
-  // cancel to prevent duplicate listeners
   sub.cancel();
 }

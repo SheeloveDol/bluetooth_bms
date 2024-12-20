@@ -266,7 +266,7 @@ class Be {
         answer.addAll(event);
       });
       List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
-      print("sendind read command : $cmd");
+      print("sending read command : $cmd");
       int j = 0;
       do {
         for (var i = (wake) ? 0 : 1; i < 2; i++) {
@@ -288,7 +288,7 @@ class Be {
       if (!good) await resetConnection();
       k++;
       if (k > 2) {
-        _communicatingNow = true;
+        _communicatingNow = false;
         return false;
       }
     } while (!good);
@@ -458,10 +458,6 @@ class Be {
     await getBasicInfo();
   }
 
-  static read_design_cap() async {
-    await read(Data.DESIGN_CAP_PAYLOAD);
-  }
-
   static void _setWake(bool wakeValue) {
     wake = wakeValue;
   }
@@ -513,6 +509,7 @@ class Be {
 
   static void readSettings() async {
     Data.setAvailableData(false);
+    await write(Data.CLR_PW_CMD);
     var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isNotEmpty) {
       Data.setBatchData(batch, Data.PARAMETERS);
@@ -541,6 +538,7 @@ class Data {
   static const PARAMETERS = 0xFA;
   static const FET_CTRL = 0xE1;
   static const CMD_CTRL = 0x0A;
+  static const CLR_PW = 0x09;
 
   //Parameters registeries
   static const DESIGN_CAP = 0;
@@ -558,7 +556,7 @@ class Data {
   static const CELL_40 = 0;
   static const CELL_30 = 0;
   static const CELL_20 = 0;
-  static const CELL_10 = 0;*/
+  static const CELL_10 = 0; */
   static const PROT_C_HIGH_TEMP_TRIG = 8;
   static const PROT_C_HIGH_TEMP_REL = 9;
   static const PROT_C_LOW_TEMP_TRIG = 10;
@@ -664,6 +662,9 @@ class Data {
     105: 'DEL_GPS_SHUTD',
   };
 
+  /// Clear password : 'J1B2D4'
+  static const CLR_PW_CMD = [CLR_PW, 0x06, 0x4A, 0x31, 0x42, 0x32, 0x44, 0x34];
+
   //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
   static const EXIT_FACTORY_MODE = 0x01;
@@ -679,12 +680,6 @@ class Data {
   // Parameters payload read
   static const ALL_PARAMS_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 56]; // i want registry 0 all the way to 55;
   static const MANUF_PAYLOAD = [PARAMETERS, 0x03, 0x00, MFG_NAME, 10];
-
-  static const BAL_PAYLOAD = [PARAMETERS, 0x03, 0x00, BAL_START, 0x2];
-  static const DESIGN_CAP_PAYLOAD = [PARAMETERS, 0x03, 0x00, DESIGN_CAP, 0x1];
-
-  // Parameters payload write
-  static const DESIGN_CAP_WRITE = [PARAMETERS, 0x00, 5, 0x00, 0x00, 66, 204];
 
   //command write payloads
   static const ON_DSICHARGE_ON_CHARGE_PAYLOAD = [FET_CTRL, 0x02, 0x00, 0x00];
