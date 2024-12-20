@@ -55,8 +55,7 @@ class Be {
         try {
           if (results.isNotEmpty) {
             ScanResult r = results.last;
-            onFound(
-                (r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device);
+            onFound((r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device);
           }
         } catch (e) {
           print("switched window");
@@ -987,24 +986,18 @@ class Data {
 
   // Parameters info
 
+  static String get param_prot_c_high_temp_trig => _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_high_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_trig => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_trig => _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_rel => _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_low_temp_trig => _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_TRIG"]).toStringAsFixed(1);
   static String get param_design_cap => _unsigned10Mili(_settingsData["DESIGN_CAP"]).toStringAsFixed(2);
   static String get param_cycle_cap => _unsigned10Mili(_settingsData["CYCLE_CAP"]).toStringAsFixed(2);
   static String get param_cell_full_mv => _unsignedOneMili(_settingsData["CELL_FULL_MV"]).toStringAsFixed(2);
   static String get param_cell_min_mv => _unsignedOneMili(_settingsData["CELL_MIN_MV"]).toStringAsFixed(2);
   static String get param_cell_d_perc => _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(2);
-  static String get param_prot_c_high_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
-  static String get param_prot_c_high_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_REL"]).toStringAsFixed(1);
-  static String get param_prot_c_low_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_TRIG"]).toStringAsFixed(1);
-  static String get param_prot_c_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_REL"]).toStringAsFixed(1);
-  static String get param_prot_d_high_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
-  static String get param_prot_d_high_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_REL"]).toStringAsFixed(1);
-  static String get param_prot_d_low_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_TRIG"]).toStringAsFixed(1);
   static String get param_prot_d_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_REL"]).toStringAsFixed(1);
   static String get param_prot_bat_high_trig => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_TRIG"]).toStringAsFixed(2);
   static String get param_prot_bat_high_rel => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_REL"]).toStringAsFixed(2);
@@ -1019,12 +1012,14 @@ class Data {
   static String get param_bal_start => _unsignedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
   static String get param_bal_delta => _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
   static String get param_resistor => _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
+  static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
+  static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
+  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
+  static String get param_gps_shutd => _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
+
   static int get param_cell_cnt => _oneUnit(_settingsData["CELL_CNT"]);
   static int get param_del_fet_ctrl_sw => _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
   static int get param_del_led => 0; //_oneUnit(_settingsData["DEL_LED"]);
-  static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
-  static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
-
   static int get param_del_sc_rel => _oneUnit(_settingsData["DEL_SC_REL"]);
   static int get param_del_low_ch_temp => _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
   static int get param_del_high_ch_temp => _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
@@ -1038,8 +1033,6 @@ class Data {
   static int get param_del_high_ma_rel => _oneUnit(_settingsData["DEL_HIGH_MA_REL"]);
   static int get param_del_low_ma => _oneUnit(_settingsData["DEL_LOW_MA"]);
   static int get param_del_low_ma_rel => _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
-  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
-  static String get param_gps_shutd => _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
   static int get param_del_gps_shutd => _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
 
   static String get param_function => _unsigned10Mili(_settingsData["FUNCTION"]).toStringAsFixed(2);
