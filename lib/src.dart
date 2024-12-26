@@ -509,6 +509,9 @@ class Be {
   static void readSettings() async {
     Data.setAvailableData(false);
     await write(Data.CLR_PW_CMD);
+    await write(Data.USE_PW_CMD);
+    await unLock();
+    await write(Data.SEE_MFG);
     var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isNotEmpty) {
       Data.setBatchData(batch, Data.PARAMETERS);
@@ -538,6 +541,7 @@ class Data {
   static const FET_CTRL = 0xE1;
   static const CMD_CTRL = 0x0A;
   static const CLR_PW = 0x09;
+  static const USE_PW = 0x06;
 
   //Parameters registeries
   static const DESIGN_CAP = 0;
@@ -662,7 +666,9 @@ class Data {
   };
 
   /// Clear password : 'J1B2D4'
-  static const CLR_PW_CMD = [CLR_PW, 0x06, 0x4A, 0x31, 0x42, 0x32, 0x44, 0x34];
+  static const CLR_PW_CMD = [CLR_PW, 0x07, 0x06, 0x4A, 0x31, 0x42, 0x32, 0x44, 0x34];
+  static const USE_PW_CMD = [USE_PW, 0x07, 0x06, 0x4A, 0x31, 0x42, 0x32, 0x44, 0x34];
+  static const SEE_MFG = [0x28, 0x02, 48, 212];
 
   //Factory mode
   static const ENTER_FACTORY_MODE = 0x00;
