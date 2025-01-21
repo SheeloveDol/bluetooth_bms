@@ -17,7 +17,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPage extends State<SettingsPage> {
   List<Widget> tiles = [];
-  Map<int, int> registerWrites = {};
+  Map<int, dynamic> registerWrites = {};
   @override
   void initState() {
     Be.setUpdater(() => setState(() {}));
@@ -58,7 +58,7 @@ class _SettingsPage extends State<SettingsPage> {
         OneInputField(
             text: "Number of Cells",
             initialValue: Data.cell_cnt,
-            onChange: (v) => (registerWrites[Data.CELL_CNT] = int.parse(v))),
+            onChange: (v) => (registerWrites[Data.CELL_CNT] = v)),
         OneInputField(
             text: "Number of Sensors",
             initialValue: Data.ntc_cnt,
