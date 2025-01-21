@@ -93,7 +93,7 @@ class _MainState extends State<Main> {
     pages = [
       ScanPage(gotoDashboard: gotoDashboard),
       DashBoard(),
-      SettingsPage(tiles: widget.settingTiles),
+      SettingsPage(tiles: widget.settingTiles, registerWrites: registerWrites),
       TuningPage()
     ];
     super.initState();
@@ -128,6 +128,7 @@ class _MainState extends State<Main> {
             resizeToAvoidBottomInset:
                 (_selectedTab == _SelectedTab.scan) ? false : true,
             floatingActionButton: LockButton(
+                registerWrites: registerWrites,
                 visible: (_selectedTab != _SelectedTab.scan &&
                     _selectedTab != _SelectedTab.dashboard &&
                     !keyboardIsOpen)),
