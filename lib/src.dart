@@ -542,7 +542,7 @@ class Be {
 
   static Future<List<int>> recursiveParamRead(
       int param, List<int> batch) async {
-    if (param == Data.ADV_LOW_V_TRIG + 1) {
+    if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
       return batch;
     }
     List<int> payload = [param, 0x0];
