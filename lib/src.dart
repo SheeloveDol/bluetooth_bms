@@ -548,7 +548,7 @@ class Be {
     List<int> payload = [param, 0x0];
     var b = await parameterRead(payload);
     if (b.isNotEmpty) {
-      batch.addAll(b.sublist(4, 6));
+      batch.addAll(b);
       return recursiveParamRead(param + 1, batch);
     } else {
       return batch;
