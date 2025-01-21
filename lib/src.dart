@@ -555,7 +555,7 @@ class Be {
     }
   }
 
-  static batchWrite(Map<int, int> parmsToWite) async {
+  static batchWrite(Map<int, dynamic> parmsToWite) async {
     for (var k in parmsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
     }

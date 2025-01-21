@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 
 class LockButton extends StatefulWidget {
   bool visible;
-  LockButton({
-    super.key,
-    required this.visible,
-  });
+  LockButton({super.key, required this.visible, required this.registerWrites});
+  final Map<int, dynamic> registerWrites;
 
   @override
   State<LockButton> createState() => _LockButtonState();
@@ -17,6 +15,11 @@ class _LockButtonState extends State<LockButton> {
   Icon icon = const Icon(Icons.lock);
   bool visi = true;
   TextStyle textStyle = const TextStyle(color: Color(0xFF002A4D));
+
+  write() async {
+    await Be.batchWrite(widget.registerWrites);
+    widget.registerWrites.clear();
+  }
 
   @override
   void initState() {
@@ -68,9 +71,8 @@ class _LockButtonState extends State<LockButton> {
                                     icon: Icon(Icons.warning),
                                     content: const Column(children: [
                                       Divider(),
-                                      Text(
-                                          "By pushing and getting values directly to the battery you agree that this will void your waranty." +
-                                              "\n\nThis functionality will allow you to read and write to the BMS.")
+                                      Text("By pushing and getting values directly to the battery you agree that this will void your waranty." +
+                                          "\n\nThis functionality will allow you to read and write to the BMS.")
                                     ]),
                                     actions: [
                                       CupertinoButton(
@@ -81,29 +83,35 @@ class _LockButtonState extends State<LockButton> {
                                           },
                                           child: Text("I Agree")),
                                       CupertinoButton(
-                                          onPressed: () => Navigator.pop(context, false), child: Text("I Disagree"))
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: Text("I Disagree"))
                                     ]);
                               });
                         },
                         child: icon)
-                    : Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                        FloatingActionButton.extended(
-                            splashColor: Colors.transparent,
-                            backgroundColor: Colors.white,
-                            onPressed: () {},
-                            label: Text("Push", style: textStyle),
-                            icon: const Icon(Icons.upload_rounded, color: const Color(0xFF002A4D))),
-                        FloatingActionButton.extended(
-                            splashColor: Colors.transparent,
-                            backgroundColor: Colors.white,
-                            onPressed: () {},
-                            label: Text("Get", style: textStyle),
-                            icon: const Icon(Icons.download_rounded, color: const Color(0xFF002A4D))),
-                        FloatingActionButton(
-                            splashColor: Colors.transparent,
-                            backgroundColor: Colors.white,
-                            onPressed: () => Be.lock(),
-                            child: icon)
-                      ]))));
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                            FloatingActionButton.extended(
+                                splashColor: Colors.transparent,
+                                backgroundColor: Colors.white,
+                                onPressed: write,
+                                label: Text("Push", style: textStyle),
+                                icon: const Icon(Icons.upload_rounded,
+                                    color: const Color(0xFF002A4D))),
+                            FloatingActionButton.extended(
+                                splashColor: Colors.transparent,
+                                backgroundColor: Colors.white,
+                                onPressed: Be.readSettings,
+                                label: Text("Get", style: textStyle),
+                                icon: const Icon(Icons.download_rounded,
+                                    color: const Color(0xFF002A4D))),
+                            FloatingActionButton(
+                                splashColor: Colors.transparent,
+                                backgroundColor: Colors.white,
+                                onPressed: () => Be.lock(),
+                                child: icon)
+                          ]))));
   }
 }

@@ -38,6 +38,7 @@ class _MainState extends State<Main> {
   double sScreen = 0;
   bool showbar = false;
   late List<Widget> pages;
+  Map<int, dynamic> registerWrites = {};
 
   void _handleIndexChanged(int i) {
     setState(() {

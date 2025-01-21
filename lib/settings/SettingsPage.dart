@@ -9,7 +9,8 @@ import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({super.key, required this.tiles});
+  SettingsPage({super.key, required this.tiles, required this.registerWrites});
+  final Map<int, dynamic> registerWrites;
   List<int> tiles;
   @override
   State<StatefulWidget> createState() => _SettingsPage();
@@ -17,7 +18,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPage extends State<SettingsPage> {
   List<Widget> tiles = [];
-  Map<int, dynamic> registerWrites = {};
   @override
   void initState() {
     Be.setUpdater(() => setState(() {}));
@@ -58,7 +58,7 @@ class _SettingsPage extends State<SettingsPage> {
         OneInputField(
             text: "Number of Cells",
             initialValue: Data.cell_cnt,
-            onChange: (v) => (registerWrites[Data.CELL_CNT] = v)),
+            onChange: (v) => (widget.registerWrites[Data.CELL_CNT] = v)),
         OneInputField(
             text: "Number of Sensors",
             initialValue: Data.ntc_cnt,
