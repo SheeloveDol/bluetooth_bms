@@ -62,7 +62,7 @@ class _SettingsPage extends State<SettingsPage> {
         OneInputField(
             text: "Number of Sensors",
             initialValue: Data.ntc_cnt,
-            onChange: (v) {}),
+            onChange: (v) => (widget.registerWrites[Data.NTC_EN] = v)),
         NtcInputfield(
             text: "Activated Temperatue Sensors", onChange: (v) {}) //TODO
       ]),
@@ -73,15 +73,16 @@ class _SettingsPage extends State<SettingsPage> {
             OneInputField(
                 text: "Total Battery Capacity",
                 initialValue: Data.param_design_cap,
-                onChange: (v) {}),
+                onChange: (v) => (widget.registerWrites[Data.DESIGN_CAP] = v)),
             OneInputField(
                 text: "Total Cycle Capacity",
                 initialValue: Data.param_cycle_cap,
-                onChange: (v) {}),
+                onChange: (v) => (widget.registerWrites[Data.CYCLE_CAP] = v)),
             OneInputField(
                 text: "Cell Full Voltage",
                 initialValue: Data.param_cell_full_mv,
-                onChange: (v) {}),
+                onChange: (v) =>
+                    (widget.registerWrites[Data.CELL_FULL_MV] = v)),
             OneInputField(
                 text: "Cell Minimal Voltage",
                 initialValue: Data.param_cell_min_mv,
