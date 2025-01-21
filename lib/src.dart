@@ -555,6 +555,12 @@ class Be {
     }
   }
 
+  static batchWrite(Map<int, int> parmsToWite) async {
+    for (var k in parmsToWite.keys) {
+      print("${Data.parameterRegistry[k]} will be modified");
+    }
+  }
+
   static void setConnectionState(DeviceConnectionState state) {
     _currentState = state;
     updater!();
@@ -602,7 +608,7 @@ class Data {
   static const PROT_CELL_LOW_TRIG = 0x16;
   static const PROT_CELL_LOW_REL = 0x17;
   static const PROT_CH_HIGH_MA = 0x18;
-  static const PROT_CH_LOW_MA = 0x19;
+  static const PROT_D_HIGH_MA = 0x19;
   static const BAL_START = 0x1A;
   static const BAL_DELTA = 0x1B;
   static const RESISTOR = 0x1C;
@@ -683,7 +689,7 @@ class Data {
     PROT_CELL_LOW_TRIG: 'PROT_CELL_LOW_TRIG',
     PROT_CELL_LOW_REL: 'PROT_CELL_LOW_REL',
     PROT_CH_HIGH_MA: 'PROT_CH_HIGH_MA',
-    PROT_CH_LOW_MA: 'PROT_CH_LOW_MA',
+    PROT_D_HIGH_MA: 'PROT_D_HIGH_MA',
     BAL_START: 'BAL_START',
     BAL_DELTA: 'BAL_DELTA',
     RESISTOR: 'RESISTOR',
@@ -1034,10 +1040,17 @@ class Data {
         return true;
 
       case PARAMETERS:
-        return _handleParameterData(batch);
+        var register = batch[1];
+        print("handeling ${parameterRegistry[register]} payload : $batch");
+        _handleBatchParameterData(batch.sublist(3), register);
+        setAvailableData(true);
+        return true;
 
       case LEGACY_PARAMETERS:
-        return _handleBatchParameterData(batch, Data.DESIGN_CAP);
+        _handleBatchParameterData(
+            batch, Data.DESIGN_CAP); // always starts at design_cap
+        setAvailableData(true);
+        return true;
 
       case ENTER_FACTORY_MODE:
         print("ENTER_FACTORY_MODE");
@@ -1053,12 +1066,6 @@ class Data {
         print("uncaught registery $registerResponse");
         return false;
     }
-  }
-
-  static bool _handleParameterData(List<int> batch) {
-    var register = batch[1];
-    print("handeling ${parameterRegistry[register]} payload : $batch");
-    return _handleBatchParameterData(batch.sublist(3), register);
   }
 
   // Parameters info
@@ -1114,8 +1121,8 @@ class Data {
       _unsignedOneMili(_settingsData["PROT_CELL_LOW_REL"]).toStringAsFixed(2);
   static String get param_prot_ch_high_ma =>
       _unsigned10Mili(_settingsData["PROT_CH_HIGH_MA"]).toStringAsFixed(2);
-  static String get param_prot_ch_low_ma =>
-      _unsigned10Mili(_settingsData["PROT_CH_LOW_MA"]).toStringAsFixed(2);
+  static String get param_prot_d_high_ma =>
+      _unsigned10Mili(_settingsData["PROT_D_HIGH_MA"]).toStringAsFixed(2);
   static String get param_bal_start =>
       _unsignedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
   static String get param_bal_delta =>
@@ -1175,7 +1182,7 @@ class Data {
       _unsigned10Mili(_settingsData["DEL_ADV_HIGH_LOW_V"]).toStringAsFixed(2);
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
-    print("param:$param data left : $batch");
+    // print("param:$param data left : $batch");
     if (batch.isEmpty) {
       return true;
     }
@@ -1310,9 +1317,9 @@ class Data {
         print(" [param] ${parameterRegistry[param]}:$param_prot_ch_high_ma");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
-      case PROT_CH_LOW_MA:
-        _settingsData["PROT_CH_LOW_MA"] = batch.sublist(0, 2);
-        print(" [param] ${parameterRegistry[param]}:$param_prot_ch_low_ma");
+      case PROT_D_HIGH_MA:
+        _settingsData["PROT_D_HIGH_MA"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_high_ma");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case BAL_START:
@@ -1487,9 +1494,9 @@ class Data {
   /// converts 2 bytes to a value of unit of signed 10mili
   static double _signed10Mili(List<int>? data) {
     if (data == null) return 0.00;
-    int result = (data[1] & 0xFF) | ((data[0] << 8) & 0xFF00);
-    // Check the sign bit (MSB)
-    if (result & 0x8000 != 0) result = -(0x10000 - result);
+    int result = _combineSigned(data, 0, 1);
+    if (result & 0x8000 != 0)
+      result = -(0x10000 - result); // Check the sign bit (MSB)
     return (result * 0.01);
   }
 
