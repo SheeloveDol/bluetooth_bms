@@ -532,11 +532,11 @@ class Be {
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), []);
-    }
-    await write(Data.CLOSE_FACTORY_MODE);
-    if (batch.isNotEmpty) {
+      if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_PARAMETERS);
+    } else {
       Data.setBatchData(batch, Data.PARAMETERS);
     }
+    await write(Data.CLOSE_FACTORY_MODE);
     updater!();
   }
 
@@ -571,6 +571,7 @@ class Data {
   static const DEVICE_NAME = 0x05;
   static const STAT_INFO = 0xAA;
   static const PARAMETERS = 0xFA;
+  static const LEGACY_PARAMETERS = 0x02;
   static const FET_CTRL = 0xE1;
   static const CMD_CTRL = 0x0A;
   static const CLR_PW = 0x09;
@@ -1034,6 +1035,9 @@ class Data {
 
       case PARAMETERS:
         return _handleParameterData(batch);
+
+      case LEGACY_PARAMETERS:
+        return _handleBatchParameterData(batch, Data.DESIGN_CAP);
 
       case ENTER_FACTORY_MODE:
         print("ENTER_FACTORY_MODE");
