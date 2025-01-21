@@ -1175,6 +1175,7 @@ class Data {
       _unsigned10Mili(_settingsData["DEL_ADV_HIGH_LOW_V"]).toStringAsFixed(2);
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
+    print("param:$param data left : $batch");
     if (batch.isEmpty) {
       return true;
     }
@@ -1212,7 +1213,7 @@ class Data {
 
       case CYCLES:
         _settingsData["CYCLES"] = batch.sublist(0, 2);
-        print(" [param] ${parameterRegistry[param]}:$param_cell_d_perc");
+        print(" [param] ${parameterRegistry[param]}:$param_cycles");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_HIGH_TEMP_TRIG:
@@ -1444,7 +1445,7 @@ class Data {
         print(" [param] ${parameterRegistry[param]}:$param_del_gps_shutd");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
       default:
-        print("param:$param unknown: $batch");
+        print("param:$param unknown");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
     }
   }
