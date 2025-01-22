@@ -17,15 +17,17 @@ class NtcInputfield extends SettingsElement {
     value[index] = activated;
   }
 
+  bool activated(int index) => (Data.param_ntc_en & (1 << (index - 1))) == 1;
+
   @override
   Widget build(BuildContext context) {
     List<NtcField> ntcs = [];
-    for (var i = 1; i <= Data.ntc_cnt; i++) {
+    for (var i = 1; i <= 8; i++) {
       value.add(true); //to change to add a list of NTCs
       ntcs.add(NtcField(
           title: "T$i",
           index: i - 1,
-          activated: true, //to change to add a list of NTCs
+          activated: activated(i), //to change to add a list of NTCs
           onChange: onSingularChange));
     }
     if (ntcs.isEmpty) {
@@ -64,14 +66,14 @@ class NtcField extends SettingsField {
         child: Container(
             margin: const EdgeInsets.all(3),
             padding: const EdgeInsets.all(3),
-            height: 52,
-            width: 52,
+            height: 45,
+            width: 45,
             decoration: BoxDecoration(
                 color:
                     (activated) ? Colors.greenAccent : const Color(0xFF00192E),
                 borderRadius: BorderRadius.circular(10)),
             child: Row(children: [
-              const Icon(Icons.thermostat, color: Colors.white, size: 30),
+              const Icon(Icons.thermostat, color: Colors.white, size: 20),
               Column(children: [
                 Text(title,
                     style: const TextStyle(fontSize: 11, color: Colors.white))

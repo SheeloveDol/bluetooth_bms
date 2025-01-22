@@ -1172,8 +1172,7 @@ class Data {
 
   static String get param_function =>
       _unsigned10Mili(_settingsData["FUNCTION"]).toStringAsFixed(2);
-  static String get param_ntc_en =>
-      _unsigned10Mili(_settingsData["NTC_EN"]).toStringAsFixed(2);
+  static int get param_ntc_en => _oneUnit(_settingsData["NTC_EN"]);
   static String get param_adv_prot_high_ma =>
       _unsigned10Mili(_settingsData["ADV_PROT_HIGH_MA"]).toStringAsFixed(2);
   static String get param_sc_prot_set =>
