@@ -536,6 +536,11 @@ class Be {
     await write(Data.USE_PW_CMD);
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
+    await write([
+      Data.CELL_D_PERC,
+      0x02,
+      ...Data.reverseUnsigned100Mili(double.parse("0.5"))
+    ]);
     batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
@@ -1419,7 +1424,7 @@ class Data {
   static String get param_cell_min_mv =>
       _unsignedOneMili(_settingsData["CELL_MIN_MV"]).toStringAsFixed(2);
   static String get param_cell_d_perc =>
-      _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(2);
+      _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(1);
   static String get param_prot_d_low_temp_rel =>
       _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_REL"])
           .toStringAsFixed(1);
