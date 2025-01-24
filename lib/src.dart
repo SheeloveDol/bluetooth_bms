@@ -534,8 +534,9 @@ class Be {
     Data.setAvailableData(false);
     await write(Data.CLR_PW_CMD);
     await write(Data.USE_PW_CMD);
-    await write(Data.OPEN_FACTORY_MODE);
-    var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
+    var batch = await write(Data.OPEN_FACTORY_MODE);
+    Data.setBatchData(batch, batch[1]);
+    batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), []);
@@ -543,8 +544,10 @@ class Be {
     } else {
       Data.setBatchData(batch, Data.PARAMETERS);
     }
-    await write(Data.CLOSE_FACTORY_MODE);
+    batch = await write(Data.CLOSE_FACTORY_MODE);
+    Data.setBatchData(batch, batch[1]);
     updater!();
+    factoryUpdater!();
   }
 
   static Future<List<int>> recursiveParamRead(
@@ -564,7 +567,6 @@ class Be {
   }
 
   static batchWrite(Map<int, dynamic> paramsToWite) async {
-    await write(Data.USE_PW_CMD);
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
 
