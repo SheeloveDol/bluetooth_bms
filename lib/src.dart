@@ -1803,7 +1803,7 @@ class Data {
     int scaledValue = (value * 1000).round();
     int byte1 = scaledValue & 0xFF; // Lower 8 bits
     int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 2 bytes to a value of unit of unsigned 10mili
@@ -1816,7 +1816,7 @@ class Data {
     int scaledValue = (value * 100).round();
     int byte1 = scaledValue & 0xFF; // Lower 8 bits
     int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 2 bytes to a value of unit of unsigned 100mili
@@ -1830,7 +1830,7 @@ class Data {
     int scaledValue = (value * 10).round();
     int byte1 = scaledValue & 0xFF; // Lower 8 bits
     int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 2 bytes to a value of unit of unsigned 100mili then substracts 273.15
@@ -1862,7 +1862,7 @@ class Data {
     }
     int byte1 = scaledValue & 0xFF; // Lower 8 bits
     int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 2 bytes to a value of unit of signed 10mili
@@ -1882,7 +1882,7 @@ class Data {
     }
     int byte1 = scaledValue & 0xFF; // Lower 8 bits
     int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 2 bytes to a value of one unit 1;
@@ -1894,7 +1894,7 @@ class Data {
   static List<int> reverseOneUnit(int value) {
     int byte1 = value & 0xFF; // Lower 8 bits
     int byte2 = (value >> 8) & 0xFF; // Upper 8 bits
-    return [byte1, byte2];
+    return [byte2, byte1];
   }
 
   /// converts 1 bytes to a value of one unit 1;
