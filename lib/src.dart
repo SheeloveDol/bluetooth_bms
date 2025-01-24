@@ -528,6 +528,7 @@ class Be {
   }
 
   static void readSettings([force = false]) async {
+    consumeChangeScreen();
     if (Data.availableParamData && !force) {
       return;
     }
