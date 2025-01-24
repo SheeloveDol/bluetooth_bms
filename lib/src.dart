@@ -22,6 +22,7 @@ class Be {
   static int times = 0;
   static int readTimes = 0;
   static Function? updater;
+  static bool changedScreen = false;
   static Function? _onConectedCb;
   static Function? factoryUpdater;
   static bool _communicatingNow = false;
@@ -453,6 +454,7 @@ class Be {
 
   static void setUpdater(void Function() setstate) {
     updater = setstate;
+    changedScreen = true;
   }
 
   static void setFactryUpdater(void Function() setstate) {
@@ -529,6 +531,7 @@ class Be {
     if (Data.availableParamData && !force) {
       return;
     }
+    Data.setAvailableData(false);
     await write(Data.CLR_PW_CMD);
     await write(Data.USE_PW_CMD);
     await write(Data.OPEN_FACTORY_MODE);
@@ -549,6 +552,11 @@ class Be {
     if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
       return batch;
     }
+    if (changedScreen) {
+      consumeChangeScreen();
+      return batch;
+    }
+
     List<int> payload = [param, 0x0];
     var b = await parameterRead(payload);
     if (b.isNotEmpty) {
@@ -568,6 +576,10 @@ class Be {
   static void setConnectionState(DeviceConnectionState state) {
     _currentState = state;
     updater!();
+  }
+
+  static void consumeChangeScreen() {
+    changedScreen = false;
   }
 
   static bool get warantyVoided => _warantyVoided;
@@ -971,7 +983,6 @@ class Data {
   }
 
   static bool setBatchData(List<int> batch, int registerResponse) {
-    setAvailableData(false);
     switch (registerResponse) {
       case BASIC_INFO:
         int afterNtc = 0;
