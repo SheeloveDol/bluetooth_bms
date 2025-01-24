@@ -3,9 +3,9 @@ import 'package:bluetooth_bms/src.dart';
 import 'package:flutter/material.dart';
 
 class NtcInputfield extends SettingsElement {
-  List<bool> value = [];
+  int value = 0;
   final String text;
-  final Function(List<bool>) onChange;
+  final Function(int) onChange;
   NtcInputfield({super.key, required this.text, required this.onChange});
 
   final TextStyle titleStyle = const TextStyle(
@@ -14,7 +14,8 @@ class NtcInputfield extends SettingsElement {
       fontWeight: FontWeight.bold);
 
   void onSingularChange(int index, bool activated) {
-    value[index] = activated;
+    value |= (activated) ? 1 : 0 << index;
+    onChange(value);
   }
 
   bool activated(int index) => (Data.param_ntc_en & (1 << (index - 1))) == 1;
@@ -23,7 +24,8 @@ class NtcInputfield extends SettingsElement {
   Widget build(BuildContext context) {
     List<NtcField> ntcs = [];
     for (var i = 1; i <= 8; i++) {
-      value.add(true); //to change to add a list of NTCs
+      value |=
+          activated(i) ? 1 : 0 << (i - 1); //to change to add a list of NTCs
       ntcs.add(NtcField(
           title: "T$i",
           index: i - 1,
@@ -45,10 +47,11 @@ class NtcInputfield extends SettingsElement {
 }
 
 class NtcField extends SettingsField {
-  final bool activated;
+  bool activated;
   final String title;
   final int index;
   final Function(int, bool) onChange;
+  late Function setState;
   NtcField(
       {super.key,
       required this.title,
@@ -58,26 +61,30 @@ class NtcField extends SettingsField {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          ontap(context);
-          onChange(index, !activated);
-        },
-        child: Container(
-            margin: const EdgeInsets.all(3),
-            padding: const EdgeInsets.all(3),
-            height: 45,
-            width: 45,
-            decoration: BoxDecoration(
-                color:
-                    (activated) ? Colors.greenAccent : const Color(0xFF00192E),
-                borderRadius: BorderRadius.circular(10)),
-            child: Row(children: [
-              const Icon(Icons.thermostat, color: Colors.white, size: 20),
-              Column(children: [
-                Text(title,
-                    style: const TextStyle(fontSize: 11, color: Colors.white))
-              ])
-            ])));
+    return GestureDetector(onTap: () {
+      var update = ontap(context);
+      if (update) {
+        activated = !activated;
+        setState();
+        onChange(index, activated);
+      }
+    }, child: StatefulBuilder(builder: (context, setState) {
+      this.setState = () => setState(() {});
+      return Container(
+          margin: const EdgeInsets.all(3),
+          padding: const EdgeInsets.all(3),
+          height: 45,
+          width: 45,
+          decoration: BoxDecoration(
+              color: (activated) ? Colors.greenAccent : const Color(0xFF00192E),
+              borderRadius: BorderRadius.circular(10)),
+          child: Row(children: [
+            const Icon(Icons.thermostat, color: Colors.white, size: 20),
+            Column(children: [
+              Text(title,
+                  style: const TextStyle(fontSize: 11, color: Colors.white))
+            ])
+          ]));
+    }));
   }
 }

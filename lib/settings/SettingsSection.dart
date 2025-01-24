@@ -3,7 +3,8 @@ import 'package:bluetooth_bms/utils.dart';
 import 'package:flutter/material.dart';
 
 class SettingsSection extends StatefulWidget {
-  const SettingsSection({super.key, required this.title, required this.settingsElements});
+  const SettingsSection(
+      {super.key, required this.title, required this.settingsElements});
   final String title;
   final List<SettingsElement> settingsElements;
   @override
@@ -12,7 +13,8 @@ class SettingsSection extends StatefulWidget {
 
 class _MySettingsSection extends State<SettingsSection> {
   final Divider divider = const Divider();
-  final TextStyle titleStyle = const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold);
+  final TextStyle titleStyle = const TextStyle(
+      fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,10 +41,14 @@ abstract class SettingsElement extends StatelessWidget {
 abstract class SettingsField extends StatelessWidget {
   const SettingsField({super.key});
 
-  void ontap(BuildContext con) {
+  bool ontap(BuildContext con) {
     if (Be.locked) {
       showDialogAdaptive(con,
-          title: Text("Unable to modify"), content: Text(" Modification is currently locked"), actions: []);
+          title: Text("Unable to modify"),
+          content: Text(" Modification is currently locked"),
+          actions: []);
+      return false;
     }
+    return true;
   }
 }

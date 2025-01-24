@@ -498,6 +498,7 @@ class Be {
     var batch = await write(Data.CLOSE_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
     factoryUpdater!();
+    updater!();
   }
 
   static unLock() async {
@@ -507,6 +508,7 @@ class Be {
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
     factoryUpdater!();
+    updater!();
   }
 
   static resetAlarm() async {
