@@ -1491,11 +1491,11 @@ class Data {
   static int get param_ntc_en => _oneUnit(_settingsData["NTC_EN"]);
 
   // will fail must implement translating function
-  static int get param_adv_prot_high_ma =>
-      (_settingsData["ADV_PROT_HIGH_MA"]) as int;
-  static int get param_sc_prot_set => (_settingsData["SC_PROT_SET"]) as int;
-  static int get param_del_adv_high_low_v =>
-      (_settingsData["DEL_ADV_HIGH_LOW_V"]) as int;
+  static dynamic get param_adv_prot_high_ma =>
+      (_settingsData["ADV_PROT_HIGH_MA"]);
+  static dynamic get param_sc_prot_set => (_settingsData["SC_PROT_SET"]);
+  static dynamic get param_del_adv_high_low_v =>
+      (_settingsData["DEL_ADV_HIGH_LOW_V"]);
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
     // print("param:$param data left : $batch");
