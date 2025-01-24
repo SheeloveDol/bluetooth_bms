@@ -142,7 +142,7 @@ class Be {
       quicktell(context, "Device $title is not compatible");
       return false;
     }
-
+    Data.clear();
     setConnectionState(DeviceConnectionState.connected);
 
     try {
@@ -526,7 +526,9 @@ class Be {
   }
 
   static void readSettings() async {
-    Data.setAvailableData(false);
+    if (Data.availableParamData) {
+      return;
+    }
     await write(Data.CLR_PW_CMD);
     await write(Data.USE_PW_CMD);
     await write(Data.OPEN_FACTORY_MODE);
@@ -1057,11 +1059,13 @@ class Data {
       case ENTER_FACTORY_MODE:
         print("ENTER_FACTORY_MODE");
         _factory = true;
+        setAvailableData(true);
         return true;
 
       case EXIT_FACTORY_MODE:
         print("EXIT_FACTORY_MODE");
         _factory = false;
+        setAvailableData(true);
         return true;
 
       default:
@@ -1522,7 +1526,7 @@ class Data {
   }
 
   static bool get availableData => _availableData;
-
+  static bool get availableParamData => _settingsData.isNotEmpty;
   static clear() {
     setAvailableData(false);
     _data.clear();
