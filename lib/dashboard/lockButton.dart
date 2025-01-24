@@ -103,7 +103,7 @@ class _LockButtonState extends State<LockButton> {
                             FloatingActionButton.extended(
                                 splashColor: Colors.transparent,
                                 backgroundColor: Colors.white,
-                                onPressed: Be.readSettings,
+                                onPressed: () => Be.readSettings(true),
                                 label: Text("Get", style: textStyle),
                                 icon: const Icon(Icons.download_rounded,
                                     color: const Color(0xFF002A4D))),

@@ -525,8 +525,8 @@ class Be {
     updater!();
   }
 
-  static void readSettings() async {
-    if (Data.availableParamData) {
+  static void readSettings([force = false]) async {
+    if (Data.availableParamData && !force) {
       return;
     }
     await write(Data.CLR_PW_CMD);

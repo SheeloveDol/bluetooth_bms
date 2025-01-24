@@ -72,16 +72,16 @@ class NtcField extends SettingsField {
       return Container(
           margin: const EdgeInsets.all(3),
           padding: const EdgeInsets.all(3),
-          height: 45,
-          width: 45,
+          height: 55,
+          width: 60,
           decoration: BoxDecoration(
               color: (activated) ? Colors.greenAccent : const Color(0xFF00192E),
               borderRadius: BorderRadius.circular(10)),
           child: Row(children: [
-            const Icon(Icons.thermostat, color: Colors.white, size: 20),
+            const Icon(Icons.thermostat, color: Colors.white, size: 35),
             Column(children: [
               Text(title,
-                  style: const TextStyle(fontSize: 11, color: Colors.white))
+                  style: const TextStyle(fontSize: 12, color: Colors.white))
             ])
           ]));
     }));
