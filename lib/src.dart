@@ -567,9 +567,320 @@ class Be {
     }
   }
 
-  static batchWrite(Map<int, dynamic> parmsToWite) async {
-    for (var k in parmsToWite.keys) {
+  static batchWrite(Map<int, dynamic> paramsToWite) async {
+    for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
+      if (changedScreen) {
+        consumeChangeScreen();
+        return;
+      }
+      switch (k) {
+        case Data.DESIGN_CAP:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.CYCLE_CAP:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.CELL_FULL_MV:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.CELL_MIN_MV:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.CELL_D_PERC:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.CYCLES:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_C_HIGH_TEMP_TRIG:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_C_HIGH_TEMP_REL:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_C_LOW_TEMP_TRIG:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_C_LOW_TEMP_REL:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_D_HIGH_TEMP_TRIG:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_D_HIGH_TEMP_REL:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+
+        case Data.PROT_D_LOW_TEMP_TRIG:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_D_LOW_TEMP_REL:
+          await write(
+              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          continue;
+
+        case Data.PROT_BAT_HIGH_TRIG:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_BAT_HIGH_REL:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_BAT_LOW_TRIG:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_BAT_LOW_REL:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_CELL_HIGH_TRIG:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_CELL_HIGH_REL:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_CELL_LOW_TRIG:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_CELL_LOW_REL:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_CH_HIGH_MA:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.PROT_D_HIGH_MA:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.BAL_START:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.BAL_DELTA:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.NTC_EN:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.CELL_CNT:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_FET_CTRL_SW:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LED:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        // case Data.ADV_HIGH_V_TRIG:
+        //   _settingsData["ADV_HIGH_V_TRIG"] = batch.sublist(0, 2);
+        //   print(" [param] ${parameterRegistry[param]}:$param_adv_high_v_trig");
+        //   continue;
+
+        // case Data.ADV_LOW_V_TRIG:
+        //   _settingsData["ADV_LOW_V_TRIG"] = batch.sublist(0, 2);
+        //   print(" [param] ${parameterRegistry[param]}:$param_adv_low_v_trig");
+        //   continue;
+
+        // case Data.ADV_PROT_HIGH_MA:
+        //   _settingsData["ADV_PROT_HIGH_MA"] = batch.sublist(0, 2);
+        //   print(" [param] ${parameterRegistry[param]}:$param_adv_prot_high_ma");
+        //   continue;
+
+        // case Data.SC_PROT_SET:
+        //   _settingsData["SC_PROT_SET"] = batch.sublist(0, 2);
+        //   print(" [param] ${parameterRegistry[param]}:$param_sc_prot_set");
+        //   continue;
+
+        case Data.DEL_ADV_HIGH_LOW_V:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_SC_REL:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_CH_TEMP:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_CH_TEMP:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_D_TEMP:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_D_TEMP:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_BAT_V:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_BAT_V:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_CELL_V:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_CELL_V:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_MA:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_HIGH_MA_REL:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_MA:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.DEL_LOW_MA_REL:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+
+        case Data.GPS_SHUTD:
+          await write([
+            k,
+            0x02,
+            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
+          ]);
+          continue;
+
+        case Data.DEL_GPS_SHUTD:
+          await write(
+              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          continue;
+        default:
+          print("param:$k unknown");
+          continue;
+      }
     }
   }
 
@@ -925,7 +1236,7 @@ class Data {
     return cells;
   }
 
-  static double get bal_start => _unsigned10Mili(_data["bal_start"]);
+  static double get bal_start => _signedOneMili(_data["bal_start"]);
 
   static String get watts => (pack_ma * pack_mv).round().toString();
 
@@ -1141,7 +1452,7 @@ class Data {
   static String get param_prot_d_high_ma =>
       _unsigned10Mili(_settingsData["PROT_D_HIGH_MA"]).toStringAsFixed(2);
   static String get param_bal_start =>
-      _unsignedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
+      _signedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
   static String get param_bal_delta =>
       _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
   static String get param_resistor =>
@@ -1187,15 +1498,15 @@ class Data {
   static int get param_del_gps_shutd =>
       _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
 
-  static String get param_function =>
-      _unsigned10Mili(_settingsData["FUNCTION"]).toStringAsFixed(2);
+  static int get param_function => _oneUnit(_settingsData["FUNCTION"]);
   static int get param_ntc_en => _oneUnit(_settingsData["NTC_EN"]);
-  static String get param_adv_prot_high_ma =>
-      _unsigned10Mili(_settingsData["ADV_PROT_HIGH_MA"]).toStringAsFixed(2);
-  static String get param_sc_prot_set =>
-      _unsigned10Mili(_settingsData["SC_PROT_SET"]).toStringAsFixed(2);
-  static String get param_del_adv_high_low_v =>
-      _unsigned10Mili(_settingsData["DEL_ADV_HIGH_LOW_V"]).toStringAsFixed(2);
+
+  // will fail must implement translating function
+  static int get param_adv_prot_high_ma =>
+      (_settingsData["ADV_PROT_HIGH_MA"]) as int;
+  static int get param_sc_prot_set => (_settingsData["SC_PROT_SET"]) as int;
+  static int get param_del_adv_high_low_v =>
+      (_settingsData["DEL_ADV_HIGH_LOW_V"]) as int;
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
     // print("param:$param data left : $batch");
@@ -1488,9 +1799,25 @@ class Data {
     return (data == null) ? 0.0 : _combine(data, 0, 1) * 0.001;
   }
 
+  /// Converts an unsigned 1 milli double value back to a list of two bytes
+  static List<int> reverseUnsignedOneMili(double value) {
+    int scaledValue = (value * 1000).round();
+    int byte1 = scaledValue & 0xFF; // Lower 8 bits
+    int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
+  }
+
   /// converts 2 bytes to a value of unit of unsigned 10mili
   static double _unsigned10Mili(List<int>? data) {
     return (data == null) ? 0.0 : _combine(data, 0, 1) * 0.01;
+  }
+
+  /// Converts an unsigned 10 milli double value back to a list of two bytes
+  static List<int> reverseUnsigned10Mili(double value) {
+    int scaledValue = (value * 100).round();
+    int byte1 = scaledValue & 0xFF; // Lower 8 bits
+    int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
   }
 
   /// converts 2 bytes to a value of unit of unsigned 100mili
@@ -1499,12 +1826,24 @@ class Data {
     return (data == null) ? 0.0 : _combine(data, index, nextIndex) * 0.1;
   }
 
+  /// Converts an unsigned 100 milli double value back to a list of two bytes
+  static List<int> reverseUnsigned100Mili(double value) {
+    int scaledValue = (value * 10).round();
+    int byte1 = scaledValue & 0xFF; // Lower 8 bits
+    int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
+  }
+
   /// converts 2 bytes to a value of unit of unsigned 100mili then substracts 273.15
   static double _kelvinsToCelcius(List<int>? data,
       [int index = 0, int nextIndex = 1]) {
     return (data == null)
         ? 0.0
         : _unsigned100Mili(data, index, nextIndex) - 273.15;
+  }
+
+  static List<int> celciusToBytes(double celcius) {
+    return reverseUnsigned100Mili(celcius + 273.15);
   }
 
   /// converts 2 bytes to a value of unit of signed 10mili
@@ -1516,14 +1855,57 @@ class Data {
     return (result * 0.01);
   }
 
+  /// Converts a signed 10 milli double value back to a list of two bytes
+  static List<int> reverseSigned10Mili(double value) {
+    int scaledValue = (value * 100).round();
+    if (scaledValue < 0) {
+      scaledValue = 0x10000 + scaledValue; // Convert to two's complement
+    }
+    int byte1 = scaledValue & 0xFF; // Lower 8 bits
+    int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
+  }
+
+  /// converts 2 bytes to a value of unit of signed 10mili
+  static double _signedOneMili(List<int>? data) {
+    if (data == null) return 0.00;
+    int result = _combineSigned(data, 0, 1);
+    if (result & 0x8000 != 0)
+      result = -(0x10000 - result); // Check the sign bit (MSB)
+    return (result * 0.001);
+  }
+
+  /// Converts a signed 10 milli double value back to a list of two bytes
+  static List<int> reverseSignedOneMili(double value) {
+    int scaledValue = (value * 1000).round();
+    if (scaledValue < 0) {
+      scaledValue = 0x10000 + scaledValue; // Convert to two's complement
+    }
+    int byte1 = scaledValue & 0xFF; // Lower 8 bits
+    int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
+  }
+
   /// converts 2 bytes to a value of one unit 1;
   static int _oneUnit(List<int>? data) {
     return (data == null) ? 0 : _combine(data, 0, 1);
   }
 
+  /// Converts an integer value (one unit) back to a list of two bytes
+  static List<int> reverseOneUnit(int value) {
+    int byte1 = value & 0xFF; // Lower 8 bits
+    int byte2 = (value >> 8) & 0xFF; // Upper 8 bits
+    return [byte1, byte2];
+  }
+
   /// converts 1 bytes to a value of one unit 1;
   static int _oneByteOneUnit(List<int>? data) {
     return (data == null) ? 0 : data[0];
+  }
+
+  /// converts 1 bytes to a value of one unit 1;
+  static List<int> reverseOneByteOneUnit(int data) {
+    return [data];
   }
 
   /// converts 1 bytes to a value of a bool;
