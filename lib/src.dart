@@ -528,7 +528,6 @@ class Be {
   }
 
   static void readSettings([force = false]) async {
-    consumeChangeScreen();
     if (Data.availableParamData && !force) {
       return;
     }
@@ -553,10 +552,6 @@ class Be {
     if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
       return batch;
     }
-    if (changedScreen) {
-      consumeChangeScreen();
-      return batch;
-    }
 
     List<int> payload = [param, 0x0];
     var b = await parameterRead(payload);
@@ -571,10 +566,7 @@ class Be {
   static batchWrite(Map<int, dynamic> paramsToWite) async {
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
-      if (changedScreen) {
-        consumeChangeScreen();
-        return;
-      }
+
       switch (k) {
         case Data.DESIGN_CAP:
           await write([
@@ -888,10 +880,6 @@ class Be {
   static void setConnectionState(DeviceConnectionState state) {
     _currentState = state;
     updater!();
-  }
-
-  static void consumeChangeScreen() {
-    changedScreen = false;
   }
 
   static bool get warantyVoided => _warantyVoided;
