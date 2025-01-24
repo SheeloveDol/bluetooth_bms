@@ -538,6 +538,7 @@ class Be {
     Data.setBatchData(batch, batch[1]);
     await write([
       Data.CELL_D_PERC,
+      0x03,
       0x02,
       ...Data.reverseUnsigned100Mili(double.parse("0.5"))
     ]);
