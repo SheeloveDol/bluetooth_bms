@@ -541,6 +541,8 @@ class Be {
       0x02,
       ...Data.reverseUnsigned100Mili(double.parse("0.5"))
     ]);
+    batch = await write(Data.CLOSE_FACTORY_MODE);
+    batch = await write(Data.OPEN_FACTORY_MODE);
     batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
