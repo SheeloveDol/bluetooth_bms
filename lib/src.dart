@@ -537,10 +537,9 @@ class Be {
     var batch = await write(Data.OPEN_FACTORY_MODE);
     Data.setBatchData(batch, batch[1]);
     await write([
-      Data.CELL_D_PERC,
-      0x03,
+      Data.DESIGN_CAP,
       0x02,
-      ...Data.reverseUnsigned100Mili(double.parse("0.5"))
+      ...Data.reverseUnsigned100Mili(double.parse("171.00"))
     ]);
     batch = await write(Data.CLOSE_FACTORY_MODE);
     batch = await write(Data.OPEN_FACTORY_MODE);
