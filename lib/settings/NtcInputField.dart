@@ -14,18 +14,17 @@ class NtcInputfield extends SettingsElement {
       fontWeight: FontWeight.bold);
 
   void onSingularChange(int index, bool activated) {
-    value |= (activated) ? 1 : 0 << index;
+    value |= (activated) ? 1 : 0 << (index - 1);
     onChange(value);
   }
 
-  bool activated(int index) => (Data.param_ntc_en & (1 << (index - 1))) == 1;
+  bool activated(int index) => ((Data.param_ntc_en >> (index - 1)) & 1) == 1;
 
   @override
   Widget build(BuildContext context) {
     List<NtcField> ntcs = [];
+    value = Data.param_ntc_en;
     for (var i = 1; i <= 8; i++) {
-      value |=
-          activated(i) ? 1 : 0 << (i - 1); //to change to add a list of NTCs
       ntcs.add(NtcField(
           title: "T$i",
           index: i - 1,
