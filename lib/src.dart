@@ -564,6 +564,7 @@ class Be {
   }
 
   static batchWrite(Map<int, dynamic> paramsToWite) async {
+    await write(Data.USE_PW_CMD);
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
 
