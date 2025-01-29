@@ -10,11 +10,21 @@ List<int> reverseUnsigned100Mili(double value) {
   return [byte1, byte2];
 }
 
-void main() {
-  //runApp(const MyApp());
-  print(reverseUnsigned100Mili(double.parse("0.12")));
-  print(double.parse("0.12") * 10);
+String intTo8BitBinaryString(int value) {
+  // Ensure the value is within the range of 8 bits
+  assert(value >= 0 && value <= 255, 'Value must be an 8-bit integer (0-255).');
+
+  // Convert the integer to binary and pad with leading zeros to ensure 8 bits
+  return value.toRadixString(2).padLeft(8, '0');
 }
+
+void main() {
+  var value = 255;
+  value = value & ~(1 << 1);
+  print(intTo8BitBinaryString(value));
+}
+
+
 
 // class MyApp extends StatelessWidget {
 //   const MyApp({super.key});

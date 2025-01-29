@@ -14,7 +14,8 @@ class NtcInputfield extends SettingsElement {
       fontWeight: FontWeight.bold);
 
   void onSingularChange(int index, bool activated) {
-    value |= (activated) ? 1 : 0 << (index - 1);
+    if (activated) value |= 1 << (index - 1);
+    if (!activated) value = value & ~(1 << index - 1);
     onChange(value);
   }
 

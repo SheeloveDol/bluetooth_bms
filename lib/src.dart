@@ -27,6 +27,7 @@ class Be {
   static Function? factoryUpdater;
   static bool _communicatingNow = false;
   static bool _warantyVoided = false;
+  static bool _locked = true;
 
   static Future<bool> init() async {
     bool status = false;
@@ -491,24 +492,22 @@ class Be {
 
   static bool get communicatingNow => _communicatingNow;
 
-  static bool get locked => !Data.factoryModeState;
+  static bool get locked => _locked;
 
   static lock() async {
-    if (locked) {
+    if (_locked) {
       return;
     }
-    var batch = await write(Data.CLOSE_FACTORY_MODE);
-    Data.setBatchData(batch, batch[1]);
+    _locked = true;
     factoryUpdater!();
     updater!();
   }
 
   static unLock() async {
-    if (!locked) {
+    if (!_locked) {
       return;
     }
-    var batch = await write(Data.OPEN_FACTORY_MODE);
-    Data.setBatchData(batch, batch[1]);
+    _locked = false;
     factoryUpdater!();
     updater!();
   }
@@ -533,26 +532,18 @@ class Be {
     }
     Data.setAvailableData(false);
     await write(Data.CLR_PW_CMD);
-    await write(Data.USE_PW_CMD);
-    var batch = await write(Data.OPEN_FACTORY_MODE);
-    Data.setBatchData(batch, batch[1]);
-    await write([
-      Data.DESIGN_CAP,
-      0x02,
-      ...Data.reverseUnsigned100Mili(double.parse("171.00"))
-    ]);
-    batch = await write(Data.CLOSE_FACTORY_MODE);
-    batch = await write(Data.OPEN_FACTORY_MODE);
-    batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
+    await write(Data.USE_PW_CMD); // use password
+
+    var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
+      Data.setBatchData(batch, (await write(Data.OPEN_FACTORY_MODE))[1]);
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), []);
       if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_PARAMETERS);
+      Data.setBatchData(batch, (await write(Data.CLOSE_FACTORY_MODE))[1]);
     } else {
       Data.setBatchData(batch, Data.PARAMETERS);
     }
-    batch = await write(Data.CLOSE_FACTORY_MODE);
-    Data.setBatchData(batch, batch[1]);
     updater!();
     factoryUpdater!();
   }
@@ -576,7 +567,7 @@ class Be {
   static batchWrite(Map<int, dynamic> paramsToWite) async {
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
-
+      await write(Data.OPEN_FACTORY_MODE);
       switch (k) {
         case Data.DESIGN_CAP:
           await write([
@@ -584,6 +575,7 @@ class Be {
             0x02,
             ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLE_CAP:
@@ -592,6 +584,7 @@ class Be {
             0x02,
             ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_FULL_MV:
@@ -600,6 +593,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_MIN_MV:
@@ -608,6 +602,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_D_PERC:
@@ -616,36 +611,43 @@ class Be {
             0x02,
             ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLES:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_TRIG:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_REL:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_TRIG:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_REL:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_TRIG:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_REL:
@@ -655,11 +657,13 @@ class Be {
         case Data.PROT_D_LOW_TEMP_TRIG:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_LOW_TEMP_REL:
           await write(
               [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_TRIG:
@@ -668,6 +672,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_REL:
@@ -676,6 +681,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_TRIG:
@@ -684,6 +690,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_REL:
@@ -692,6 +699,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_TRIG:
@@ -700,6 +708,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_REL:
@@ -708,6 +717,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_TRIG:
@@ -716,6 +726,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_REL:
@@ -724,6 +735,7 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CH_HIGH_MA:
@@ -732,6 +744,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_MA:
@@ -740,6 +753,7 @@ class Be {
             0x02,
             ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_START:
@@ -748,6 +762,7 @@ class Be {
             0x02,
             ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_DELTA:
@@ -756,116 +771,135 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.NTC_EN:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_CNT:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_FET_CTRL_SW:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LED:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         // case Data.ADV_HIGH_V_TRIG:
         //   _settingsData["ADV_HIGH_V_TRIG"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_high_v_trig");
-        //   continue;
+        //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         // case Data.ADV_LOW_V_TRIG:
         //   _settingsData["ADV_LOW_V_TRIG"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_low_v_trig");
-        //   continue;
+        //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         // case Data.ADV_PROT_HIGH_MA:
         //   _settingsData["ADV_PROT_HIGH_MA"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_prot_high_ma");
-        //   continue;
+        //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         // case Data.SC_PROT_SET:
         //   _settingsData["SC_PROT_SET"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_sc_prot_set");
-        //   continue;
+        //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         case Data.DEL_ADV_HIGH_LOW_V:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_SC_REL:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CH_TEMP:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CH_TEMP:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_D_TEMP:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_D_TEMP:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_BAT_V:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_BAT_V:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CELL_V:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CELL_V:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA_REL:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA_REL:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.GPS_SHUTD:
@@ -874,14 +908,17 @@ class Be {
             0x02,
             ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
           ]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_GPS_SHUTD:
           await write(
               [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
         default:
           print("param:$k unknown");
+          await write(Data.CLOSE_FACTORY_MODE);
           continue;
       }
     }
