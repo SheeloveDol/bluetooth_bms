@@ -328,13 +328,13 @@ class Be {
     for (var i = (wake) ? 0 : 1; i < 2; i++) {
       await writeCharacteristics!.write(cmd, withoutResponse: true);
       if (wake) {
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 200));
       }
       _setWake(false);
     }
     int k = 0;
     while (answer.isEmpty) {
-      await Future.delayed(const Duration(milliseconds: 400));
+      await Future.delayed(const Duration(milliseconds: 150));
       k++;
       if (k > 4) {
         notifySub.cancel();
@@ -555,7 +555,7 @@ class Be {
           continue;
 
         case Data.CYCLE_CAP:
-          await write([Data.legacy(k), 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
