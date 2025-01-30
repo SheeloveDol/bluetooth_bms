@@ -10,8 +10,7 @@ enum DeviceConnectionState { connecting, connected, disconnected }
 
 class Be {
   static BluetoothDevice? savedDevice;
-  static DeviceConnectionState _currentState =
-      DeviceConnectionState.disconnected;
+  static DeviceConnectionState _currentState = DeviceConnectionState.disconnected;
   static String? title;
   static BluetoothService? service;
   static BluetoothCharacteristic? readCharacteristics;
@@ -35,8 +34,7 @@ class Be {
       print("Bluetooth not supported by this device");
       return false;
     }
-    var subscription =
-        FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+    var subscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
       if (state == BluetoothAdapterState.on) {
         status = true;
       } else {
@@ -59,11 +57,7 @@ class Be {
         try {
           if (results.isNotEmpty) {
             ScanResult r = results.last;
-            onFound(
-                (r.advertisementData.advName.length > 1)
-                    ? r.advertisementData.advName
-                    : "${r.device.remoteId}",
-                r.device);
+            onFound((r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device);
           }
         } catch (e) {
           print("switched window");
@@ -72,9 +66,7 @@ class Be {
       onError: (e) => print(e),
     );
     FlutterBluePlus.cancelWhenScanComplete(subscription);
-    await FlutterBluePlus.adapterState
-        .where((val) => val == BluetoothAdapterState.on)
-        .first;
+    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
@@ -90,8 +82,7 @@ class Be {
   }
 
   static Future<bool> connect(BluetoothDevice device) async {
-    var subscription =
-        device.connectionState.listen((BluetoothConnectionState state) async {
+    var subscription = device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
         print("Device Disconnected : ${device.disconnectReason}");
       }
@@ -150,12 +141,8 @@ class Be {
     try {
       //getting first basic info
       var readSuccessFully = await read(Data.BASIC_INFO_PAYLOAD);
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.CELL_INFO_PAYLOAD)
-          : readSuccessFully;
-      readSuccessFully = (readSuccessFully)
-          ? await read(Data.STATS_PAYLOAD)
-          : readSuccessFully;
+      readSuccessFully = (readSuccessFully) ? await read(Data.CELL_INFO_PAYLOAD) : readSuccessFully;
+      readSuccessFully = (readSuccessFully) ? await read(Data.STATS_PAYLOAD) : readSuccessFully;
 
       if (readSuccessFully) {
         savedDevice = device;
@@ -280,13 +267,7 @@ class Be {
       var notifySub = readCharacteristics!.onValueReceived.listen((event) {
         answer.addAll(event);
       });
-      List<int> cmd = [
-        0xDD,
-        0xa5,
-        ...payload,
-        ...checksumtoRead(payload),
-        0x77
-      ];
+      List<int> cmd = [0xDD, 0xa5, ...payload, ...checksumtoRead(payload), 0x77];
       print("sending read command : $cmd");
       int j = 0;
       do {
@@ -434,10 +415,8 @@ class Be {
       }
 
       var payload = rawData.sublist(3, rawData.length - 3);
-      if (rawData.sublist(rawData.length - 3)[0] !=
-              checksumtoRead(payload)[0] ||
-          rawData.sublist(rawData.length - 3)[1] !=
-              checksumtoRead(payload)[1]) {
+      if (rawData.sublist(rawData.length - 3)[0] != checksumtoRead(payload)[0] ||
+          rawData.sublist(rawData.length - 3)[1] != checksumtoRead(payload)[1]) {
         print("corupted data ${[
           ...checksumtoRead(payload),
           0x77
@@ -549,8 +528,7 @@ class Be {
     factoryUpdater!();
   }
 
-  static Future<List<int>> recursiveParamRead(
-      int param, List<int> batch) async {
+  static Future<List<int>> recursiveParamRead(int param, List<int> batch) async {
     if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
       return batch;
     }
@@ -567,236 +545,155 @@ class Be {
 
   static batchWrite(Map<int, dynamic> paramsToWite) async {
     for (var k in paramsToWite.keys) {
-      print("${Data.parameterRegistry[k]} will be modified");
+      print("${Data.parameterRegistry[k]} will be modified next");
       await write(Data.USE_PW_CMD); // use password
       await write(Data.OPEN_FACTORY_MODE);
       switch (k) {
         case Data.DESIGN_CAP:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLE_CAP:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_FULL_MV:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_MIN_MV:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_D_PERC:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLES:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_TRIG:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_REL:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_TRIG:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_REL:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_TRIG:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_REL:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
 
         case Data.PROT_D_LOW_TEMP_TRIG:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_LOW_TEMP_REL:
-          await write(
-              [k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_TRIG:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_REL:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_TRIG:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_REL:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_TRIG:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_REL:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_TRIG:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_REL:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CH_HIGH_MA:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_MA:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_START:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_DELTA:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.NTC_EN:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_CNT:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_FET_CTRL_SW:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LED:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
@@ -821,101 +718,82 @@ class Be {
         //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         case Data.DEL_ADV_HIGH_LOW_V:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_SC_REL:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CH_TEMP:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CH_TEMP:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_D_TEMP:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_D_TEMP:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_BAT_V:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_BAT_V:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CELL_V:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CELL_V:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA_REL:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA_REL:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.GPS_SHUTD:
-          await write([
-            k,
-            0x02,
-            ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))
-          ]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_GPS_SHUTD:
-          await write(
-              [k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
         default:
@@ -1136,15 +1014,11 @@ class Data {
   static bool get factoryModeState => (_factory == null) ? false : _factory!;
   static double get pack_mv => _unsigned10Mili(_data["pack_mv"]);
   static double get pack_ma => _signed10Mili(_data["pack_ma"]);
-  static String get cycle_cap =>
-      _unsigned10Mili(_data["cycle_cap"]).toStringAsFixed(1);
-  static String get design_cap =>
-      _unsigned10Mili(_data["design_cap"]).toStringAsFixed(1);
+  static String get cycle_cap => _unsigned10Mili(_data["cycle_cap"]).toStringAsFixed(1);
+  static String get design_cap => _unsigned10Mili(_data["design_cap"]).toStringAsFixed(1);
   static String get cycle_cnt => _oneUnit(_data["cycle_cnt"]).toString();
-  static bool get chargeStatus =>
-      _oneBool(_data["fet_status"], 0x01); // position 01
-  static bool get dischargeStatus =>
-      _oneBool(_data["fet_status"], 0x02); // position 10
+  static bool get chargeStatus => _oneBool(_data["fet_status"], 0x01); // position 01
+  static bool get dischargeStatus => _oneBool(_data["fet_status"], 0x02); // position 10
   static int get cap_pct => _oneByteOneUnit(_data["cap_pct"]);
   static int get cell_cnt => _oneByteOneUnit(_data["cell_cnt"]);
   static int get ntc_cnt => _oneByteOneUnit(_data["ntc_cnt"]);
@@ -1160,17 +1034,13 @@ class Data {
   static int get dsgut_err_cnt => _oneUnit(_data["dsgut_err_cnt"]);
   static int get povp_err_cnt => _oneUnit(_data["povp_err_cnt"]);
   static int get puvp_err_cnt => _oneUnit(_data["puvp_err_cnt"]);
-  static String get device_name => (_data["device_name"] == null)
-      ? ""
-      : String.fromCharCodes(_data["device_name"]!);
+  static String get device_name => (_data["device_name"] == null) ? "" : String.fromCharCodes(_data["device_name"]!);
 
   static List<String> get curr_err {
     if (_data["curr_err"] == null) return [];
     List<String> err = [];
     for (int i = 15; i >= 0; i--) {
-      bool bit =
-          (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) !=
-              0;
+      bool bit = (((_data["curr_err"]![0] << 8) + _data["curr_err"]![1]) & (1 << i)) != 0;
       if (bit) {
         switch (i) {
           case 0:
@@ -1255,8 +1125,7 @@ class Data {
     List<String> temps = [];
     int j = 0;
     for (var i = 0; i < ntc_cnt; i++) {
-      temps.add(
-          (_kelvinsToCelcius(_data["ntc_temp"], j, j + 1)).toStringAsFixed(1));
+      temps.add((_kelvinsToCelcius(_data["ntc_temp"], j, j + 1)).toStringAsFixed(1));
       j += 2;
     }
     return temps;
@@ -1279,9 +1148,7 @@ class Data {
   static String get watts => (pack_ma * pack_mv).round().toString();
 
   static String get timeLeft {
-    if (_data["cycle_cap"] == null ||
-        _data["design_cap"] == null ||
-        _data["pack_ma"] == null) {
+    if (_data["cycle_cap"] == null || _data["design_cap"] == null || _data["pack_ma"] == null) {
       return "0 Minutes left";
     }
 
@@ -1354,14 +1221,11 @@ class Data {
         try {
           _data["humidity"] = [batch[afterNtc]];
           _data["alarm"] = batch.sublist(afterNtc, afterNtc + 1);
-          _data["full_charge_capacity"] =
-              batch.sublist(afterNtc + 1, afterNtc + 3);
-          _data["remaining_capacity"] =
-              batch.sublist(afterNtc + 3, afterNtc + 5);
+          _data["full_charge_capacity"] = batch.sublist(afterNtc + 1, afterNtc + 3);
+          _data["remaining_capacity"] = batch.sublist(afterNtc + 3, afterNtc + 5);
           _data["balance_current"] = batch.sublist(afterNtc + 5, afterNtc + 7);
         } catch (e) {
-          print(
-              "Data humidity, alarm, full_charge_capacity, remining_capacity and balance current was not found");
+          print("Data humidity, alarm, full_charge_capacity, remining_capacity and balance current was not found");
         }
         return true;
 
@@ -1411,8 +1275,7 @@ class Data {
         return true;
 
       case LEGACY_PARAMETERS:
-        _handleBatchParameterData(
-            batch, Data.DESIGN_CAP); // always starts at design_cap
+        _handleBatchParameterData(batch, Data.DESIGN_CAP); // always starts at design_cap
         setAvailableData(true);
         return true;
 
@@ -1435,116 +1298,63 @@ class Data {
   }
 
   // Parameters info
-  static String get param_prot_c_high_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_TRIG"])
-          .toStringAsFixed(1);
-  static String get param_prot_c_high_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_REL"])
-          .toStringAsFixed(1);
-  static String get param_prot_c_low_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_TRIG"])
-          .toStringAsFixed(1);
-  static String get param_prot_c_low_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_REL"])
-          .toStringAsFixed(1);
-  static String get param_prot_d_high_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_TRIG"])
-          .toStringAsFixed(1);
-  static String get param_prot_d_high_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_REL"])
-          .toStringAsFixed(1);
-  static String get param_prot_d_low_temp_trig =>
-      _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_TRIG"])
-          .toStringAsFixed(1);
-  static String get param_design_cap =>
-      _unsigned10Mili(_settingsData["DESIGN_CAP"]).toStringAsFixed(2);
-  static String get param_cycle_cap =>
-      _unsigned10Mili(_settingsData["CYCLE_CAP"]).toStringAsFixed(2);
-  static String get param_cell_full_mv =>
-      _unsignedOneMili(_settingsData["CELL_FULL_MV"]).toStringAsFixed(2);
-  static String get param_cell_min_mv =>
-      _unsignedOneMili(_settingsData["CELL_MIN_MV"]).toStringAsFixed(2);
-  static String get param_cell_d_perc =>
-      _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(1);
-  static String get param_prot_d_low_temp_rel =>
-      _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_REL"])
-          .toStringAsFixed(1);
-  static String get param_prot_bat_high_trig =>
-      _unsigned10Mili(_settingsData["PROT_BAT_HIGH_TRIG"]).toStringAsFixed(2);
-  static String get param_prot_bat_high_rel =>
-      _unsigned10Mili(_settingsData["PROT_BAT_HIGH_REL"]).toStringAsFixed(2);
-  static String get param_prot_bat_low_trig =>
-      _unsigned10Mili(_settingsData["PROT_BAT_LOW_TRIG"]).toStringAsFixed(2);
-  static String get param_prot_bat_low_rel =>
-      _unsigned10Mili(_settingsData["PROT_BAT_LOW_REL"]).toStringAsFixed(2);
-  static String get param_prot_cell_high_trig =>
-      _unsignedOneMili(_settingsData["PROT_CELL_HIGH_TRIG"]).toStringAsFixed(2);
-  static String get param_prot_cell_high_rel =>
-      _unsignedOneMili(_settingsData["PROT_CELL_HIGH_REL"]).toStringAsFixed(2);
-  static String get param_prot_cell_low_trig =>
-      _unsignedOneMili(_settingsData["PROT_CELL_LOW_TRIG"]).toStringAsFixed(2);
-  static String get param_prot_cell_low_rel =>
-      _unsignedOneMili(_settingsData["PROT_CELL_LOW_REL"]).toStringAsFixed(2);
-  static String get param_prot_ch_high_ma =>
-      _unsigned10Mili(_settingsData["PROT_CH_HIGH_MA"]).toStringAsFixed(2);
-  static String get param_prot_d_high_ma =>
-      _unsigned10Mili(_settingsData["PROT_D_HIGH_MA"]).toStringAsFixed(2);
-  static String get param_bal_start =>
-      _signedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
-  static String get param_bal_delta =>
-      _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
-  static String get param_resistor =>
-      _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
-  static String get param_adv_high_v_trig =>
-      _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
-  static String get param_adv_low_v_trig =>
-      _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
-  static String get mfg_name => (_data["mfg_name"] == null)
-      ? "Royer Batteries"
-      : String.fromCharCodes(_data["mfg_name"]!);
-  static String get param_gps_shutd =>
-      _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
+  static String get param_prot_c_high_temp_trig => _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_high_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_trig => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_c_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_C_LOW_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_trig => _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_prot_d_high_temp_rel => _kelvinsToCelcius(_settingsData["PROT_D_HIGH_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_d_low_temp_trig => _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_TRIG"]).toStringAsFixed(1);
+  static String get param_design_cap => _unsigned10Mili(_settingsData["DESIGN_CAP"]).toStringAsFixed(2);
+  static String get param_cycle_cap => _unsigned10Mili(_settingsData["CYCLE_CAP"]).toStringAsFixed(2);
+  static String get param_cell_full_mv => _unsignedOneMili(_settingsData["CELL_FULL_MV"]).toStringAsFixed(2);
+  static String get param_cell_min_mv => _unsignedOneMili(_settingsData["CELL_MIN_MV"]).toStringAsFixed(2);
+  static String get param_cell_d_perc => _unsigned100Mili(_settingsData["CELL_D_PERC"]).toStringAsFixed(1);
+  static String get param_prot_d_low_temp_rel => _kelvinsToCelcius(_settingsData["PROT_D_LOW_TEMP_REL"]).toStringAsFixed(1);
+  static String get param_prot_bat_high_trig => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_bat_high_rel => _unsigned10Mili(_settingsData["PROT_BAT_HIGH_REL"]).toStringAsFixed(2);
+  static String get param_prot_bat_low_trig => _unsigned10Mili(_settingsData["PROT_BAT_LOW_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_bat_low_rel => _unsigned10Mili(_settingsData["PROT_BAT_LOW_REL"]).toStringAsFixed(2);
+  static String get param_prot_cell_high_trig => _unsignedOneMili(_settingsData["PROT_CELL_HIGH_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_cell_high_rel => _unsignedOneMili(_settingsData["PROT_CELL_HIGH_REL"]).toStringAsFixed(2);
+  static String get param_prot_cell_low_trig => _unsignedOneMili(_settingsData["PROT_CELL_LOW_TRIG"]).toStringAsFixed(2);
+  static String get param_prot_cell_low_rel => _unsignedOneMili(_settingsData["PROT_CELL_LOW_REL"]).toStringAsFixed(2);
+  static String get param_prot_ch_high_ma => _unsigned10Mili(_settingsData["PROT_CH_HIGH_MA"]).toStringAsFixed(2);
+  static String get param_prot_d_high_ma => _unsigned10Mili(_settingsData["PROT_D_HIGH_MA"]).toStringAsFixed(2);
+  static String get param_bal_start => _signedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
+  static String get param_bal_delta => _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
+  static String get param_resistor => _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
+  static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
+  static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
+  static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
+  static String get param_gps_shutd => _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
 
   static int get param_cell_cnt => _oneUnit(_settingsData["CELL_CNT"]);
   static int get param_cycles => _oneUnit(_settingsData["CYCLES"]);
-  static int get param_del_fet_ctrl_sw =>
-      _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
+  static int get param_del_fet_ctrl_sw => _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
   static int get param_del_led => 0; //_oneUnit(_settingsData["DEL_LED"]);
   static int get param_del_sc_rel => _oneUnit(_settingsData["DEL_SC_REL"]);
-  static int get param_del_low_ch_temp =>
-      _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
-  static int get param_del_high_ch_temp =>
-      _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
-  static int get param_del_low_d_temp =>
-      _oneUnit(_settingsData["DEL_LOW_D_TEMP"]);
-  static int get param_del_high_d_temp =>
-      _oneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
-  static int get param_del_low_bat_v =>
-      _oneUnit(_settingsData["DEL_LOW_BAT_V"]);
-  static int get param_del_high_bat_v =>
-      _oneUnit(_settingsData["DEL_HIGH_BAT_V"]);
-  static int get param_del_low_cell_v =>
-      _oneUnit(_settingsData["DEL_LOW_CELL_V"]);
-  static int get param_del_high_cell_v =>
-      _oneUnit(_settingsData["DEL_HIGH_CELL_V"]);
+  static int get param_del_low_ch_temp => _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
+  static int get param_del_high_ch_temp => _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
+  static int get param_del_low_d_temp => _oneUnit(_settingsData["DEL_LOW_D_TEMP"]);
+  static int get param_del_high_d_temp => _oneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
+  static int get param_del_low_bat_v => _oneUnit(_settingsData["DEL_LOW_BAT_V"]);
+  static int get param_del_high_bat_v => _oneUnit(_settingsData["DEL_HIGH_BAT_V"]);
+  static int get param_del_low_cell_v => _oneUnit(_settingsData["DEL_LOW_CELL_V"]);
+  static int get param_del_high_cell_v => _oneUnit(_settingsData["DEL_HIGH_CELL_V"]);
   static int get param_del_high_ma => _oneUnit(_settingsData["DEL_HIGH_MA"]);
-  static int get param_del_high_ma_rel =>
-      _oneUnit(_settingsData["DEL_HIGH_MA_REL"]);
+  static int get param_del_high_ma_rel => _oneUnit(_settingsData["DEL_HIGH_MA_REL"]);
   static int get param_del_low_ma => _oneUnit(_settingsData["DEL_LOW_MA"]);
-  static int get param_del_low_ma_rel =>
-      _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
-  static int get param_del_gps_shutd =>
-      _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
+  static int get param_del_low_ma_rel => _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
+  static int get param_del_gps_shutd => _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
 
   static int get param_function => _oneUnit(_settingsData["FUNCTION"]);
   static int get param_ntc_en => _oneUnit(_settingsData["NTC_EN"]);
 
   // will fail must implement translating function
-  static dynamic get param_adv_prot_high_ma =>
-      (_settingsData["ADV_PROT_HIGH_MA"]);
+  static dynamic get param_adv_prot_high_ma => (_settingsData["ADV_PROT_HIGH_MA"]);
   static dynamic get param_sc_prot_set => (_settingsData["SC_PROT_SET"]);
-  static dynamic get param_del_adv_high_low_v =>
-      (_settingsData["DEL_ADV_HIGH_LOW_V"]);
+  static dynamic get param_del_adv_high_low_v => (_settingsData["DEL_ADV_HIGH_LOW_V"]);
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
     // print("param:$param data left : $batch");
@@ -1590,50 +1400,42 @@ class Data {
 
       case PROT_C_HIGH_TEMP_TRIG:
         _settingsData["PROT_C_HIGH_TEMP_TRIG"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_trig");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_trig");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_HIGH_TEMP_REL:
         _settingsData["PROT_C_HIGH_TEMP_REL"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_rel");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_high_temp_rel");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_LOW_TEMP_TRIG:
         _settingsData["PROT_C_LOW_TEMP_TRIG"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_trig");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_trig");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_C_LOW_TEMP_REL:
         _settingsData["PROT_C_LOW_TEMP_REL"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_rel");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_c_low_temp_rel");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_HIGH_TEMP_TRIG:
         _settingsData["PROT_D_HIGH_TEMP_TRIG"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_trig");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_trig");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_HIGH_TEMP_REL:
         _settingsData["PROT_D_HIGH_TEMP_REL"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_rel");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_high_temp_rel");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_LOW_TEMP_TRIG:
         _settingsData["PROT_D_LOW_TEMP_TRIG"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_trig");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_trig");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_D_LOW_TEMP_REL:
         _settingsData["PROT_D_LOW_TEMP_REL"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_rel");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_d_low_temp_rel");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_BAT_HIGH_TRIG:
@@ -1658,8 +1460,7 @@ class Data {
 
       case PROT_CELL_HIGH_TRIG:
         _settingsData["PROT_CELL_HIGH_TRIG"] = batch.sublist(0, 2);
-        print(
-            " [param] ${parameterRegistry[param]}:$param_prot_cell_high_trig");
+        print(" [param] ${parameterRegistry[param]}:$param_prot_cell_high_trig");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
       case PROT_CELL_HIGH_REL:
@@ -1859,8 +1660,7 @@ class Data {
   }
 
   /// converts 2 bytes to a value of unit of unsigned 100mili
-  static double _unsigned100Mili(List<int>? data,
-      [int index = 0, int nextIndex = 1]) {
+  static double _unsigned100Mili(List<int>? data, [int index = 0, int nextIndex = 1]) {
     return (data == null) ? 0.0 : _combine(data, index, nextIndex) * 0.1;
   }
 
@@ -1873,11 +1673,8 @@ class Data {
   }
 
   /// converts 2 bytes to a value of unit of unsigned 100mili then substracts 273.15
-  static double _kelvinsToCelcius(List<int>? data,
-      [int index = 0, int nextIndex = 1]) {
-    return (data == null)
-        ? 0.0
-        : _unsigned100Mili(data, index, nextIndex) - 273.15;
+  static double _kelvinsToCelcius(List<int>? data, [int index = 0, int nextIndex = 1]) {
+    return (data == null) ? 0.0 : _unsigned100Mili(data, index, nextIndex) - 273.15;
   }
 
   static List<int> celciusToBytes(double celcius) {
@@ -1888,8 +1685,7 @@ class Data {
   static double _signed10Mili(List<int>? data) {
     if (data == null) return 0.00;
     int result = _combineSigned(data, 0, 1);
-    if (result & 0x8000 != 0)
-      result = -(0x10000 - result); // Check the sign bit (MSB)
+    if (result & 0x8000 != 0) result = -(0x10000 - result); // Check the sign bit (MSB)
     return (result * 0.01);
   }
 
@@ -1908,8 +1704,7 @@ class Data {
   static double _signedOneMili(List<int>? data) {
     if (data == null) return 0.00;
     int result = _combineSigned(data, 0, 1);
-    if (result & 0x8000 != 0)
-      result = -(0x10000 - result); // Check the sign bit (MSB)
+    if (result & 0x8000 != 0) result = -(0x10000 - result); // Check the sign bit (MSB)
     return (result * 0.001);
   }
 

@@ -10,6 +10,13 @@ List<int> reverseUnsigned100Mili(double value) {
   return [byte1, byte2];
 }
 
+List<int> reverseUnsignedOneMili(double value) {
+  int scaledValue = (value * 1000).round();
+  int byte1 = scaledValue & 0xFF; // Lower 8 bits
+  int byte2 = (scaledValue >> 8) & 0xFF; // Upper 8 bits
+  return [byte2, byte1];
+}
+
 String intTo8BitBinaryString(int value) {
   // Ensure the value is within the range of 8 bits
   assert(value >= 0 && value <= 255, 'Value must be an 8-bit integer (0-255).');
@@ -19,9 +26,7 @@ String intTo8BitBinaryString(int value) {
 }
 
 void main() {
-  var value = 255;
-  value = value & ~(1 << 1);
-  print(intTo8BitBinaryString(value));
+  print(reverseUnsignedOneMili(double.parse("3.40")));
 }
 
 
