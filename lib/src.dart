@@ -568,6 +568,7 @@ class Be {
   static batchWrite(Map<int, dynamic> paramsToWite) async {
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified");
+      await write(Data.USE_PW_CMD); // use password
       await write(Data.OPEN_FACTORY_MODE);
       switch (k) {
         case Data.DESIGN_CAP:
