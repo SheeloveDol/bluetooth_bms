@@ -210,6 +210,7 @@ class Be {
     // Disconnect from device
     await savedDevice?.disconnect();
     await savedSubscription?.cancel();
+    _communicatingNow = false;
     savedSubscription = null;
     _onConectedCb = null;
     if (totaly) {
