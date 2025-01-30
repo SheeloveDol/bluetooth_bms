@@ -550,150 +550,150 @@ class Be {
       await write(Data.OPEN_FACTORY_MODE);
       switch (k) {
         case Data.DESIGN_CAP:
-          await write([k,  ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLE_CAP:
-          await write([k,  ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_FULL_MV:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_MIN_MV:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_D_PERC:
-          await write([k,  ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLES:
-          await write([k,  ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_TRIG:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_REL:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_TRIG:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_REL:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_TRIG:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_REL:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
 
         case Data.PROT_D_LOW_TEMP_TRIG:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_LOW_TEMP_REL:
-          await write([k,  ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_TRIG:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_REL:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_TRIG:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_REL:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_TRIG:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_REL:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_TRIG:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_REL:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CH_HIGH_MA:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_MA:
-          await write([k,  ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_START:
-          await write([k,  ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_DELTA:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.NTC_EN:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_CNT:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_FET_CTRL_SW:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LED:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
@@ -718,82 +718,82 @@ class Be {
         //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         case Data.DEL_ADV_HIGH_LOW_V:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_SC_REL:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CH_TEMP:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CH_TEMP:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_D_TEMP:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_D_TEMP:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_BAT_V:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_BAT_V:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CELL_V:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CELL_V:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA_REL:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA_REL:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.GPS_SHUTD:
-          await write([k,  ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
+          await write([k, 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_GPS_SHUTD:
-          await write([k,  ...Data.reverseOneUnit(paramsToWite[k] as int)]);
+          await write([k, 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
         default:
