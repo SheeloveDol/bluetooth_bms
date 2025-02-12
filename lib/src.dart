@@ -525,10 +525,10 @@ class Be {
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
       Data.setBatchData(batch, (await write(Data.OPEN_FACTORY_MODE))[1]);
-      batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), []);
+      batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), [], false);
       if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_PARAMETERS);
 
-      batch = await recursiveParamRead(Data.LEGACY_SC_DSGOC2, []);
+      batch = await recursiveParamRead(Data.LEGACY_SC_DSGOC2, [], true);
       if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_SC_DSGOC2);
       Data.setBatchData(batch, (await write(Data.CLOSE_FACTORY_MODE))[1]);
     } else {
@@ -538,8 +538,8 @@ class Be {
     factoryUpdater!();
   }
 
-  static Future<List<int>> recursiveParamRead(int param, List<int> batch) async {
-    if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
+  static Future<List<int>> recursiveParamRead(int param, List<int> batch, bool secondPass) async {
+    if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1 && !secondPass) {
       return batch;
     }
 
@@ -552,7 +552,7 @@ class Be {
     var b = await parameterRead(payload);
     if (b.isNotEmpty) {
       batch.addAll(b);
-      return recursiveParamRead(param + 1, batch);
+      return recursiveParamRead(param + 1, batch, secondPass);
     } else {
       return batch;
     }
