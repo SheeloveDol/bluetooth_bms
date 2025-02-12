@@ -544,6 +544,7 @@ class Be {
     }
 
     if (param == Data.LEGACY_DEL_D_TRIG_REL_MA + 1) {
+      print("was empty in Data.LEGACY_DEL_D_TRIG_REL_MA");
       return batch;
     }
 
@@ -1377,7 +1378,7 @@ class Data {
         return true;
 
       case LEGACY_SC_DSGOC2:
-        _handleLegacyBatchParameterDelayData(batch, LEGACY_SC_DSGOC2); // always starts at design_cap
+        _handleLegacyBatchParameterDelayData(batch, LEGACY_SC_DSGOC2); // always starts at LEGACY_SC_DSGOC2
         setAvailableData(true);
         return true;
 
