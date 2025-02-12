@@ -568,67 +568,67 @@ class Be {
       switch (k) {
         case Data.DESIGN_CAP:
           await write([Data.legacy(k), 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLE_CAP:
           await write([k, 0x02, ...Data.reverseSigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_FULL_MV:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_MIN_MV:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_D_PERC:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned100Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CYCLES:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(int.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_HIGH_TEMP_REL:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_C_LOW_TEMP_REL:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_TEMP_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
@@ -637,230 +637,230 @@ class Be {
 
         case Data.PROT_D_LOW_TEMP_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_LOW_TEMP_REL:
           await write([Data.legacy(k), 0x02, ...Data.celciusToBytes(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_HIGH_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_BAT_LOW_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_HIGH_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_TRIG:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CELL_LOW_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_CH_HIGH_MA:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.PROT_D_HIGH_MA:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsigned10Mili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_START:
           await write([Data.legacy(k), 0x02, ...Data.reverseSignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.BAL_DELTA:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.NTC_EN:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.CELL_CNT:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_FET_CTRL_SW:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LED:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         // case Data.ADV_HIGH_V_TRIG:
         //   _settingsData["ADV_HIGH_V_TRIG"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_high_v_trig");
-        // await readSingleParam(Data.legacy(k));
+        // await readSingleParam(k);
         //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         // case Data.ADV_LOW_V_TRIG:
         //   _settingsData["ADV_LOW_V_TRIG"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_low_v_trig");
-        // await readSingleParam(Data.legacy(k));
+        // await readSingleParam(k);
         //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         // case Data.ADV_PROT_HIGH_MA:
         //   _settingsData["ADV_PROT_HIGH_MA"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_adv_prot_high_ma");
-        // await readSingleParam(Data.legacy(k));
+        // await readSingleParam(k);
         //   await write(Data.CLOSE_FACTORY_MODE);
         // continue;
 
         // case Data.SC_PROT_SET:
         //   _settingsData["SC_PROT_SET"] = batch.sublist(0, 2);
         //   print(" [param] ${parameterRegistry[param]}:$param_sc_prot_set");
-        // await readSingleParam(Data.legacy(k));
+        // await readSingleParam(k);
         //   await write(Data.CLOSE_FACTORY_MODE);continue;
 
         case Data.DEL_ADV_HIGH_LOW_V:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_SC_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CH_TEMP:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CH_TEMP:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_D_TEMP:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_D_TEMP:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_BAT_V:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_BAT_V:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_CELL_V:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_CELL_V:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_HIGH_MA_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_LOW_MA_REL:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.GPS_SHUTD:
           await write([Data.legacy(k), 0x02, ...Data.reverseUnsignedOneMili(double.parse(paramsToWite[k]))]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
 
         case Data.DEL_GPS_SHUTD:
           await write([Data.legacy(k), 0x02, ...Data.reverseOneUnit(paramsToWite[k] as int)]);
-          await readSingleParam(Data.legacy(k));
+          await readSingleParam(k);
           await write(Data.CLOSE_FACTORY_MODE);
           continue;
         default:
