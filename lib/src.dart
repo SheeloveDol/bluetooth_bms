@@ -1050,7 +1050,7 @@ class Data {
 
   /// Change form  Legacy parameters
   static int fromLegacy(int pegacyParam) {
-    if (pegacyParam > legacy(ADV_LOW_V_TRIG) || pegacyParam < legacy(0)) {
+    if (pegacyParam > 0x37 || pegacyParam < 0x10) {
       throw "Unaceptable legacy parameter translation";
     }
     return pegacyParam - 0x10;
