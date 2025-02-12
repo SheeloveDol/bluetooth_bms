@@ -439,6 +439,7 @@ class Be {
   static void setUpdater(void Function() setstate) {
     updater = ([String v = "Loading..."]) {
       currentMessage = v;
+      setstate();
     };
     changedScreen = true;
   }
