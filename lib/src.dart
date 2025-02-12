@@ -1378,6 +1378,7 @@ class Data {
         return true;
 
       case LEGACY_SC_DSGOC2:
+        print("was empty in LEGACY_SC_DSGOC2 batch read");
         _handleLegacyBatchParameterDelayData(batch, LEGACY_SC_DSGOC2); // always starts at LEGACY_SC_DSGOC2
         setAvailableData(true);
         return true;
@@ -1723,6 +1724,7 @@ class Data {
 
   static bool _handleLegacyBatchParameterDelayData(List<int> batch, int param) {
     if (batch.isEmpty) {
+      print("was empty in batch read");
       return true;
     }
 
