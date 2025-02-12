@@ -30,6 +30,7 @@ class Be {
 
   static Future<bool> init() async {
     bool status = false;
+    FlutterBluePlus.setLogLevel(LogLevel.none, color:false);
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
       return false;
@@ -439,7 +440,13 @@ class Be {
   }
 
   static void setFactryUpdater(void Function() setstate) {
-    factoryUpdater = setstate;
+    factoryUpdater = (){
+      try {
+        setstate();
+      } catch (e) {
+        print("Lock button does not exist");
+      }
+    };
   }
 
   static void on_discharge_on_charge() async {
