@@ -527,6 +527,9 @@ class Be {
       Data.setBatchData(batch, (await write(Data.OPEN_FACTORY_MODE))[1]);
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), []);
       if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_PARAMETERS);
+
+      batch = await recursiveParamRead(Data.LEGACY_SC_DSGOC2, []);
+      if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_SC_DSGOC2);
       Data.setBatchData(batch, (await write(Data.CLOSE_FACTORY_MODE))[1]);
     } else {
       Data.setBatchData(batch, Data.PARAMETERS);
@@ -537,6 +540,10 @@ class Be {
 
   static Future<List<int>> recursiveParamRead(int param, List<int> batch) async {
     if (param == Data.legacy(Data.ADV_LOW_V_TRIG) + 1) {
+      return batch;
+    }
+
+    if (param == Data.LEGACY_DEL_D_TRIG_REL_MA + 1) {
       return batch;
     }
 
@@ -1029,6 +1036,17 @@ class Data {
     DEL_HIGH_MA_REL: 'DEL_HIGH_MA_REL',
     DEL_LOW_MA: 'DEL_LOW_MA',
     DEL_LOW_MA_REL: 'DEL_LOW_MA_REL',
+
+    LEGACY_SC_DSGOC2: "LEGACY_SC_DSGOC2",
+    LEGACY_CXVP: "LEGACY_CXVP",
+    LEGACY_DEL_CH_LOW_HIGH_TEMP: "LEGACY_DEL_CH_LOW_HIGH_TEMP",
+    LEGACY_DEL_D_LOW_HIGH_TEMP: "LEGACY_DEL_D_LOW_HIGH_TEMP",
+    LEGACY_DEL_PACK_LOW_HIGH_V: "LEGACY_DEL_PACK_LOW_HIGH_V",
+    LEGACY_DEL_CELL_LOW_HIGH_V: "LEGACY_DEL_CELL_LOW_HIGH_V",
+    LEGACY_DEL_CH_TRIG_REL_MA: "LEGACY_DEL_CH_TRIG_REL_MA",
+    LEGACY_DEL_D_TRIG_REL_MA: "LEGACY_DEL_D_TRIG_REL_MA",
+    LEGACY_MFG_NAME: "LEGACY_MFG_NAME",
+
     GPS_SHUTD: 'GPS_SHUTD',
     DEL_GPS_SHUTD: 'DEL_GPS_SHUTD',
     // volt percent
@@ -1049,11 +1067,8 @@ class Data {
   }
 
   /// Change form  Legacy parameters
-  static int fromLegacy(int pegacyParam) {
-    if (pegacyParam > 0x37 || pegacyParam < 0x10) {
-      throw "Unaceptable legacy parameter translation";
-    }
-    return pegacyParam - 0x10;
+  static int fromLegacy(int legacyParam) {
+    return legacyParam - 0x10;
   }
 
   //Factory mode
@@ -1357,7 +1372,12 @@ class Data {
         return true;
 
       case LEGACY_PARAMETERS:
-        _handleBatchParameterData(batch, Data.DESIGN_CAP); // always starts at design_cap
+        _handleBatchParameterData(batch, DESIGN_CAP); // always starts at design_cap
+        setAvailableData(true);
+        return true;
+
+      case LEGACY_SC_DSGOC2:
+        _handleLegacyBatchParameterDelayData(batch, LEGACY_SC_DSGOC2); // always starts at design_cap
         setAvailableData(true);
         return true;
 
@@ -1439,7 +1459,6 @@ class Data {
   static dynamic get param_del_adv_high_low_v => (_settingsData["DEL_ADV_HIGH_LOW_V"]);
 
   static bool _handleBatchParameterData(List<int> batch, int param) {
-    // print("param:$param data left : $batch");
     if (batch.isEmpty) {
       return true;
     }
@@ -1695,13 +1714,57 @@ class Data {
         print(" [param] ${parameterRegistry[param]}:$param_gps_shutd");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
 
-      case DEL_GPS_SHUTD:
-        _settingsData["DEL_GPS_SHUTD"] = batch.sublist(0, 2);
-        print(" [param] ${parameterRegistry[param]}:$param_del_gps_shutd");
-        return _handleBatchParameterData(batch.sublist(2), param + 1);
       default:
         print("param:$param unknown");
         return _handleBatchParameterData(batch.sublist(2), param + 1);
+    }
+  }
+
+  static bool _handleLegacyBatchParameterDelayData(List<int> batch, int param) {
+    if (batch.isEmpty) {
+      return true;
+    }
+
+    switch (param) {
+      case LEGACY_SC_DSGOC2:
+        _settingsData["LEGACY_SC_DSGOC2"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+
+      case LEGACY_CXVP:
+        _settingsData["LEGACY_CXVP"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+      case LEGACY_DEL_CH_LOW_HIGH_TEMP:
+        _settingsData["LEGACY_DEL_CH_LOW_HIGH_TEMP"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+
+      case LEGACY_DEL_D_LOW_HIGH_TEMP:
+        _settingsData["LEGACY_DEL_D_LOW_HIGH_TEMP"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+      case LEGACY_DEL_PACK_LOW_HIGH_V:
+        _settingsData["LEGACY_DEL_PACK_LOW_HIGH_V"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+
+      case LEGACY_DEL_CELL_LOW_HIGH_V:
+        _settingsData["LEGACY_DEL_CELL_LOW_HIGH_V"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+      case LEGACY_DEL_CH_TRIG_REL_MA:
+        _settingsData["LEGACY_DEL_CH_TRIG_REL_MA"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
+
+      case LEGACY_DEL_D_TRIG_REL_MA:
+        _settingsData["LEGACY_DEL_D_TRIG_REL_MA"] = batch.sublist(0, 2);
+        print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
+        return true;
+      default:
+        print("param:$param unknown");
+        return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
     }
   }
 
