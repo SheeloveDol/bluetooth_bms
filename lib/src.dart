@@ -20,7 +20,7 @@ class Be {
   static bool wake = true;
   static int times = 0;
   static int readTimes = 0;
-  static Function? updater;
+  static Function([String])? updater;
   static bool changedScreen = false;
   static Function? _onConectedCb;
   static Function? factoryUpdater;
@@ -28,9 +28,11 @@ class Be {
   static bool _warantyVoided = false;
   static bool _locked = true;
 
+  static String currentMessage = "Getting Data";
+
   static Future<bool> init() async {
     bool status = false;
-    FlutterBluePlus.setLogLevel(LogLevel.none, color:false);
+    FlutterBluePlus.setLogLevel(LogLevel.none, color: false);
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
       return false;
@@ -435,18 +437,14 @@ class Be {
   }
 
   static void setUpdater(void Function() setstate) {
-    updater = setstate;
+    updater = ([String v = "Loading..."]) {
+      currentMessage = v;
+    };
     changedScreen = true;
   }
 
   static void setFactryUpdater(void Function() setstate) {
-    factoryUpdater = (){
-      try {
-        setstate();
-      } catch (e) {
-        print("Lock button does not exist");
-      }
-    };
+    factoryUpdater = setstate;
   }
 
   static void on_discharge_on_charge() async {
@@ -518,6 +516,7 @@ class Be {
       return;
     }
     Data.setAvailableData(false);
+    updater!("Reading");
     await write(Data.CLR_PW_CMD);
     await write(Data.USE_PW_CMD); // use password
 
@@ -551,6 +550,8 @@ class Be {
   }
 
   static batchWrite(Map<int, dynamic> paramsToWite) async {
+    Data.setAvailableData(false);
+    updater!("Writing");
     for (var k in paramsToWite.keys) {
       print("${Data.parameterRegistry[k]} will be modified next");
       await write(Data.USE_PW_CMD); // use password
@@ -809,6 +810,8 @@ class Be {
           continue;
       }
     }
+    Data.setAvailableData(true);
+    updater!();
   }
 
   static void setConnectionState(DeviceConnectionState state) {
