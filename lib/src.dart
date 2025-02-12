@@ -51,7 +51,7 @@ class Be {
     return status;
   }
 
-  static scan(Function(String, BluetoothDevice) onFound) async {
+  static scan(Function(String, BluetoothDevice,List<Guid>) onFound) async {
     for (var device in FlutterBluePlus.connectedDevices) {
       await device.disconnect();
     }
@@ -60,7 +60,7 @@ class Be {
         try {
           if (results.isNotEmpty) {
             ScanResult r = results.last;
-            onFound((r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device);
+            onFound((r.advertisementData.advName.length > 1) ? r.advertisementData.advName : "${r.device.remoteId}", r.device,r.advertisementData.serviceUuids);
           }
         } catch (e) {
           print("switched window");
@@ -524,6 +524,7 @@ class Be {
     var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
+      Data.setLegacyDevice();
       Data.setBatchData(batch, (await write(Data.OPEN_FACTORY_MODE))[1]);
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), [], false);
       if (batch.isNotEmpty) Data.setBatchData(batch, Data.LEGACY_PARAMETERS);
@@ -964,8 +965,8 @@ class Data {
   static const LEGACY_CXVP = 0x39;
   static const LEGACY_DEL_CH_LOW_HIGH_TEMP = 0x3A;
   static const LEGACY_DEL_D_LOW_HIGH_TEMP = 0x3B;
-  static const LEGACY_DEL_PACK_LOW_HIGH_V = 0x3C;
-  static const LEGACY_DEL_CELL_LOW_HIGH_V = 0x3D;
+  static const LEGACY_DEL_PACK_LOW_HIGH_REL_V = 0x3C;
+  static const LEGACY_DEL_CELL_LOW_HIGH_REL_V = 0x3D;
   static const LEGACY_DEL_CH_TRIG_REL_MA = 0x3E;
   static const LEGACY_DEL_D_TRIG_REL_MA = 0x3F;
   static const LEGACY_MFG_NAME = 0xA0;
@@ -1042,8 +1043,8 @@ class Data {
     LEGACY_CXVP: "LEGACY_CXVP",
     LEGACY_DEL_CH_LOW_HIGH_TEMP: "LEGACY_DEL_CH_LOW_HIGH_TEMP",
     LEGACY_DEL_D_LOW_HIGH_TEMP: "LEGACY_DEL_D_LOW_HIGH_TEMP",
-    LEGACY_DEL_PACK_LOW_HIGH_V: "LEGACY_DEL_PACK_LOW_HIGH_V",
-    LEGACY_DEL_CELL_LOW_HIGH_V: "LEGACY_DEL_CELL_LOW_HIGH_V",
+    LEGACY_DEL_PACK_LOW_HIGH_REL_V: "LEGACY_DEL_PACK_LOW_HIGH_REL_V",
+    LEGACY_DEL_CELL_LOW_HIGH_REL_V: "LEGACY_DEL_CELL_LOW_HIGH_REL_V",
     LEGACY_DEL_CH_TRIG_REL_MA: "LEGACY_DEL_CH_TRIG_REL_MA",
     LEGACY_DEL_D_TRIG_REL_MA: "LEGACY_DEL_D_TRIG_REL_MA",
     LEGACY_MFG_NAME: "LEGACY_MFG_NAME",
@@ -1101,6 +1102,7 @@ class Data {
   static final Map<String, List<int>> _data = {};
   static final Map<String, List<int>> _settingsData = {};
   static bool _availableData = false;
+  static bool _legacy = false;
   static bool? _factory;
 
   //Basic info and Cell info and Stats info and Device name
@@ -1428,8 +1430,16 @@ class Data {
   static String get param_bal_start => _signedOneMili(_settingsData["BAL_START"]).toStringAsFixed(2);
   static String get param_bal_delta => _unsignedOneMili(_settingsData["BAL_DELTA"]).toStringAsFixed(2);
   static String get param_resistor => _unsigned100Mili(_settingsData["RESISTOR"]).toStringAsFixed(2);
-  static String get param_adv_high_v_trig => _unsignedOneMili(_settingsData["ADV_HIGH_V_TRIG"]).toStringAsFixed(2);
-  static String get param_adv_low_v_trig => _unsignedOneMili(_settingsData["ADV_LOW_V_TRIG"]).toStringAsFixed(2);
+  static String get param_adv_high_v_trig {
+    if (_legacy) return "ADV_HIGH_V_TRIG";
+    return "byte manip";
+  }
+
+  static String get param_adv_low_v_trig {
+    if (_legacy) return "ADV_LOW_V_TRIG";
+    return "byte manip";
+  }
+
   static String get mfg_name => (_data["mfg_name"] == null) ? "Royer Batteries" : String.fromCharCodes(_data["mfg_name"]!);
   static String get param_gps_shutd => _unsignedOneMili(_settingsData["GPS_SHUTD"]).toStringAsFixed(2);
 
@@ -1437,26 +1447,85 @@ class Data {
   static int get param_cycles => _oneUnit(_settingsData["CYCLES"]);
   static int get param_del_fet_ctrl_sw => _oneUnit(_settingsData["DEL_FET_CTRL_SW"]);
   static int get param_del_led => 0; //_oneUnit(_settingsData["DEL_LED"]);
-  static int get param_del_sc_rel => _oneUnit(_settingsData["DEL_SC_REL"]);
-  static int get param_del_low_ch_temp => _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
-  static int get param_del_high_ch_temp => _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
-  static int get param_del_low_d_temp => _oneUnit(_settingsData["DEL_LOW_D_TEMP"]);
-  static int get param_del_high_d_temp => _oneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
-  static int get param_del_low_bat_v => _oneUnit(_settingsData["DEL_LOW_BAT_V"]);
-  static int get param_del_high_bat_v => _oneUnit(_settingsData["DEL_HIGH_BAT_V"]);
-  static int get param_del_low_cell_v => _oneUnit(_settingsData["DEL_LOW_CELL_V"]);
-  static int get param_del_high_cell_v => _oneUnit(_settingsData["DEL_HIGH_CELL_V"]);
-  static int get param_del_high_ma => _oneUnit(_settingsData["DEL_HIGH_MA"]);
-  static int get param_del_high_ma_rel => _oneUnit(_settingsData["DEL_HIGH_MA_REL"]);
-  static int get param_del_low_ma => _oneUnit(_settingsData["DEL_LOW_MA"]);
-  static int get param_del_low_ma_rel => _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
-  static int get param_del_gps_shutd => _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
+  static int get param_del_sc_rel {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_SC_REL"]);
+    return _oneUnit(_settingsData["DEL_SC_REL"]);
+  }
+
+  static int get param_del_low_ch_temp {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
+    return _oneUnit(_settingsData["DEL_LOW_CH_TEMP"]);
+  }
+
+  static int get param_del_high_ch_temp {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
+    return _oneUnit(_settingsData["DEL_HIGH_CH_TEMP"]);
+  }
+
+  static int get param_del_low_d_temp {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_D_TEMP"]);
+    return _oneUnit(_settingsData["DEL_LOW_D_TEMP"]);
+  }
+
+  static int get param_del_high_d_temp {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
+    return _oneUnit(_settingsData["DEL_HIGH_D_TEMP"]);
+  }
+
+  static int get param_del_low_bat_v {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_BAT_V"]);
+    return _oneUnit(_settingsData["DEL_LOW_BAT_V"]);
+  }
+
+  static int get param_del_high_bat_v {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_BAT_V"]);
+    return _oneUnit(_settingsData["DEL_HIGH_BAT_V"]);
+  }
+
+  static int get param_del_low_cell_v {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_CELL_V"]);
+    return _oneUnit(_settingsData["DEL_LOW_CELL_V"]);
+  }
+
+  static int get param_del_high_cell_v {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_CELL_V"]);
+    return _oneUnit(_settingsData["DEL_HIGH_CELL_V"]);
+  }
+
+  static int get param_del_high_ma {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_MA"]);
+    return _oneUnit(_settingsData["DEL_HIGH_MA"]);
+  }
+
+  static int get param_del_high_ma_rel {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_HIGH_MA_REL"]);
+    return _oneUnit(_settingsData["DEL_HIGH_MA_ REL"]);
+  }
+
+  static int get param_del_low_ma {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_MA"]);
+    return _oneUnit(_settingsData["DEL_LOW_MA"]);
+  }
+
+  static int get param_del_low_ma_rel {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_LOW_MA_REL"]);
+    return _oneUnit(_settingsData["DEL_LOW_MA_REL"]);
+  }
+
+  static int get param_del_gps_shutd {
+    if (_legacy) return _oneByteOneUnit(_settingsData["DEL_GPS_SHUTD"]);
+    return _oneUnit(_settingsData["DEL_GPS_SHUTD"]);
+  }
 
   static int get param_function => _oneUnit(_settingsData["FUNCTION"]);
   static int get param_ntc_en => _oneUnit(_settingsData["NTC_EN"]);
 
   // will fail must implement translating function
-  static dynamic get param_adv_prot_high_ma => (_settingsData["ADV_PROT_HIGH_MA"]);
+  static dynamic get param_adv_prot_high_ma {
+    if (_legacy) return "ADV_PROT_HIGH_MA";
+    return "byte manip";
+  }
+
   static dynamic get param_sc_prot_set => (_settingsData["SC_PROT_SET"]);
   static dynamic get param_del_adv_high_low_v => (_settingsData["DEL_ADV_HIGH_LOW_V"]);
 
@@ -1739,30 +1808,36 @@ class Data {
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
       case LEGACY_DEL_CH_LOW_HIGH_TEMP:
-        _settingsData["LEGACY_DEL_CH_LOW_HIGH_TEMP"] = batch.sublist(0, 2);
+        _settingsData["DEL_LOW_CH_TEMP"] = batch.sublist(0, 1);
+        _settingsData["DEL_HIGH_CH_TEMP"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
 
       case LEGACY_DEL_D_LOW_HIGH_TEMP:
-        _settingsData["LEGACY_DEL_D_LOW_HIGH_TEMP"] = batch.sublist(0, 2);
+        _settingsData["DEL_LOW_D_TEMP"] = batch.sublist(0, 1);
+        _settingsData["DEL_HIGH_D_TEMP"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
-      case LEGACY_DEL_PACK_LOW_HIGH_V:
-        _settingsData["LEGACY_DEL_PACK_LOW_HIGH_V"] = batch.sublist(0, 2);
+      case LEGACY_DEL_PACK_LOW_HIGH_REL_V:
+        _settingsData["DEL_LOW_BAT_V"] = batch.sublist(0, 1);
+        _settingsData["DEL_HIGH_BAT_V"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
 
-      case LEGACY_DEL_CELL_LOW_HIGH_V:
-        _settingsData["LEGACY_DEL_CELL_LOW_HIGH_V"] = batch.sublist(0, 2);
+      case LEGACY_DEL_CELL_LOW_HIGH_REL_V:
+        _settingsData["DEL_LOW_CELL_V"] = batch.sublist(0, 1);
+        _settingsData["DEL_HIGH_CELL_V"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
       case LEGACY_DEL_CH_TRIG_REL_MA:
-        _settingsData["LEGACY_DEL_CH_TRIG_REL_MA"] = batch.sublist(0, 2);
+        _settingsData["DEL_HIGH_MA"] = batch.sublist(0, 1);
+        _settingsData["DEL_HIGH_MA_REL"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return _handleLegacyBatchParameterDelayData(batch.sublist(2), param + 1);
 
       case LEGACY_DEL_D_TRIG_REL_MA:
-        _settingsData["LEGACY_DEL_D_TRIG_REL_MA"] = batch.sublist(0, 2);
+        _settingsData["DEL_LOW_MA"] = batch.sublist(0, 1);
+        _settingsData["DEL_LOW_MA_REL"] = batch.sublist(1, 2);
         print(" [param] ${parameterRegistry[param]}:${batch.sublist(0, 2)}");
         return true;
       default:
@@ -1899,11 +1974,16 @@ class Data {
     _availableData = isBLEConnected;
   }
 
+  static setLegacyDevice() {
+    _legacy = true;
+  }
+
   static bool get availableData => _availableData;
   static bool get availableParamData => _settingsData.isNotEmpty;
   static clear() {
     setAvailableData(false);
     _data.clear();
     _settingsData.clear();
+    _legacy = false;
   }
 }
