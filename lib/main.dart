@@ -16,6 +16,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       systemNavigationBarColor: Colors.transparent));
+  Be.init();
   runApp(MaterialApp(
       theme: ThemeData.from(
           colorScheme:

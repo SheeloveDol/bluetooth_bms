@@ -35,13 +35,10 @@ class _ScanPageState extends State<ScanPage> {
     shadingVisible = false;
     setState(() => disabled = true);
     setState(() => devices.clear());
-    if (!await Be.init()) {
-      return;
-    }
     setState(() => visible = false);
     Be.scan(onFound);
     await Future.delayed(const Duration(seconds: 5)).then((value) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           visible = true;
           disabled = false;
@@ -79,8 +76,7 @@ class _ScanPageState extends State<ScanPage> {
     });
     Be.setUpdater(() => setState(() {}));
     super.initState();
-
-    Be.init().then((value) => {onScan()});
+    onScan();
   }
 
   showAbout() {

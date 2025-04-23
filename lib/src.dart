@@ -30,25 +30,17 @@ class Be {
 
   static String currentMessage = "Getting Data";
 
-  static Future<bool> init() async {
-    bool status = false;
-    FlutterBluePlus.setLogLevel(LogLevel.none, color: false);
+  static init() async {
+    FlutterBluePlus.setOptions(restoreState: true);
+    FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
-      return false;
+      return;
     }
-    var subscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
-      if (state == BluetoothAdapterState.on) {
-        status = true;
-      } else {
-        status = false;
-      }
-    });
     if (Platform.isAndroid) {
       await FlutterBluePlus.turnOn();
     }
-    subscription.cancel();
-    return status;
+    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
   }
 
   static scan(Function(String, BluetoothDevice,List<Guid>) onFound) async {
@@ -69,7 +61,6 @@ class Be {
       onError: (e) => print(e),
     );
     FlutterBluePlus.cancelWhenScanComplete(subscription);
-    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
@@ -1059,7 +1050,7 @@ class Data {
   static const CLR_PW_CMD = [CLR_PW, ...PW];
   static const USE_PW_CMD = [USE_PW, ...PW];
 
-  /// Cahnge to Legacy parameters
+  /// Change to Legacy parameters
   static int legacy(int param) {
     if (param > ADV_LOW_V_TRIG || param < 0) {
       throw "Unaceptable legacy parameter";

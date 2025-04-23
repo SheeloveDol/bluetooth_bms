@@ -1,7 +1,8 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_blue_plus (0.0.1):
+  - flutter_blue_plus_darwin (0.0.2):
     - Flutter
+    - FlutterMacOS
   - flutter_native_splash (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -9,15 +10,15 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
+  - flutter_blue_plus_darwin (from `.symlinks/plugins/flutter_blue_plus_darwin/darwin`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_blue_plus:
-    :path: ".symlinks/plugins/flutter_blue_plus/ios"
+  flutter_blue_plus_darwin:
+    :path: ".symlinks/plugins/flutter_blue_plus_darwin/darwin"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   url_launcher_ios:
@@ -25,10 +26,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
-  flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  flutter_blue_plus_darwin: 20a08bfeaa0f7804d524858d3d8744bcc1b6dbc3
+  flutter_native_splash: 35ddbc7228eafcb3969dcc5f1fbbe27c1145a4f0
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
