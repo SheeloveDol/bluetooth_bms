@@ -19,31 +19,36 @@ class _BatteryControlState extends State<BatteryControl> {
     return AnimatedContainer(
         margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 40),
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.only(left: 5, right: 5, bottom: 15),
+        padding: const EdgeInsets.only(left: 5, right: 5, bottom: 10),
         height: (size > 260) ? 190 - widget.height : 300 - widget.height,
         decoration: BoxDecoration(
             color: (widget.height > 0) ? const Color(0xF2002A4D) : null,
             gradient: (widget.height > 0)
                 ? null
                 : const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [Colors.transparent, Color(0xFF002A4D)]),
+                    begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.transparent, Color(0xFF002A4D)]),
             borderRadius: BorderRadius.circular(30)),
         alignment: Alignment.center,
-        child: (widget.height > 0)
-            ? BatteryControlSmall()
-            : Column(children: [
-                if (size > 260)
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Left(), Middle(title: widget.title), Right()]),
-                if (size <= 260)
-                  Column(children: [
-                    Middle(title: widget.title),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [Left(), Right()])
-                  ]),
-                const SizedBox(height: 5),
-                Text(Data.timeLeft, style: const TextStyle(color: Colors.white, fontSize: 20))
-              ]));
+        child: FittedBox(
+          fit: BoxFit.fitWidth,
+          child: (widget.height > 0)
+              ? BatteryControlSmall()
+              : Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                  const SizedBox(height: 5),
+                  Text("widget.title",
+                      style: TextStyle(
+                          fontSize: (widget.title.length > 20) ? 10 : 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                  if (size > 260)
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [Left(), Middle(title: widget.title), Right()]),
+                  if (size <= 260)
+                    Column(children: [
+                      Middle(title: widget.title),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [Left(), Right()])
+                    ]),
+                  const SizedBox(height: 5),
+                  Text(Data.timeLeft, style: const TextStyle(color: Colors.white, fontSize: 20))
+                ]),
+        ));
   }
 }
 
@@ -68,7 +73,6 @@ class _RightState extends State<Right> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Padding(padding: EdgeInsets.only(top: 35)),
         Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Bolts(position: BoltPosition.right),
           (Data.dischargeStatus && !Data.chargeStatus)
@@ -102,44 +106,46 @@ class _MiddleState extends State<Middle> {
   double batterySize = 70;
   @override
   Widget build(BuildContext context) {
-    int level = Data.cap_pct;
+    int level = 100; //Data.cap_pct;
     var size = MediaQuery.sizeOf(context).width;
     if (size > 260) batterySize = min(MediaQuery.sizeOf(context).width * 0.18, 105);
     if (size <= 260) batterySize = MediaQuery.sizeOf(context).width * 0.24;
 
-    return Container(
-        padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
-        child: Column(children: [
-          Text(widget.title,
-              style: TextStyle(
-                  fontSize: (widget.title.length > 20) ? 10 : 15, fontWeight: FontWeight.bold, color: Colors.white)),
-          SizedBox(height: 5),
-          Stack(alignment: Alignment.centerLeft, children: [
-            AnimatedContainer(
-                duration: Durations.extralong3,
-                margin: const EdgeInsets.only(left: 7),
-                color: const Color(0xFF00C106),
-                width: (level * batterySize * 0.0187 - 20 < 0) ? 0 : level * batterySize * 0.0187 - 20,
-                height: batterySize - 2),
-            Stack(alignment: Alignment.center, children: [
-              Image.asset(
-                "assets/bat.png",
-                height: batterySize,
-              ),
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(
-                  "${Data.cap_pct}%",
-                  style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 20),
-                ),
-                Text(
-                  "${Data.pack_mv.toStringAsFixed(2)}V",
-                  style: const TextStyle(height: 0, fontSize: 10),
-                ),
-                Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: const TextStyle(height: 0, fontSize: 10))
-              ])
-            ])
-          ])
-        ]));
+    return Column(children: [
+      const SizedBox(height: 45),
+      Stack(children: [
+        AnimatedContainer(
+            duration: Durations.extralong3,
+            margin: const EdgeInsets.only(left: 7, top: 3),
+            decoration: BoxDecoration(color: const Color(0xFF00C106), borderRadius: BorderRadius.circular(10)),
+            width: (level * batterySize * 0.0187 - 20 < 0) ? 0 : level * batterySize * 0.0187 - 18,
+            height: batterySize - 4),
+        Container(
+            width: batterySize * 2,
+            height: batterySize,
+            padding:const EdgeInsets.all(10),
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(image: DecorationImage(fit: BoxFit.scaleDown, image: AssetImage('assets/bat.png'))),
+            child: Stack(children: [
+              FittedBox(
+                  fit: BoxFit.fitWidth,
+
+                  child: Column(children: [
+                    Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      Text(
+                        "${Data.cap_pct}%",
+                        style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 30),
+                      ),
+                      Text(
+                        "${Data.pack_mv.toStringAsFixed(2)}V",
+                        style: TextStyle(height: 0, fontSize: 15),
+                      ),
+                      Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: TextStyle(height: 0, fontSize: 15))
+                    ])
+                  ]))
+            ]))
+      ])
+    ]);
   }
 }
 
@@ -157,7 +163,6 @@ class _LeftState extends State<Left> {
     var watts =
         "${(Data.pack_ma.isNegative) ? Data.watts.substring(1) : Data.watts}W ${(Data.pack_ma.isNegative) ? "Out" : "In"}";
     return Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children: [
-      const Padding(padding: EdgeInsets.only(top: 35)),
       Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Bolts(position: BoltPosition.left),
         (Data.chargeStatus || Data.dischargeStatus && Data.chargeStatus)

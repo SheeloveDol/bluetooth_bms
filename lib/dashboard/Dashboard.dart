@@ -100,7 +100,7 @@ class _DashBoardState extends State<DashBoard> {
                     DelayedBuilder(child: BatteryState()),
                     DelayedBuilder(child: CellsState()),
                     DelayedBuilder(child: Temperatures()),
-                    DelayedBuilder(child: Reports())
+                    DelayedBuilder(child: const Reports())
                   ]),
               BatteryControl(title: title, height: height),
               Visibility(

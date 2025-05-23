@@ -32,7 +32,7 @@ class Be {
 
   static init() async {
     FlutterBluePlus.setOptions(restoreState: true);
-    FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
+    FlutterBluePlus.setLogLevel(LogLevel.none, color: false);
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
       return;
@@ -504,6 +504,10 @@ class Be {
   }
 
   static void readSettings([force = false]) async {
+    if(_currentState != DeviceConnectionState.connected){
+      print("no device is connected to access settings");
+      return;
+    }
     if (Data.availableParamData && !force) {
       return;
     }
@@ -515,6 +519,7 @@ class Be {
     var batch = await parameterRead(Data.ALL_PARAMS_PAYLOAD);
     if (batch.isEmpty) {
       print("No data was found trying to read all at the same time");
+      print("Now reading one by one in legacy");
       Data.setLegacyDevice();
       Data.setBatchData(batch, (await write(Data.OPEN_FACTORY_MODE))[1]);
       batch = await recursiveParamRead(Data.legacy(Data.DESIGN_CAP), [], false);

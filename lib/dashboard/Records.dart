@@ -10,7 +10,6 @@ class Reports extends StatefulWidget {
 
 class _ReportsState extends State<Reports> {
   PageController controller = PageController();
-  bool bg = false;
   Column first() {
     List<Widget> data = [];
     data.addAll([
@@ -96,6 +95,7 @@ class _ReportsState extends State<Reports> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Durations.extralong1).then((s)=>setState(() {}));
   }
 
   @override
@@ -116,7 +116,7 @@ class _ReportsState extends State<Reports> {
                   height: 200,
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(30)),
-                  child: PageView(key: UniqueKey(), controller: controller, children: [first(), second(), third()]))),
+                  child: PageView(key: UniqueKey(),controller: controller, children: [first(), second(), third()]))),
           Positioned(
               top: 10,
               right: 20,

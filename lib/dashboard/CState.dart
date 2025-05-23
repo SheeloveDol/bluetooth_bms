@@ -33,23 +33,25 @@ class _CellsStateState extends State<CellsState> {
     }
     return Container(
       width: 75,
-      margin: EdgeInsets.symmetric(vertical: 2),
-      child: Row(children: [
-        Stack(alignment: Alignment.center, children: [
-          Image.asset(
-            "assets/bat.png",
-            height: 37,
-          ),
-          Column(children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 12, color: titleColor, fontWeight: titleWeight),
-            ),
-            Text("${Data.cell_mv[index].toStringAsFixed(3)}V",
-                style: TextStyle(fontSize: 12, height: 0, color: color, fontWeight: weight))
-          ])
-        ])
-      ]),
+      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/bat.png'),
+        fit: BoxFit.scaleDown, // or BoxFit.fill, BoxFit.contain, etc.
+      )),
+      child: Padding(
+          padding: const EdgeInsets.only(left: 5, right: 13),
+          child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 12, color: titleColor, fontWeight: titleWeight),
+                ),
+                Text("${Data.cell_mv[index].toStringAsFixed(3)}V",
+                    style: TextStyle(fontSize: 12, height: 0, color: color, fontWeight: weight))
+              ]))),
     );
   }
 
@@ -61,17 +63,21 @@ class _CellsStateState extends State<CellsState> {
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0x2EFFFFFF)),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
           Wrap(children: [for (int i = 0; i < Data.cell_cnt; i++) cell("cell${i + 1}", i)]),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            Text("Cell Difference: ${Data.celldif.toStringAsFixed(3)}",
-                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-            const Padding(padding: EdgeInsets.only(left: 3)),
-            const Text("Balance inactive", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold))
-          ]),
-          const Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            Text("High cell group", style: TextStyle(color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
-            Padding(padding: EdgeInsets.only(left: 3)),
-            Text("Low cell group", style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold))
-          ])
+          FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                Text("Cell Difference: ${Data.celldif.toStringAsFixed(3)}",
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                const Padding(padding: EdgeInsets.only(left: 3)),
+                const Text("Balance inactive", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold))
+              ])),
+          FittedBox(
+              fit: BoxFit.fitWidth,
+              child: const Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                Text("High cell group", style: TextStyle(color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
+                Padding(padding: EdgeInsets.only(left: 3)),
+                Text("Low cell group", style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold))
+              ]))
         ]));
   }
 }
