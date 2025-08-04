@@ -200,9 +200,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      (Data.chargeStatus)
-          ? Bolts(position: BoltPosition.left)
-          : const CupertinoButton(
+      const CupertinoButton(
               pressedOpacity: 0.1,
               color: Colors.red,
               padding: EdgeInsets.symmetric(horizontal: 15),
@@ -237,9 +235,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
         ),
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
-      (Data.dischargeStatus)
-          ? Bolts(position: BoltPosition.right)
-          : const CupertinoButton(
+      const CupertinoButton(
               pressedOpacity: 0.1,
               color: Colors.red,
               padding: EdgeInsets.all(3),
