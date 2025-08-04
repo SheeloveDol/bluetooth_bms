@@ -16,20 +16,20 @@ class _CellsStateState extends State<CellsState> {
 
   Widget cell(String title, int index) {
     Color color = Colors.black;
-    Color titleColor = Colors.black;
+    Color titleColor = Colors.white;
     FontWeight weight = FontWeight.normal;
     FontWeight titleWeight = FontWeight.normal;
-    if (Data.bal[index]) {
-      titleColor = Colors.blue;
-      titleWeight = FontWeight.bold;
-    }
     if (Data.cell_mv[index] > Data.bal_start) {
-      color = Color(0xFFCA5100);
+      color = const Color(0xFFFF7519);
       weight = FontWeight.bold;
     }
     if (Data.cell_mv[index] < Data.bal_start) {
       color = Colors.yellow;
       weight = FontWeight.bold;
+    }
+    if (Data.bal[index]) {
+      titleColor = Colors.blue;
+      titleWeight = FontWeight.bold;
     }
     return Container(
       width: 75,
@@ -71,12 +71,12 @@ class _CellsStateState extends State<CellsState> {
                 const Padding(padding: EdgeInsets.only(left: 3)),
                 const Text("Balance inactive", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold))
               ])),
-          FittedBox(
+          const FittedBox(
               fit: BoxFit.fitWidth,
-              child: const Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                Text("High cell group", style: TextStyle(color: Color(0xFFCA5100), fontWeight: FontWeight.bold)),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                Text("High cell group", style: TextStyle(color: Color(0xFFCA5100))),
                 Padding(padding: EdgeInsets.only(left: 3)),
-                Text("Low cell group", style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold))
+                Text("Low cell group", style: TextStyle(color: Colors.yellow))
               ]))
         ]));
   }

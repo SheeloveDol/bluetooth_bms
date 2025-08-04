@@ -35,7 +35,7 @@ class _BatteryControlState extends State<BatteryControl> {
               ? BatteryControlSmall()
               : Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                   const SizedBox(height: 5),
-                  Text("widget.title",
+                  Text(widget.title,
                       style: TextStyle(
                           fontSize: (widget.title.length > 20) ? 10 : 15, fontWeight: FontWeight.bold, color: Colors.white)),
                   if (size > 260)
@@ -88,7 +88,7 @@ class _RightState extends State<Right> {
           color: (Data.dischargeStatus) ? Colors.green : Colors.red,
           padding: const EdgeInsets.all(3),
           onPressed: dischargePressed,
-          child: const Text("Discharge", style: TextStyle(fontSize: 11)),
+          child: const Text("Discharge", style: TextStyle(fontSize: 11,color: Colors.white)),
         )
       ],
     );
@@ -106,7 +106,7 @@ class _MiddleState extends State<Middle> {
   double batterySize = 70;
   @override
   Widget build(BuildContext context) {
-    int level = 100; //Data.cap_pct;
+    int level = Data.cap_pct;
     var size = MediaQuery.sizeOf(context).width;
     if (size > 260) batterySize = min(MediaQuery.sizeOf(context).width * 0.18, 105);
     if (size <= 260) batterySize = MediaQuery.sizeOf(context).width * 0.24;
@@ -117,30 +117,36 @@ class _MiddleState extends State<Middle> {
         AnimatedContainer(
             duration: Durations.extralong3,
             margin: const EdgeInsets.only(left: 7, top: 3),
-            decoration: BoxDecoration(color: const Color(0xFF00C106), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: Color.lerp(
+                const Color(0xFFFF0000), // Red
+                const Color(0xFF45DD4A), // Green
+                level.clamp(0, 100) / 100,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
             width: (level * batterySize * 0.0187 - 20 < 0) ? 0 : level * batterySize * 0.0187 - 18,
             height: batterySize - 4),
         Container(
             width: batterySize * 2,
             height: batterySize,
-            padding:const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
             decoration: const BoxDecoration(image: DecorationImage(fit: BoxFit.scaleDown, image: AssetImage('assets/bat.png'))),
             child: Stack(children: [
               FittedBox(
                   fit: BoxFit.fitWidth,
-
                   child: Column(children: [
                     Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Text(
                         "${Data.cap_pct}%",
-                        style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 30),
+                        style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 30,color: Colors.white),
                       ),
                       Text(
                         "${Data.pack_mv.toStringAsFixed(2)}V",
-                        style: TextStyle(height: 0, fontSize: 15),
+                        style: TextStyle(height: 0, fontSize: 15,color: Colors.white),
                       ),
-                      Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: TextStyle(height: 0, fontSize: 15))
+                      Text("${Data.cycle_cap}Ah/${Data.design_cap}Ah", style: TextStyle(height: 0, fontSize: 15,color: Colors.white))
                     ])
                   ]))
             ]))
@@ -178,7 +184,7 @@ class _LeftState extends State<Left> {
           color: (Data.chargeStatus) ? Colors.green : Colors.red,
           padding: const EdgeInsets.symmetric(horizontal: 15),
           onPressed: chargePressed,
-          child: const Text("Charge", style: TextStyle(fontSize: 11)))
+          child: const Text("Charge", style: TextStyle(fontSize: 11,color: Colors.white)))
     ]);
   }
 }
@@ -201,14 +207,19 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
               color: Colors.red,
               padding: EdgeInsets.symmetric(horizontal: 15),
               onPressed: chargePressed,
-              child: Text("Charge", style: TextStyle(fontSize: 11))),
+              child: Text("Charge", style: TextStyle(fontSize: 11,color: Colors.white))),
       const Padding(padding: EdgeInsets.only(right: 12)),
       Stack(alignment: Alignment.centerLeft, children: [
         Container(
-            decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 0, 193, 3), borderRadius: BorderRadius.horizontal(left: Radius.circular(30))),
+            decoration: BoxDecoration(
+                color: Color.lerp(
+                  const Color(0xFFFF0000), // Red
+                  const Color(0xFF00C106), // Green
+                  level.clamp(0, 100) / 100,
+                ),
+                borderRadius: BorderRadius.circular(10)),
             width: (level - 15 < 0) ? 0 : level - 15,
-            height: 49),
+            height: 42),
         Container(
           child: Stack(
             alignment: Alignment.center,
@@ -219,7 +230,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
               ),
               Text(
                 "${Data.cap_pct}%",
-                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 15),
+                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 15,color: Colors.white),
               )
             ],
           ),
@@ -233,7 +244,7 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
               color: Colors.red,
               padding: EdgeInsets.all(3),
               onPressed: dischargePressed,
-              child: Text("Discharge", style: TextStyle(fontSize: 11)))
+              child: Text("Discharge", style: TextStyle(fontSize: 11, color: Colors.white)))
     ]);
   }
 }

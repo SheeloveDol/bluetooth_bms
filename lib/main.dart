@@ -128,11 +128,13 @@ class _MainState extends State<Main> {
             extendBody: true,
             resizeToAvoidBottomInset:
                 (_selectedTab == _SelectedTab.scan) ? false : true,
-            floatingActionButton: LockButton(
+            floatingActionButton: Visibility(
+              visible: showbar,
+              child: LockButton(
                 registerWrites: registerWrites,
                 visible: (_selectedTab != _SelectedTab.scan &&
                     _selectedTab != _SelectedTab.dashboard &&
-                    !keyboardIsOpen)),
+                    !keyboardIsOpen))),
             bottomNavigationBar: AnimatedOpacity(
               duration: Durations.long1,
               opacity: (_selectedTab == _SelectedTab.scan) ? 0 : 1,
@@ -147,7 +149,7 @@ class _MainState extends State<Main> {
                   duration: Durations.long1,
                   color: Colors.white,
                   child: Visibility(
-                      //visible: showbar,
+                      visible: showbar,
                       child: DotNavigationBar(
                     enableFloatingNavBar: false,
                     marginR: const EdgeInsets.symmetric(horizontal: 10),
