@@ -82,7 +82,7 @@ class _ScanPageState extends State<ScanPage> {
   showAbout() {
     showAboutDialog(
         context: context,
-        applicationName: "Bluetooth BMS",
+        applicationName: "Royer Batteries",
         applicationIcon: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.asset("assets/logo.png", height: 50)),
         children: [
           TextButton(
@@ -106,7 +106,7 @@ class _ScanPageState extends State<ScanPage> {
           const Positioned(
               top: 20,
               left: 10,
-              child: Text("Bluetooth BMS", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 25))),
+              child: Text("Royer Batteries", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 25))),
           //Options button
           Positioned(
               top: 15,
