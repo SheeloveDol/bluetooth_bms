@@ -200,12 +200,12 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
   Widget build(BuildContext context) {
     int level = Data.cap_pct;
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      const CupertinoButton(
+      CupertinoButton(
               pressedOpacity: 0.1,
-              color: Colors.red,
-              padding: EdgeInsets.symmetric(horizontal: 15),
+              color:(Data.chargeStatus) ? Colors.green : Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               onPressed: chargePressed,
-              child: Text("Charge", style: TextStyle(fontSize: 11,color: Colors.white))),
+              child: const Text("Charge", style: TextStyle(fontSize: 11,color: Colors.white))),
       const Padding(padding: EdgeInsets.only(right: 12)),
       Stack(alignment: Alignment.centerLeft, children: [
         Container(
@@ -235,12 +235,12 @@ class _BatteryControlSmallState extends State<BatteryControlSmall> {
         ),
       ]),
       const Padding(padding: EdgeInsets.only(right: 12)),
-      const CupertinoButton(
+      CupertinoButton(
               pressedOpacity: 0.1,
-              color: Colors.red,
-              padding: EdgeInsets.all(3),
+              color: (Data.dischargeStatus) ? Colors.green : Colors.red,
+              padding: const EdgeInsets.all(3),
               onPressed: dischargePressed,
-              child: Text("Discharge", style: TextStyle(fontSize: 11, color: Colors.white)))
+              child: const Text("Discharge", style: TextStyle(fontSize: 11, color: Colors.white)))
     ]);
   }
 }

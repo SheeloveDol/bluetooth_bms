@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+
 .atom/
 .build/
 .buildlog/
@@ -17,6 +18,7 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
+
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -33,6 +35,8 @@ migrate_working_dir/
 .pub/
 /build/
 /android/key.properties
+pubspec.lock
+flutter_jank_metrics*
 
 # Symbolication related
 app.*.symbols
@@ -42,5 +46,6 @@ app.*.map.json
 
 # Android Studio will place build artifacts here
 /android/app/debug
+/android/app/.cxx
 /android/app/profile
 /android/app/release
